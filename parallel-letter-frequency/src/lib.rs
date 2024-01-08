@@ -1,36 +1,53 @@
+use spmc;
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::mpsc;
 use std::thread;
 
 pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
-    let mut handles = vec![];
-    //let counter = Arc::new(Mutex::new(HashMap::<char, usize>::new()));
     let mut root = HashMap::<char, usize>::new();
-    //let input = Arc::new(input);
-    for line in input.iter() {
-        //let clone_counter = Arc::clone(&counter);
-        let thread_line = Arc::new(line.to_string());
-        //                                              ^ take ownership of the string, so that there is no potential for a dangling reference!!
-        let handle = thread::spawn(move || {
-            /*
-            let mut thread_counter = clone_counter.lock().unwrap();
-            for char in thread_line.chars().filter(|char| char.is_alphabetic()) {
-                *thread_counter.entry(char.to_ascii_lowercase()).or_insert(0) += 1;
-            }
-            */
-            line_frequencies(&thread_line)
-        });
-        handles.push(handle);
+
+    if input.is_empty() {
+        return root;
     }
 
-    for handle in handles {
-        root = merge_frequencies(root, handle.join().unwrap());
+    if input.len() <= 30 {
+        return string_frequencies(input.join(""));
     }
-    //consume_refs(counter)
+    let (mut input_tx, input_rx) = spmc::channel();
+    let (output_tx, output_rx) = mpsc::channel();
+
+    for chunk in input.chunks(worker_count) {
+        input_tx.send(chunk.join("")).unwrap();
+    }
+    drop(input_tx);
+
+    for _ in 0..worker_count {
+        let tx = output_tx.clone();
+        let rx = input_rx.clone();
+        thread::spawn(move || {
+            while let Ok(chunk) = rx.recv() {
+                tx.send(string_frequencies(chunk)).unwrap();
+            }
+        });
+    }
+
+    drop(input_rx);
+    drop(output_tx);
+
+    while let Ok(branch) = output_rx.recv() {
+        root = merge_frequency_maps(root, branch);
+    }
     root
 }
 
-fn line_frequencies(line: &String) -> HashMap<char, usize> {
+fn chunk_frequencies(chunk: &[&str]) -> HashMap<char, usize> {
+    let root = HashMap::<char, usize>::new();
+    chunk.iter().fold(root, |acc, line| {
+        merge_frequency_maps(acc, line_frequencies(line))
+    })
+}
+
+fn line_frequencies(line: &str) -> HashMap<char, usize> {
     let root = HashMap::<char, usize>::new();
     line.chars()
         .filter(|char| char.is_alphabetic())
@@ -40,9 +57,10 @@ fn line_frequencies(line: &String) -> HashMap<char, usize> {
         })
 }
 
-fn merge_line_frequencies(root: HashMap<char, usize>, line: &str) -> HashMap<char, usize> {
-    //let frequencies = HashMap::<char, usize>::new();
-    line.chars()
+fn string_frequencies(string: String) -> HashMap<char, usize> {
+    let root = HashMap::<char, usize>::new();
+    string
+        .chars()
         .filter(|char| char.is_alphabetic())
         .fold(root, |mut acc, item| {
             *acc.entry(item.to_ascii_lowercase()).or_insert(0) += 1;
@@ -50,7 +68,7 @@ fn merge_line_frequencies(root: HashMap<char, usize>, line: &str) -> HashMap<cha
         })
 }
 
-fn merge_frequencies(
+fn merge_frequency_maps(
     root: HashMap<char, usize>,
     branch: HashMap<char, usize>,
 ) -> HashMap<char, usize> {
@@ -58,8 +76,4 @@ fn merge_frequencies(
         *acc.entry(pair.0).or_insert(0) += pair.1;
         acc
     })
-}
-
-fn consume_refs<T>(reference: Arc<Mutex<T>>) -> T {
-    Arc::into_inner(reference).unwrap().into_inner().unwrap()
 }
