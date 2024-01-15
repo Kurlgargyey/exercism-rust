@@ -23,7 +23,7 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
         let work_tx = output_tx.clone();
         if let Some(work_string) = workloads.next() {
             thread::spawn(move || {
-                work_tx.send(string_frequencies(work_string)).unwrap();
+                let _ = work_tx.send(string_frequencies(work_string));
             });
         } else {
             break;
