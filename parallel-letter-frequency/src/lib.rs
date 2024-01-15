@@ -25,7 +25,9 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
             thread::spawn(move || {
                 work_tx.send(string_frequencies(work_string)).unwrap();
             });
-        };
+        } else {
+            break;
+        }
     }
 
     drop(output_tx);
