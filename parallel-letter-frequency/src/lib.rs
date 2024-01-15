@@ -13,25 +13,29 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
     if input.len() <= 30 {
         return string_frequencies(input.join(""));
     }
-    let (mut input_tx, input_rx) = spmc::channel();
+    //let (mut input_tx, input_rx) = spmc::channel();
     let (output_tx, output_rx) = mpsc::channel();
 
+    let mut work_chunks = input.chunks(worker_count);
+
+    /*
     for chunk in input.chunks(worker_count) {
         input_tx.send(chunk.join("")).unwrap();
     }
-    drop(input_tx);
+        */
+    //drop(input_tx);
 
     for _ in 0..worker_count {
         let tx = output_tx.clone();
-        let rx = input_rx.clone();
+        let chunk = work_chunks.next().unwrap().join("");
         thread::spawn(move || {
-            while let Ok(chunk) = rx.recv() {
-                tx.send(string_frequencies(chunk)).unwrap();
-            }
+            //            while let Ok(chunk) = rx.recv() {
+            tx.send(string_frequencies(chunk)).unwrap();
+            //          }
         });
     }
 
-    drop(input_rx);
+    //drop(input_rx);
     drop(output_tx);
 
     while let Ok(branch) = output_rx.recv() {
