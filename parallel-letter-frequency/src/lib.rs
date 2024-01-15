@@ -16,7 +16,7 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
     //let (mut input_tx, input_rx) = spmc::channel();
     let (output_tx, output_rx) = mpsc::channel();
 
-    let mut work_chunks = input.chunks(worker_count);
+    let mut workloads = input.chunks(input.len().div_ceil(worker_count));
 
     /*
     for chunk in input.chunks(worker_count) {
@@ -27,12 +27,12 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
 
     for _ in 0..worker_count {
         let tx = output_tx.clone();
-        let chunk = work_chunks.next().unwrap().join("");
-        thread::spawn(move || {
-            //            while let Ok(chunk) = rx.recv() {
-            tx.send(string_frequencies(chunk)).unwrap();
-            //          }
-        });
+        if let Some(chunk) = workloads.next() {
+            let work_string = chunk.join("");
+            thread::spawn(move || {
+                tx.send(string_frequencies(work_string)).unwrap();
+            });
+        };
     }
 
     //drop(input_rx);
