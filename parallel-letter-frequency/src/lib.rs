@@ -9,23 +9,30 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
         return root;
     }
 
-    if input.len() <= 30 {
+    const MIN_INPUT_SIZE: usize = 30;
+
+    if input.len() <= MIN_INPUT_SIZE {
         return string_frequencies(input.join(""));
     }
 
     let (output_tx, output_rx) = mpsc::channel();
 
-    let mut workloads = input
-        .chunks(input.len().div_ceil(worker_count))
-        .map(|chunk| chunk.join(""));
+    let mut workloads = input.chunks_exact(input.len().div_ceil(worker_count));
+    //.map(|chunk| chunk.join(""));
 
     for _ in 0..worker_count {
         let work_tx = output_tx.clone();
-        if let Some(work_string) = workloads.next() {
+        if let Some(chunk) = workloads.next() {
+            let work_string = chunk.join("");
             thread::spawn(move || {
                 let _ = work_tx.send(string_frequencies(work_string));
             });
         } else {
+            let remainder = workloads.remainder();
+            let work_remainder = remainder.join("");
+            thread::spawn(move || {
+                let _ = work_tx.send(string_frequencies(work_remainder));
+            });
             break;
         }
     }
