@@ -18,10 +18,7 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
         .filter(|char| char.is_alphabetic())
         .fold(
             || HashMap::new(),
-            |mut map, letter| {
-                *map.entry(letter.to_ascii_lowercase()).or_insert(0) += 1;
-                map
-            },
+            |map, letter| tally_letter(map, letter, 1),
         )
         .reduce(
             || HashMap::new(),
@@ -29,35 +26,35 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
         )
 }
 
+fn tally_letter(mut map: HashMap<char, usize>, letter: char, tally: usize) -> HashMap<char, usize> {
+    *map.entry(letter.to_ascii_lowercase()).or_default() += tally;
+    map
+}
+
 fn slice_frequencies(slice: &[&str]) -> HashMap<char, usize> {
     let root = HashMap::<char, usize>::new();
     slice.iter().fold(root, |map, line| {
         line.chars()
             .filter(|char| char.is_alphabetic())
-            .fold(map, |mut map, letter| {
-                *map.entry(letter.to_ascii_lowercase()).or_insert(0) += 1;
-                map
-            })
+            .fold(map, |map, letter| tally_letter(map, letter, 1))
     })
 }
 
+/*
 fn string_frequencies(string: String) -> HashMap<char, usize> {
     let root = HashMap::<char, usize>::new();
     string
-        .chars()
-        .filter(|char| char.is_alphabetic())
-        .fold(root, |mut map, letter| {
-            *map.entry(letter.to_ascii_lowercase()).or_insert(0) += 1;
-            map
-        })
+    .chars()
+    .filter(|char| char.is_alphabetic())
+    .fold(root, |map, letter| tally_letter(map, letter, 1))
 }
+*/
 
 fn merge_frequency_maps(
     root: HashMap<char, usize>,
     branch: HashMap<char, usize>,
 ) -> HashMap<char, usize> {
-    branch.into_iter().fold(root, |mut map, (letter, count)| {
-        *map.entry(letter).or_insert(0) += count;
-        map
+    branch.into_iter().fold(root, |map, (letter, count)| {
+        tally_letter(map, letter, count)
     })
 }
