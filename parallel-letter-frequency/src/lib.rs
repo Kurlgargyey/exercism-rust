@@ -1,6 +1,5 @@
+use rayon::prelude::*;
 use std::collections::HashMap;
-use std::sync::mpsc;
-use std::thread;
 
 pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
     if input.is_empty() {
@@ -13,35 +12,21 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
         return slice_frequencies(input);
     }
 
-    let (output_tx, output_rx) = mpsc::channel();
-
-    let mut workloads = input.chunks_exact(input.len().div_ceil(worker_count));
-    //.map(|chunk| chunk.join(""));
-
-    for _ in 0..worker_count {
-        let work_tx = output_tx.clone();
-        if let Some(chunk) = workloads.next() {
-            let work_string = chunk.join("");
-            thread::spawn(move || {
-                let _ = work_tx.send(string_frequencies(work_string));
-            });
-        } else {
-            let remainder = workloads.remainder();
-            let work_remainder = remainder.join("");
-            thread::spawn(move || {
-                let _ = work_tx.send(string_frequencies(work_remainder));
-            });
-            break;
-        }
-    }
-
-    drop(output_tx);
-
-    let mut root = HashMap::<char, usize>::new();
-    while let Ok(branch) = output_rx.recv() {
-        root = merge_frequency_maps(root, branch);
-    }
-    root
+    input
+        .par_iter()
+        .flat_map(|str| str.par_chars())
+        .filter(|char| char.is_alphabetic())
+        .fold(
+            || HashMap::new(),
+            |mut map, letter| {
+                *map.entry(letter.to_ascii_lowercase()).or_insert(0) += 1;
+                map
+            },
+        )
+        .reduce(
+            || HashMap::new(),
+            |root, branch| merge_frequency_maps(root, branch),
+        )
 }
 
 fn slice_frequencies(slice: &[&str]) -> HashMap<char, usize> {
