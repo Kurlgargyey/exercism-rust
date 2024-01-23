@@ -9,23 +9,20 @@ pub fn frequency(input: &[&str], _worker_count: usize) -> HashMap<char, usize> {
         .map(|c| c.to_ascii_lowercase())
         .fold(
             || HashMap::new(),
-            |map, letter| tally_letter(map, letter, 1),
+            |map, letter| count_letter(map, letter, 1),
         )
-        .reduce(
-            || HashMap::new(),
-            |root, branch| merge_tallies(root, branch),
-        )
+        .reduce(|| HashMap::new(), |root, branch| merge_counts(root, branch))
 }
 
-fn tally_letter(mut map: HashMap<char, usize>, letter: char, tally: usize) -> HashMap<char, usize> {
+fn count_letter(mut map: HashMap<char, usize>, letter: char, tally: usize) -> HashMap<char, usize> {
     map.entry(letter)
         .and_modify(|count| *count += tally)
         .or_insert(tally);
     map
 }
 
-fn merge_tallies(root: HashMap<char, usize>, branch: HashMap<char, usize>) -> HashMap<char, usize> {
+fn merge_counts(root: HashMap<char, usize>, branch: HashMap<char, usize>) -> HashMap<char, usize> {
     branch.into_iter().fold(root, |map, (letter, count)| {
-        tally_letter(map, letter, count)
+        count_letter(map, letter, count)
     })
 }
