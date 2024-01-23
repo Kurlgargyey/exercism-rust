@@ -7,11 +7,8 @@ pub fn frequency(input: &[&str], _worker_count: usize) -> HashMap<char, usize> {
         .par_chars()
         .filter(|c| c.is_alphabetic())
         .map(|c| c.to_ascii_lowercase())
-        .fold(
-            || HashMap::new(),
-            |map, letter| count_letter(map, letter, 1),
-        )
-        .reduce(|| HashMap::new(), |root, branch| merge_counts(root, branch))
+        .fold(HashMap::new, |map, letter| count_letter(map, letter, 1))
+        .reduce(HashMap::new, |root, branch| merge_counts(root, branch))
 }
 
 fn count_letter(mut map: HashMap<char, usize>, letter: char, tally: usize) -> HashMap<char, usize> {
