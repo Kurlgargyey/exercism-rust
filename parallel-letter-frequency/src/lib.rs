@@ -3,20 +3,35 @@ use std::sync::mpsc;
 use std::thread;
 
 pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
-    if input.is_empty() {
-        return HashMap::new();
-    }
-
     const MIN_INPUT_SIZE: usize = 500;
-
-    if input.len() <= MIN_INPUT_SIZE {
-        return slice_frequencies(input);
+    match input.len() {
+        0 => HashMap::new(),
+        x if x < MIN_INPUT_SIZE => slice_frequencies(input),
+        _ => par_frequencies(input, worker_count),
     }
+}
 
+fn slice_frequencies(slice: &[&str]) -> HashMap<char, usize> {
+    slice.iter().fold(HashMap::new(), |map, line| {
+        line.chars()
+            .filter(|c| c.is_alphabetic())
+            .map(|c| c.to_ascii_lowercase())
+            .fold(map, |map, letter| insert_count(map, letter, 1))
+    })
+}
+
+fn string_frequencies(string: String) -> HashMap<char, usize> {
+    string
+        .chars()
+        .filter(|c| c.is_alphabetic())
+        .map(|c| c.to_ascii_lowercase())
+        .fold(HashMap::new(), |map, letter| insert_count(map, letter, 1))
+}
+
+fn par_frequencies(slice: &[&str], worker_count: usize) -> HashMap<char, usize> {
     let (output_tx, output_rx) = mpsc::channel();
 
-    let mut workloads = input.chunks_exact(input.len().div_ceil(worker_count));
-    //.map(|chunk| chunk.join(""));
+    let mut workloads = slice.chunks(slice.len().div_ceil(worker_count));
 
     for _ in 0..worker_count {
         let work_tx = output_tx.clone();
@@ -26,53 +41,26 @@ pub fn frequency(input: &[&str], worker_count: usize) -> HashMap<char, usize> {
                 let _ = work_tx.send(string_frequencies(work_string));
             });
         } else {
-            let remainder = workloads.remainder();
-            let work_remainder = remainder.join("");
-            thread::spawn(move || {
-                let _ = work_tx.send(string_frequencies(work_remainder));
-            });
             break;
         }
     }
 
     drop(output_tx);
 
-    let mut root = HashMap::<char, usize>::new();
-    while let Ok(branch) = output_rx.recv() {
-        root = merge_frequency_maps(root, branch);
+    let mut result = HashMap::new();
+    while let Ok(partial) = output_rx.recv() {
+        result = merge_counts(result, partial);
     }
-    root
+    result
 }
 
-fn slice_frequencies(slice: &[&str]) -> HashMap<char, usize> {
-    let root = HashMap::<char, usize>::new();
-    slice.iter().fold(root, |map, line| {
-        line.chars()
-            .filter(|char| char.is_alphabetic())
-            .fold(map, |mut map, letter| {
-                *map.entry(letter.to_ascii_lowercase()).or_insert(0) += 1;
-                map
-            })
+fn merge_counts(root: HashMap<char, usize>, branch: HashMap<char, usize>) -> HashMap<char, usize> {
+    branch.into_iter().fold(root, |map, (letter, count)| {
+        insert_count(map, letter, count)
     })
 }
 
-fn string_frequencies(string: String) -> HashMap<char, usize> {
-    let root = HashMap::<char, usize>::new();
-    string
-        .chars()
-        .filter(|char| char.is_alphabetic())
-        .fold(root, |mut map, letter| {
-            *map.entry(letter.to_ascii_lowercase()).or_insert(0) += 1;
-            map
-        })
-}
-
-fn merge_frequency_maps(
-    root: HashMap<char, usize>,
-    branch: HashMap<char, usize>,
-) -> HashMap<char, usize> {
-    branch.into_iter().fold(root, |mut map, (letter, count)| {
-        *map.entry(letter).or_insert(0) += count;
-        map
-    })
+fn insert_count(mut map: HashMap<char, usize>, letter: char, count: usize) -> HashMap<char, usize> {
+    *map.entry(letter).or_default() += count;
+    map
 }
