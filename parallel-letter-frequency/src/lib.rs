@@ -17,12 +17,12 @@ fn count_letter(mut map: HashMap<char, usize>, letter: char, tally: usize) -> Ha
 }
 
 fn slice_frequencies(slice: &[&str]) -> HashMap<char, usize> {
-    let root = HashMap::<char, usize>::new();
-    slice.iter().fold(root, |map, line| {
-        line.chars()
-            .filter(|char| char.is_alphabetic())
-            .fold(map, |map, letter| count_letter(map, letter, 1))
-    })
+    slice
+        .join("")
+        .chars()
+        .filter(|char| char.is_alphabetic())
+        .map(|c| c.to_ascii_lowercase())
+        .fold(HashMap::new(), |map, letter| count_letter(map, letter, 1))
 }
 
 fn par_frequencies(slice: &[&str]) -> HashMap<char, usize> {
