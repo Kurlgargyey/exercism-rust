@@ -2,9 +2,10 @@ use rayon::prelude::*;
 use std::collections::HashMap;
 
 pub fn frequency(input: &[&str], _worker_count: usize) -> HashMap<char, usize> {
+    const MIN_INPUT_SIZE: usize = 500;
     match input.len() {
         0 => HashMap::new(),
-        x if x < 300 => slice_frequencies(input),
+        x if x < MIN_INPUT_SIZE => slice_frequencies(input),
         _ => par_frequencies(input),
     }
 }
@@ -17,12 +18,12 @@ fn count_letter(mut map: HashMap<char, usize>, letter: char, tally: usize) -> Ha
 }
 
 fn slice_frequencies(slice: &[&str]) -> HashMap<char, usize> {
-    slice
-        .join("")
-        .chars()
-        .filter(|char| char.is_alphabetic())
-        .map(|c| c.to_ascii_lowercase())
-        .fold(HashMap::new(), |map, letter| count_letter(map, letter, 1))
+    slice.iter().fold(HashMap::new(), |map, line| {
+        line.chars()
+            .filter(|char| char.is_alphabetic())
+            .map(|c| c.to_ascii_lowercase())
+            .fold(map, |map, letter| count_letter(map, letter, 1))
+    })
 }
 
 fn par_frequencies(slice: &[&str]) -> HashMap<char, usize> {
