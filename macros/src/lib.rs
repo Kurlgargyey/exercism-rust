@@ -3,8 +3,7 @@
 macro_rules! hashmap {
     ($($key:expr => $value:expr,)*) => {
         {
-            use ::std::collections::HashMap as hm;
-            let mut _map = hm::new();
+            let mut _map = ::std::collections::HashMap::new();
             $(
                 _map.insert($key, $value);
             )*
@@ -13,8 +12,7 @@ macro_rules! hashmap {
     };
     ($($key:expr => $value:expr),*) => {
         {
-            use ::std::collections::HashMap as hm;
-            let mut _map = hm::new();
+            let mut _map = ::std::collections::HashMap::new();
             $(
                 _map.insert($key, $value);
             )*
