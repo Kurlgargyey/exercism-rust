@@ -1,4 +1,3 @@
-#![recursion_limit = "256"]
 #[macro_export]
 
 macro_rules! hashmap {
