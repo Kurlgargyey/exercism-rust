@@ -11,6 +11,6 @@ macro_rules! hashmap {
         }
     };
     ($($key:expr => $value:expr),*) => {
-        crate::hashmap!( $($key => $value,)*)
+        $crate::hashmap!( $($key => $value,)*)
     };
 }
