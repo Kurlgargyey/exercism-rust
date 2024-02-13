@@ -5,6 +5,14 @@
 pub fn winning_hands<'a>(hands: &[&'a str]) -> Vec<&'a str> {
     let mut result = vec![];
 
+    let face_values = HashMap::from([("J", 11), ("Q", 12), ("K", 13), ("A", 14)]);
+
+    let mut highest = 0;
+
+    for hand in hands {
+        let hand_value = 
+    }
+
     if hands.len() == 1 {
         result.push(hands[0]);
     }

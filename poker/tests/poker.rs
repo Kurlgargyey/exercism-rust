@@ -10,7 +10,7 @@ fn single_hand_always_wins() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn highest_card_out_of_all_hands_wins() {
     let input = &["4D 5S 6S 8D 3C", "2S 4C 7S 9H 10H", "3S 4S 5D 6H JH"];
     let output = winning_hands(input).into_iter().collect::<HashSet<_>>();
