@@ -49,10 +49,9 @@ impl ParseCard for str {
     }
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Default)]
+#[derive(PartialEq, Eq, PartialOrd, Ord)]
 enum Category {
-    #[default]
-    HighCard,
+    HighCard { kickers: Vec<i32> },
     OnePair,
     TwoPair,
     ThreeKind,
@@ -63,18 +62,33 @@ enum Category {
     StraightFlush,
 }
 
+impl Default for Category {
+    fn default() -> Self {
+        Category::HighCard {
+            kickers: vec![6, 5, 4, 3, 1],
+        }
+    }
+}
+
 #[derive(Eq, Default)]
 struct Hand<'a> {
     hand: &'a str,
     category: Category,
-    ranks: Vec<i32>,
 }
 
 impl Ord for Hand<'_> {
     fn cmp(&self, other: &Self) -> Ordering {
         if self.category == other.category {
-            println!("comparing {:?} against {:?}", self.ranks, other.ranks);
-            return self.ranks.iter().cmp(other.ranks.iter());
+            match self.category {
+                Category::HighCard { kickers } => {
+                    println!(
+                        "comparing {:?} against {:?}",
+                        self.category.kickers, other.category.kickers
+                    );
+                    return self.ranks.iter().cmp(other.ranks.iter());
+                }
+                _ => return Ordering::Equal,
+            }
         }
         self.category.cmp(&other.category)
     }
@@ -135,11 +149,11 @@ impl<'a> ParseHand for str {
             (false, false, false, true, false, false) => hand.category = Category::ThreeKind,
             (false, false, false, false, true, false) => hand.category = Category::TwoPair,
             (false, false, false, false, false, true) => hand.category = Category::OnePair,
-            _ => hand.category = Category::HighCard,
-        }
-
-        for card in cards {
-            hand.ranks.push(card.0);
+            _ => {
+                hand.category = Category::HighCard {
+                    kickers: cards.iter().map(|card| card.0).collect(),
+                }
+            }
         }
 
         Ok(hand)
