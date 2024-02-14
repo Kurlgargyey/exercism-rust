@@ -2,7 +2,10 @@
 ///
 /// Note the type signature: this function should return _the same_ reference to
 /// the winning hand(s) as were passed in, not reconstructed strings which happen to be equal.
-use ::std::collections::HashMap;
+use std::{
+    collections::{BinaryHeap, HashMap},
+    str::FromStr,
+};
 
 pub fn winning_hands<'a>(hands: &[&'a str]) -> Vec<&'a str> {
     let mut winners: Vec<&'a str> = vec![];
@@ -40,7 +43,7 @@ trait SplitCard {
 
 impl SplitCard for str {
     fn split_card(&self) -> (&str, &str) {
-        self.split_at(self.len() - 2)
+        self.split_at(self.len() - 1)
     }
 }
 
@@ -50,12 +53,31 @@ trait ParseCard {
 
 impl ParseCard for str {
     fn parse_card(&self) -> (i32, &str) {
-        let values = HashMap::from([("J", 11), ("Q", 12), ("K", 13), ("A", 14)]);
+        let face_values = HashMap::from([("J", 11), ("Q", 12), ("K", 13), ("A", 14)]);
         let (value_str, suit) = self.split_card();
         if let Ok(value) = value_str.parse::<i32>() {
             return (value, suit);
         }
-        let value = values[value_str];
+        let value = face_values[value_str];
         (value, suit)
     }
 }
+#[derive(PartialEq, Eq, PartialOrd, Ord)]
+enum Category {
+    HighCard,
+    OnePair,
+    TwoPair,
+    ThreeKind,
+    Straight,
+    Flush,
+    FullHouse,
+    FourKind,
+    StraightFlush,
+}
+struct Hand<'a> {
+    hand: &'a str,
+    category: Category,
+    ranks: BinaryHeap<i32>,
+}
+
+impl FromStr for Hand {}
