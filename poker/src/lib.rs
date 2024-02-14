@@ -8,8 +8,7 @@ pub fn winning_hands<'a>(hands: &[&'a str]) -> Vec<&'a str> {
     let mut winners: Vec<&'a str> = vec![];
     let mut highest: Hand<'_> = Hand {
         hand: "",
-        category: Category::HighCard,
-        ranks: vec![0],
+        category: Category::default(),
     };
 
     for cards in hands {
@@ -51,9 +50,18 @@ impl ParseCard for str {
 
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 enum Category {
-    HighCard { kickers: Vec<i32> },
-    OnePair,
-    TwoPair,
+    HighCard {
+        kickers: Vec<i32>,
+    },
+    OnePair {
+        pair: i32,
+        kickers: Vec<i32>,
+    },
+    TwoPair {
+        high_pair: i32,
+        low_pair: i32,
+        kicker: i32,
+    },
     ThreeKind,
     Straight,
     Flush,
@@ -72,37 +80,23 @@ impl Default for Category {
 
 #[derive(Eq, Default)]
 struct Hand<'a> {
-    hand: &'a str,
     category: Category,
+    hand: &'a str,
 }
 
 impl Ord for Hand<'_> {
     fn cmp(&self, other: &Self) -> Ordering {
-        if self.category == other.category {
-            match self.category {
-                Category::HighCard { kickers } => {
-                    println!(
-                        "comparing {:?} against {:?}",
-                        self.category.kickers, other.category.kickers
-                    );
-                    return self.ranks.iter().cmp(other.ranks.iter());
-                }
-                _ => return Ordering::Equal,
-            }
-        }
         self.category.cmp(&other.category)
     }
 }
-
 impl PartialOrd for Hand<'_> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
-
 impl PartialEq for Hand<'_> {
     fn eq(&self, other: &Self) -> bool {
-        (self.category == other.category) && self.ranks.iter().eq(other.ranks.iter())
+        self.category == other.category
     }
 }
 
@@ -147,8 +141,43 @@ impl<'a> ParseHand for str {
             (false, false, true, false, false, false) => hand.category = Category::FourKind,
             (false, false, false, true, false, true) => hand.category = Category::FullHouse,
             (false, false, false, true, false, false) => hand.category = Category::ThreeKind,
-            (false, false, false, false, true, false) => hand.category = Category::TwoPair,
-            (false, false, false, false, false, true) => hand.category = Category::OnePair,
+            (false, false, false, false, true, false) => {
+                let mut first_pair_card = 0;
+                for pair in cards.windows(2) {
+                    if pair[1].0 == pair[0].0 {
+                        first_pair_card = pair[1].0;
+                    }
+                }
+                let mut second_pair_card = 0;
+                for pair in cards
+                    .iter()
+                    .filter(|card| card.0 != first_pair_card)
+                    .windows(2)
+                {
+                    if pair[1].0 == pair[0].0 {
+                        first_pair_card = pair[1].0;
+                    }
+                }
+                let mut kicker_card = 0;
+                hand.category = Category::TwoPair
+            }
+            (false, false, false, false, false, true) => {
+                let mut pair_card = 0;
+                for pair in cards.windows(2) {
+                    if pair[1].0 == pair[0].0 {
+                        pair_card = pair[1].0;
+                    }
+                }
+                let kicker_cards = cards
+                    .iter()
+                    .filter(|card| card.0 != pair_card)
+                    .map(|card| card.0)
+                    .collect();
+                hand.category = Category::OnePair {
+                    pair: pair_card,
+                    kickers: kicker_cards,
+                }
+            }
             _ => {
                 hand.category = Category::HighCard {
                     kickers: cards.iter().map(|card| card.0).collect(),
