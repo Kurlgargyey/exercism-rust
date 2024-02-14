@@ -26,7 +26,7 @@ pub fn winning_hands<'a>(hands: &[&'a str]) -> Vec<&'a str> {
 }
 
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
-struct Card<'a>(i32, &'a str);
+struct Card<'a>(usize, &'a str);
 
 trait ParseCard {
     fn parse_card(&self) -> Result<Card, ParseCardError>;
@@ -38,7 +38,7 @@ impl ParseCard for str {
     fn parse_card(&self) -> Result<Card, ParseCardError> {
         let face_values = HashMap::from([("J", 11), ("Q", 12), ("K", 13), ("A", 14)]);
         let (value_str, suit) = self.split_at(self.len() - 1);
-        if let Ok(value) = value_str.parse::<i32>() {
+        if let Ok(value) = value_str.parse::<usize>() {
             return Ok(Card(value, suit));
         }
         if let value = face_values[value_str] {
@@ -51,23 +51,38 @@ impl ParseCard for str {
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 enum Category {
     HighCard {
-        kickers: Vec<i32>,
+        kickers: Vec<usize>,
     },
     OnePair {
-        pair: i32,
-        kickers: Vec<i32>,
+        pair: usize,
+        kickers: Vec<usize>,
     },
     TwoPair {
-        high_pair: i32,
-        low_pair: i32,
-        kicker: i32,
+        high_pair: usize,
+        low_pair: usize,
+        kicker: usize,
     },
-    ThreeKind,
-    Straight,
-    Flush,
-    FullHouse,
-    FourKind,
-    StraightFlush,
+    ThreeKind {
+        triplet: usize,
+        kickers: Vec<usize>,
+    },
+    Straight {
+        high_card: usize,
+    },
+    Flush {
+        kickers: Vec<usize>,
+    },
+    FullHouse {
+        triplet: usize,
+        pair: usize,
+    },
+    FourKind {
+        quadruplet: usize,
+        kicker: usize,
+    },
+    StraightFlush {
+        high_card: usize,
+    },
 }
 
 impl Default for Category {
