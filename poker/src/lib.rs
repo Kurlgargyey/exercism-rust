@@ -25,43 +25,28 @@ pub fn winning_hands<'a>(hands: &[&'a str]) -> Vec<&'a str> {
     winners
 }
 
-fn calculate_hand<'a>(hand: &'a str) -> i32 {
-    let mut value = 0;
-
-    for card in hand.split(" ") {
-        let card_value = card.parse_card().0;
-        if card_value > value {
-            value = card_value;
-        }
-    }
-    value
-}
-
-trait SplitCard {
-    fn split_card(&self) -> (&str, &str);
-}
-
-impl SplitCard for str {
-    fn split_card(&self) -> (&str, &str) {
-        self.split_at(self.len() - 1)
-    }
-}
+struct Card<'a>(i32, &'a str);
 
 trait ParseCard {
-    fn parse_card(&self) -> (i32, &str);
+    fn parse_card(&self) -> Result<Card, ParseCardError>;
 }
+#[derive(Debug, PartialEq, Eq)]
+struct ParseCardError;
 
 impl ParseCard for str {
-    fn parse_card(&self) -> (i32, &str) {
+    fn parse_card(&self) -> Result<Card, ParseCardError> {
         let face_values = HashMap::from([("J", 11), ("Q", 12), ("K", 13), ("A", 14)]);
-        let (value_str, suit) = self.split_card();
+        let (value_str, suit) = self.split_at(self.len() - 1);
         if let Ok(value) = value_str.parse::<i32>() {
-            return (value, suit);
+            return Ok(Card(value, suit));
         }
-        let value = face_values[value_str];
-        (value, suit)
+        if let value = face_values[value_str] {
+            return Ok(Card(value, suit));
+        }
+        Err(ParseCardError)
     }
 }
+
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 enum Category {
     HighCard,
@@ -80,4 +65,30 @@ struct Hand<'a> {
     ranks: BinaryHeap<i32>,
 }
 
-impl FromStr for Hand {}
+#[derive(Debug, PartialEq, Eq)]
+struct ParseHandError;
+
+impl From<ParseCardError> for ParseHandError {
+    fn from(error: ParseCardError) -> Self {
+        ParseHandError
+    }
+}
+
+impl<'a> FromStr for Hand<'a> {
+    type Err = ParseHandError;
+
+    fn from_str(hand: &str) -> Result<Self, Self::Err> {
+        let cards: Vec<_> = hand
+            .split(" ")
+            .map(|card| card.parse_card().unwrap())
+            .collect();
+        if cards.len() != 5 {
+            return Err(ParseHandError);
+        }
+
+        let mut hand: Hand<'a>;
+        let suit = cards[0].1;
+        for card in cards {}
+        Ok(hand)
+    }
+}
