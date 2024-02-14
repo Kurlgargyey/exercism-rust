@@ -73,6 +73,7 @@ struct Hand<'a> {
 impl Ord for Hand<'_> {
     fn cmp(&self, other: &Self) -> Ordering {
         if self.category == other.category {
+            println!("comparing {:?} against {:?}", self.ranks, other.ranks);
             return self.ranks.iter().cmp(other.ranks.iter());
         }
         self.category.cmp(&other.category)
@@ -115,8 +116,8 @@ impl<'a> ParseHand for str {
         if cards.len() != 5 {
             return Err(ParseHandError);
         }
-        cards.sort_by(|card1, card2| card1.0.cmp(&card2.0));
-        let _categories = (
+        cards.sort_by(|card1, card2| card2.0.cmp(&card1.0));
+        let categories = (
             is_flush(&cards),
             is_straight(&cards),
             is_four_of_a_kind(&cards),
@@ -125,7 +126,17 @@ impl<'a> ParseHand for str {
             is_one_pair(&cards),
         );
 
-        hand.category = Category::HighCard;
+        match categories {
+            (true, true, false, false, false, false) => hand.category = Category::StraightFlush,
+            (true, false, false, false, false, false) => hand.category = Category::Flush,
+            (false, true, false, false, false, false) => hand.category = Category::Straight,
+            (false, false, true, false, false, false) => hand.category = Category::FourKind,
+            (false, false, false, true, false, true) => hand.category = Category::FullHouse,
+            (false, false, false, true, false, false) => hand.category = Category::ThreeKind,
+            (false, false, false, false, true, false) => hand.category = Category::TwoPair,
+            (false, false, false, false, false, true) => hand.category = Category::OnePair,
+            _ => hand.category = Category::HighCard,
+        }
 
         for card in cards {
             hand.ranks.push(card.0);
@@ -151,14 +162,19 @@ fn is_straight(cards: &Vec<Card>) -> bool {
 
 fn is_four_of_a_kind(_cards: &Vec<Card>) -> bool {
     let mut _count: usize = 0;
-    true
+    false
 }
 fn is_three_of_a_kind(_cards: &Vec<Card>) -> bool {
-    true
+    false
 }
 fn is_two_pair(_cards: &Vec<Card>) -> bool {
-    true
+    false
 }
-fn is_one_pair(_cards: &Vec<Card>) -> bool {
-    true
+fn is_one_pair(cards: &Vec<Card>) -> bool {
+    for pair in cards.windows(2) {
+        if pair[1].0 == pair[0].0 {
+            return true;
+        }
+    }
+    false
 }
