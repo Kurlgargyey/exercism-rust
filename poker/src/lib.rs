@@ -6,10 +6,7 @@ use std::{cmp::Ordering, collections::HashMap};
 
 pub fn winning_hands<'a>(hands: &[&'a str]) -> Vec<&'a str> {
     let mut winners: Vec<&'a str> = vec![];
-    let mut highest: Hand<'_> = Hand {
-        hand: "",
-        category: Category::default(),
-    };
+    let mut highest: Hand<'_> = Hand::default();
 
     for cards in hands {
         let hand: Hand<'a> = cards.parse_hand().unwrap();
@@ -43,7 +40,7 @@ impl ParseCard for str {
         }
         let value = face_values[value_str];
 
-        return Ok(Card(value, suit));
+        Ok(Card(value, suit))
     }
 }
 
@@ -139,32 +136,13 @@ impl<'a> ParseHand for str {
             return Err(ParseHandError);
         }
         cards.sort_by(|card1, card2| card2.0.cmp(&card1.0));
-        let categories = (
-            is_flush(&cards),
-            is_straight(&cards),
-            is_four_of_a_kind(&cards),
-            is_three_of_a_kind(&cards),
-            is_two_pair(&cards),
-            is_one_pair(&cards),
-        );
+        let categories = (is_flush(&cards), is_straight(&cards));
 
         match categories {
-            (true, true, false, false, false, false) => {
-                hand.category = build_straight_flush(&cards)
-            }
-            (true, false, false, false, false, false) => hand.category = build_flush(&cards),
-            (false, true, false, false, false, false) => hand.category = build_straight(&cards),
-            (false, false, true, false, false, false) => hand.category = count_repeats(&cards),
-            (false, false, false, true, false, true) => hand.category = count_repeats(&cards),
-            (false, false, false, true, false, false) => hand.category = count_repeats(&cards),
-            (false, false, false, false, true, false) => hand.category = count_repeats(&cards),
-            (false, false, false, false, false, true) => hand.category = count_repeats(&cards),
-
-            _ => {
-                hand.category = Category::HighCard {
-                    kickers: cards.iter().map(|card| card.0).collect(),
-                }
-            }
+            (true, true) => hand.category = build_straight_flush(&cards),
+            (true, false) => hand.category = build_flush(&cards),
+            (false, true) => hand.category = build_straight(&cards),
+            _ => hand.category = count_repeats(&cards),
         }
 
         Ok(hand)
@@ -191,25 +169,6 @@ fn is_straight(cards: &Vec<Card>) -> bool {
         }
     }
     true
-}
-
-fn is_four_of_a_kind(_cards: &Vec<Card>) -> bool {
-    let mut _count: usize = 0;
-    false
-}
-fn is_three_of_a_kind(_cards: &Vec<Card>) -> bool {
-    false
-}
-fn is_two_pair(_cards: &Vec<Card>) -> bool {
-    false
-}
-fn is_one_pair(cards: &Vec<Card>) -> bool {
-    for pair in cards.windows(2) {
-        if pair[1].0 == pair[0].0 {
-            return true;
-        }
-    }
-    false
 }
 
 fn count_repeats(cards: &Vec<Card>) -> Category {
@@ -243,7 +202,9 @@ fn count_repeats(cards: &Vec<Card>) -> Category {
         return build_three_kind(card_counts);
     }
 
-    Category::default()
+    Category::HighCard {
+        kickers: cards.iter().map(|card| card.0).collect(),
+    }
 }
 
 fn build_four_kind(card_counts: HashMap<usize, usize>) -> Category {
