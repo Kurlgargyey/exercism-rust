@@ -190,20 +190,13 @@ fn count_repeats(cards: &Vec<Card>) -> Category {
     let one_pair = card_counts.values().filter(|count| **count == 2).count() == 1;
     let three_kind = card_counts.values().filter(|count| **count == 3).count() == 1;
 
-    if one_pair && three_kind {
-        return build_full_house(card_counts);
-    }
-
-    if one_pair {
-        return build_one_pair(card_counts);
-    }
-
-    if three_kind {
-        return build_three_kind(card_counts);
-    }
-
-    Category::HighCard {
-        kickers: cards.iter().map(|card| card.0).collect(),
+    match (three_kind, one_pair) {
+        (true, true) => build_full_house(card_counts),
+        (false, true) => build_one_pair(card_counts),
+        (true, false) => build_three_kind(card_counts),
+        _ => Category::HighCard {
+            kickers: cards.iter().map(|card| card.0).collect(),
+        },
     }
 }
 
