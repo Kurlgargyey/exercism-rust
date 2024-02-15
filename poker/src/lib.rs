@@ -41,10 +41,9 @@ impl ParseCard for str {
         if let Ok(value) = value_str.parse::<usize>() {
             return Ok(Card(value, suit));
         }
-        if let value = face_values[value_str] {
-            return Ok(Card(value, suit));
-        }
-        Err(ParseCardError)
+        let value = face_values[value_str];
+
+        return Ok(Card(value, suit));
     }
 }
 
@@ -150,49 +149,17 @@ impl<'a> ParseHand for str {
         );
 
         match categories {
-            (true, true, false, false, false, false) => hand.category = Category::StraightFlush,
-            (true, false, false, false, false, false) => hand.category = Category::Flush,
-            (false, true, false, false, false, false) => hand.category = Category::Straight,
-            (false, false, true, false, false, false) => hand.category = Category::FourKind,
-            (false, false, false, true, false, true) => hand.category = Category::FullHouse,
-            (false, false, false, true, false, false) => hand.category = Category::ThreeKind,
-            (false, false, false, false, true, false) => {
-                let mut first_pair_card = 0;
-                for pair in cards.windows(2) {
-                    if pair[1].0 == pair[0].0 {
-                        first_pair_card = pair[1].0;
-                    }
-                }
-                let mut second_pair_card = 0;
-                for pair in cards
-                    .iter()
-                    .filter(|card| card.0 != first_pair_card)
-                    .windows(2)
-                {
-                    if pair[1].0 == pair[0].0 {
-                        first_pair_card = pair[1].0;
-                    }
-                }
-                let mut kicker_card = 0;
-                hand.category = Category::TwoPair
+            (true, true, false, false, false, false) => {
+                hand.category = build_straight_flush(&cards)
             }
-            (false, false, false, false, false, true) => {
-                let mut pair_card = 0;
-                for pair in cards.windows(2) {
-                    if pair[1].0 == pair[0].0 {
-                        pair_card = pair[1].0;
-                    }
-                }
-                let kicker_cards = cards
-                    .iter()
-                    .filter(|card| card.0 != pair_card)
-                    .map(|card| card.0)
-                    .collect();
-                hand.category = Category::OnePair {
-                    pair: pair_card,
-                    kickers: kicker_cards,
-                }
-            }
+            (true, false, false, false, false, false) => hand.category = build_flush(&cards),
+            (false, true, false, false, false, false) => hand.category = build_straight(&cards),
+            (false, false, true, false, false, false) => hand.category = count_repeats(&cards),
+            (false, false, false, true, false, true) => hand.category = count_repeats(&cards),
+            (false, false, false, true, false, false) => hand.category = count_repeats(&cards),
+            (false, false, false, false, true, false) => hand.category = count_repeats(&cards),
+            (false, false, false, false, false, true) => hand.category = count_repeats(&cards),
+
             _ => {
                 hand.category = Category::HighCard {
                     kickers: cards.iter().map(|card| card.0).collect(),
@@ -211,7 +178,7 @@ fn is_flush(cards: &Vec<Card>) -> bool {
 
 fn is_straight(cards: &Vec<Card>) -> bool {
     for pair in cards.windows(2) {
-        if pair[1].0 - pair[0].0 != 1 {
+        if pair[0].0 - pair[1].0 != 1 {
             return false;
         }
     }
@@ -235,4 +202,150 @@ fn is_one_pair(cards: &Vec<Card>) -> bool {
         }
     }
     false
+}
+
+fn count_repeats(cards: &Vec<Card>) -> Category {
+    let mut card_counts: HashMap<usize, usize> = HashMap::new();
+
+    for card in cards {
+        *card_counts.entry(card.0).or_default() += 1;
+    }
+
+    let four_kind = card_counts.values().filter(|count| **count == 4).count() == 1;
+    if four_kind {
+        return build_four_kind(card_counts);
+    }
+    let two_pair = card_counts.values().filter(|count| **count == 2).count() == 2;
+    if two_pair {
+        return build_two_pair(card_counts);
+    }
+
+    let one_pair = card_counts.values().filter(|count| **count == 2).count() == 1;
+    let three_kind = card_counts.values().filter(|count| **count == 3).count() == 1;
+
+    if one_pair && three_kind {
+        return build_full_house(card_counts);
+    }
+
+    if one_pair {
+        return build_one_pair(card_counts);
+    }
+
+    if three_kind {
+        return build_three_kind(card_counts);
+    }
+
+    Category::default()
+}
+
+fn build_four_kind(card_counts: HashMap<usize, usize>) -> Category {
+    let mut quad = 0;
+    let mut kick = 0;
+    for count in card_counts {
+        if count.1 == 4 {
+            quad = count.0;
+        } else {
+            kick = count.0;
+        }
+    }
+    Category::FourKind {
+        quadruplet: quad,
+        kicker: kick,
+    }
+}
+
+fn build_two_pair(card_counts: HashMap<usize, usize>) -> Category {
+    let mut pairs = vec![];
+    let mut kick: usize = 0;
+
+    for count in card_counts {
+        if count.1 == 2 {
+            pairs.push(count.0);
+        } else {
+            kick = count.0;
+        }
+    }
+
+    pairs.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap());
+
+    Category::TwoPair {
+        high_pair: pairs[0],
+        low_pair: pairs[1],
+        kicker: kick,
+    }
+}
+
+fn build_full_house(card_counts: HashMap<usize, usize>) -> Category {
+    let mut triplet: usize = 0;
+    let mut pair: usize = 0;
+
+    for count in card_counts {
+        if count.1 == 3 {
+            triplet = count.0;
+        } else {
+            pair = count.0;
+        }
+    }
+
+    Category::FullHouse {
+        triplet: triplet,
+        pair: pair,
+    }
+}
+
+fn build_one_pair(card_counts: HashMap<usize, usize>) -> Category {
+    let mut pair: usize = 0;
+    let mut kickers = vec![];
+
+    for count in card_counts {
+        if count.1 == 2 {
+            pair = count.0;
+        } else {
+            kickers.push(count.0);
+        }
+    }
+    kickers.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap());
+    Category::OnePair {
+        pair: pair,
+        kickers: kickers,
+    }
+}
+
+fn build_three_kind(card_counts: HashMap<usize, usize>) -> Category {
+    let mut triplet = 0;
+    let mut kickers = vec![];
+    for count in card_counts {
+        if count.1 == 3 {
+            triplet = count.0;
+        } else {
+            kickers.push(count.0);
+        }
+    }
+    kickers.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap());
+    Category::ThreeKind {
+        triplet: triplet,
+        kickers: kickers,
+    }
+}
+
+fn build_straight(cards: &Vec<Card>) -> Category {
+    Category::Straight {
+        high_card: cards[0].0,
+    }
+}
+
+fn build_straight_flush(cards: &Vec<Card>) -> Category {
+    Category::StraightFlush {
+        high_card: cards[0].0,
+    }
+}
+
+fn build_flush(cards: &Vec<Card>) -> Category {
+    let mut kickers = vec![];
+
+    for card in cards {
+        kickers.push(card.0);
+    }
+    kickers.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap());
+    Category::Flush { kickers: kickers }
 }
