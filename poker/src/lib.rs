@@ -179,6 +179,14 @@ fn is_flush(cards: &Vec<Card>) -> bool {
 fn is_straight(cards: &Vec<Card>) -> bool {
     for pair in cards.windows(2) {
         if pair[0].0 - pair[1].0 != 1 {
+            if pair[0].0 == 14 {
+                let mut rotated = cards
+                    .iter()
+                    .map(|card| Card(card.0 % 13, card.1))
+                    .collect::<Vec<Card>>();
+                rotated.rotate_left(1);
+                return is_straight(&rotated);
+            }
             return false;
         }
     }
@@ -329,12 +337,20 @@ fn build_three_kind(card_counts: HashMap<usize, usize>) -> Category {
 }
 
 fn build_straight(cards: &Vec<Card>) -> Category {
+    if cards[0].0 == 14 && cards[1].0 == 5 {
+        return Category::Straight { high_card: 5 };
+    }
+
     Category::Straight {
         high_card: cards[0].0,
     }
 }
 
 fn build_straight_flush(cards: &Vec<Card>) -> Category {
+    if cards[0].0 == 14 && cards[1].0 == 5 {
+        return Category::StraightFlush { high_card: 5 };
+    }
+
     Category::StraightFlush {
         high_card: cards[0].0,
     }
