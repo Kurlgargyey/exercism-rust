@@ -201,30 +201,27 @@ fn count_repeats(cards: &Vec<Card>) -> Category {
 }
 
 fn build_four_kind(card_counts: HashMap<usize, usize>) -> Category {
-    let mut quad = 0;
-    let mut kick = 0;
+    let mut quadruplet = 0;
+    let mut kicker = 0;
     for count in card_counts {
         if count.1 == 4 {
-            quad = count.0;
+            quadruplet = count.0;
         } else {
-            kick = count.0;
+            kicker = count.0;
         }
     }
-    Category::FourKind {
-        quadruplet: quad,
-        kicker: kick,
-    }
+    Category::FourKind { quadruplet, kicker }
 }
 
 fn build_two_pair(card_counts: HashMap<usize, usize>) -> Category {
     let mut pairs = vec![];
-    let mut kick: usize = 0;
+    let mut kicker: usize = 0;
 
     for count in card_counts {
         if count.1 == 2 {
             pairs.push(count.0);
         } else {
-            kick = count.0;
+            kicker = count.0;
         }
     }
 
@@ -233,7 +230,7 @@ fn build_two_pair(card_counts: HashMap<usize, usize>) -> Category {
     Category::TwoPair {
         high_pair: pairs[0],
         low_pair: pairs[1],
-        kicker: kick,
+        kicker,
     }
 }
 
@@ -249,10 +246,7 @@ fn build_full_house(card_counts: HashMap<usize, usize>) -> Category {
         }
     }
 
-    Category::FullHouse {
-        triplet: triplet,
-        pair: pair,
-    }
+    Category::FullHouse { triplet, pair }
 }
 
 fn build_one_pair(card_counts: HashMap<usize, usize>) -> Category {
@@ -267,10 +261,7 @@ fn build_one_pair(card_counts: HashMap<usize, usize>) -> Category {
         }
     }
     kickers.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap());
-    Category::OnePair {
-        pair: pair,
-        kickers: kickers,
-    }
+    Category::OnePair { pair, kickers }
 }
 
 fn build_three_kind(card_counts: HashMap<usize, usize>) -> Category {
@@ -284,10 +275,7 @@ fn build_three_kind(card_counts: HashMap<usize, usize>) -> Category {
         }
     }
     kickers.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap());
-    Category::ThreeKind {
-        triplet: triplet,
-        kickers: kickers,
-    }
+    Category::ThreeKind { triplet, kickers }
 }
 
 fn build_straight(cards: &Vec<Card>) -> Category {
@@ -317,5 +305,5 @@ fn build_flush(cards: &Vec<Card>) -> Category {
         kickers.push(card.0);
     }
     kickers.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap());
-    Category::Flush { kickers: kickers }
+    Category::Flush { kickers }
 }
