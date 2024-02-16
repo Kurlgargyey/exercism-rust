@@ -14,7 +14,7 @@ fn numbers_just_get_pushed_onto_the_stack() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn can_add_two_numbers() {
     let mut f = Forth::new();
     assert!(f.eval("1 2 +").is_ok());

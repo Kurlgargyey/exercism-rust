@@ -28,6 +28,15 @@ impl Forth {
         for token in input.split_whitespace() {
             if let Ok(number) = token.parse::<i32>() {
                 self.stack.push(number)
+            } else {
+                match token {
+                    "+" => {
+                        if let (Some(op1), Some(op2)) = (self.stack.pop(), self.stack.pop()) {
+                            self.stack.push(op1 + op2);
+                        }
+                    }
+                    _ => return Err(Error::UnknownWord),
+                }
             }
         }
 
