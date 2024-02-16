@@ -33,6 +33,8 @@ impl Forth {
                     "+" => {
                         if let (Some(op1), Some(op2)) = (self.stack.pop(), self.stack.pop()) {
                             self.stack.push(op1 + op2);
+                        } else {
+                            return Err(Error::StackUnderflow);
                         }
                     }
                     _ => return Err(Error::UnknownWord),
