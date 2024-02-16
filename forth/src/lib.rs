@@ -31,11 +31,12 @@ impl Forth {
             } else {
                 match token {
                     "+" => {
-                        if let (Some(op1), Some(op2)) = (self.stack.pop(), self.stack.pop()) {
-                            self.stack.push(op1 + op2);
-                        } else {
-                            return Err(Error::StackUnderflow);
-                        }
+                        let operands = self.pop_operands(2)?;
+                        self.stack.push(operands[0] + operands[1]);
+                    }
+                    "-" => {
+                        let operands = self.pop_operands(2)?;
+                        self.stack.push(operands[1] - operands[0]);
                     }
                     _ => return Err(Error::UnknownWord),
                 }
@@ -43,5 +44,19 @@ impl Forth {
         }
 
         Ok(())
+    }
+
+    fn pop_operands(&mut self, amount: usize) -> std::result::Result<Vec<Value>, Error> {
+        let mut i = 0;
+        let mut operands = vec![];
+        while i < amount {
+            if let Some(operand) = self.stack.pop() {
+                operands.push(operand);
+            } else {
+                return Err(Error::StackUnderflow);
+            }
+            i += 1;
+        }
+        Ok(operands)
     }
 }
