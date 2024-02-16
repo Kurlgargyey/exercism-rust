@@ -25,19 +25,20 @@ impl Forth {
     }
 
     pub fn eval(&mut self, input: &str) -> Result {
-        for token in input.split_whitespace() {
+        let token_stream = input
+            .split_whitespace()
+            .map(|token| token.to_ascii_uppercase());
+        for token in token_stream {
             if let Ok(number) = token.parse::<i32>() {
                 self.stack.push(number)
             } else {
-                match token {
-                    "+" => {
-                        let operands = self.pop_operands(2)?;
-                        self.stack.push(operands[0] + operands[1]);
+                let binary = "+ - * / SWAP OVER";
+                match token.as_str() {
+                    s if binary.split_whitespace().any(|operator| s == operator) => {
+                        self.binary_operation(&s)?
                     }
-                    "-" => {
-                        let operands = self.pop_operands(2)?;
-                        self.stack.push(operands[1] - operands[0]);
-                    }
+                    "DUP" => self.unary_operation(&token)?,
+                    "DROP" => self.unary_operation(&token)?,
                     _ => return Err(Error::UnknownWord),
                 }
             }
@@ -46,17 +47,50 @@ impl Forth {
         Ok(())
     }
 
-    fn pop_operands(&mut self, amount: usize) -> std::result::Result<Vec<Value>, Error> {
-        let mut i = 0;
-        let mut operands = vec![];
-        while i < amount {
-            if let Some(operand) = self.stack.pop() {
-                operands.push(operand);
-            } else {
-                return Err(Error::StackUnderflow);
-            }
-            i += 1;
+    fn pop(&mut self) -> std::result::Result<Value, Error> {
+        if let Some(operand) = self.stack.pop() {
+            Ok(operand)
+        } else {
+            Err(Error::StackUnderflow)
         }
-        Ok(operands)
+    }
+
+    fn binary_operation(&mut self, operator: &str) -> Result {
+        let (op1, op2) = (self.pop()?, self.pop()?);
+        match operator {
+            "+" => self.stack.push(op2 + op1),
+            "-" => self.stack.push(op2 - op1),
+            "*" => self.stack.push(op2 * op1),
+            "/" => {
+                if op1 == 0 {
+                    return Err(Error::DivisionByZero);
+                };
+                self.stack.push(op2 / op1)
+            }
+            "SWAP" => {
+                self.stack.push(op1);
+                self.stack.push(op2);
+            }
+            "OVER" => {
+                self.stack.push(op2);
+                self.stack.push(op1);
+                self.stack.push(op2);
+            }
+            _ => return Err(Error::UnknownWord),
+        }
+        Ok(())
+    }
+
+    fn unary_operation(&mut self, operator: &str) -> Result {
+        let op = self.pop()?;
+        match operator {
+            "DUP" => {
+                self.stack.push(op);
+                self.stack.push(op);
+            }
+            "DROP" => {}
+            _ => return Err(Error::UnknownWord),
+        }
+        Ok(())
     }
 }
