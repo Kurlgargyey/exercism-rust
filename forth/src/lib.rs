@@ -26,11 +26,11 @@ impl Forth {
 
     pub fn eval(&mut self, input: &str) -> Result {
         for token in input.split_whitespace() {
-            if let number: i32 = token.parse() {
-                
+            if let Ok(number) = token.parse::<i32>() {
+                self.stack.push(number)
             }
         }
 
-        Ok()
+        Ok(())
     }
 }
