@@ -133,12 +133,25 @@ impl Forth {
                 _ => word_sequence.push(current_token.to_string()),
             }
         }
-        let word_sequence: String = word_sequence
+        let mut word_sequence: String = word_sequence
             .into_iter()
             .map(|word| word.to_ascii_uppercase())
             .rev()
             .collect::<Vec<String>>()
             .join(" ");
+
+        let mut test_forth = Forth::new();
+        let test_sequence = word_sequence
+            .split_whitespace()
+            .map(|word| word.to_string())
+            .rev()
+            .collect::<Vec<String>>()
+            .join(" ");
+        println!("Testing sequence {}!", test_sequence);
+        if test_forth.eval(&test_sequence).is_ok() && test_forth.stack.is_empty() {
+            word_sequence = String::new();
+        }
+
         println!("Inserting sequence {} for word {}!", word_sequence, word);
         self.words.insert(word, word_sequence);
         Ok(())
