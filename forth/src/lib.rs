@@ -25,6 +25,12 @@ impl Forth {
     }
 
     pub fn eval(&mut self, input: &str) -> Result {
-        todo!("result of evaluating '{input}'")
+        for token in input.split_whitespace() {
+            if let number: i32 = token.parse() {
+                
+            }
+        }
+
+        Ok()
     }
 }
