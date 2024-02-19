@@ -1,5 +1,5 @@
 pub fn abbreviate(phrase: &str) -> String {
-    let components = phrase
+    phrase
         .split(|c: char| c.is_ascii_whitespace() || c == '-')
         .filter(|word| !word.is_empty())
         .map(|word| {
@@ -20,6 +20,5 @@ pub fn abbreviate(phrase: &str) -> String {
                     .collect::<String>()
             }
         })
-        .collect::<String>();
-    components
+        .collect::<String>()
 }
