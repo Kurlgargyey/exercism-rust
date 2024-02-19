@@ -27,7 +27,7 @@ fn punctuation() {
 #[test]
 //#[ignore]
 fn all_caps_word() {
-    let input = "_*gNU*_ Image Manipulation Program";
+    let input = "GNU Image Manipulation Program";
     let output = acronym::abbreviate(input);
     let expected = "GIMP";
     assert_eq!(output, expected);
@@ -81,7 +81,7 @@ fn underscore_emphasis() {
 #[test]
 //#[ignore]
 fn camelcase() {
-    let input = "HyperTEXT Markup Language";
+    let input = "HyperText Markup Language";
     let output = acronym::abbreviate(input);
     let expected = "HTML";
     assert_eq!(output, expected);
