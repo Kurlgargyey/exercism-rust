@@ -6,7 +6,7 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
     let chars = unique_letters(input);
     let value_combos = generate_permutations(&chars).unwrap();
 
-    let mut possible_combinations = generate_possible_maps(value_combos, &chars);
+    let possible_combinations = generate_possible_maps(value_combos, &chars);
 
     let mut components = input.split(" == ");
     let addends: Vec<&str> = components.next().unwrap().split(" + ").collect();
