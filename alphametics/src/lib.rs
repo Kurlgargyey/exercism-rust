@@ -3,45 +3,8 @@ use permutohedron::heap_recursive;
 use std::collections::HashMap;
 
 pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
-    let mut chars = input
-        .chars()
-        .filter(|c| c.is_alphabetic())
-        .collect::<Vec<char>>();
-    chars.sort();
-    chars.dedup();
-    let char_count = chars.len();
-
-    let mut value_combos: Vec<_> = vec![];
-
-    match char_count {
-        u if u > 10 => {
-            return None;
-        }
-        u if u == 10 => {
-            let combination = vec![vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9]];
-            value_combos = combination
-                .into_iter()
-                .flat_map(|mut combination| {
-                    let mut permutations = Vec::new();
-                    heap_recursive(&mut combination, |permutation| {
-                        permutations.push(permutation.to_vec());
-                    });
-                    permutations
-                })
-                .collect();
-        }
-        _ => {
-            value_combos = Combinations::new(vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9], char_count)
-                .flat_map(|mut combination| {
-                    let mut permutations = Vec::new();
-                    heap_recursive(&mut combination, |permutation| {
-                        permutations.push(permutation.to_vec());
-                    });
-                    permutations
-                })
-                .collect();
-        }
-    }
+    let chars = get_chars(input);
+    let value_combos = generate_permutations(&chars).unwrap();
 
     let mut possible_combinations: Vec<HashMap<_, _>> = Vec::new();
 
@@ -54,9 +17,9 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
         possible_combinations.push(combo_map);
     }
 
-    let no_whitespace = input.split_ascii_whitespace().collect::<String>();
-    let addends: Vec<_> = no_whitespace.split("==").nth(0)?.split("+").collect();
-    let sum = no_whitespace.split("==").last().unwrap().to_string();
+    let mut components = input.split(" == ");
+    let addends: Vec<&str> = components.next().unwrap().split(" + ").collect();
+    let end_sum = components.next().unwrap();
 
     'combo: for combination in possible_combinations {
         let mut int_addends = vec![];
@@ -71,7 +34,7 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
             .iter()
             .map(|i| *i as i64)
             .sum();
-        if let Some(parsed_sum) = combine_map_with_str(&sum.as_str(), &combination) {
+        if let Some(parsed_sum) = combine_map_with_str(&end_sum, &combination) {
             if combination_sum == (parsed_sum as i64) {
                 return Some(combination);
             }
@@ -90,4 +53,50 @@ fn combine_map_with_str(str: &str, map: &HashMap<char, u8>) -> Option<i64> {
         return None;
     }
     Some(addend_digits.parse::<i64>().unwrap())
+}
+
+fn get_chars(input: &str) -> Vec<char> {
+    let mut chars = input
+        .chars()
+        .filter(|c| c.is_alphabetic())
+        .collect::<Vec<char>>();
+    chars.sort();
+    chars.dedup();
+    chars
+}
+
+fn generate_permutations(chars: &Vec<char>) -> Option<Vec<Vec<i32>>> {
+    let char_count = chars.len();
+
+    match char_count {
+        u if u > 10 => { None }
+        u if u == 10 => {
+            let combination = vec![vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9]];
+            Some(
+                combination
+                    .into_iter()
+                    .flat_map(|mut combination| {
+                        let mut permutations = Vec::new();
+                        heap_recursive(&mut combination, |permutation| {
+                            permutations.push(permutation.to_vec());
+                        });
+                        permutations
+                    })
+                    .collect()
+            )
+        }
+        _ => {
+            Some(
+                Combinations::new(vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9], char_count)
+                    .flat_map(|mut combination| {
+                        let mut permutations = Vec::new();
+                        heap_recursive(&mut combination, |permutation| {
+                            permutations.push(permutation.to_vec());
+                        });
+                        permutations
+                    })
+                    .collect()
+            )
+        }
+    }
 }
