@@ -24,7 +24,7 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
     'combo: for combination in possible_combinations {
         let mut int_addends = vec![];
         for addend in &addends {
-            if let Some(parsed_addend) = combine_map_with_str(*addend, &combination) {
+            if let Some(parsed_addend) = word_to_int(*addend, &combination) {
                 int_addends.push(parsed_addend);
             } else {
                 continue 'combo;
@@ -34,7 +34,7 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
             .iter()
             .map(|i| *i as i64)
             .sum();
-        if let Some(parsed_sum) = combine_map_with_str(&end_sum, &combination) {
+        if let Some(parsed_sum) = word_to_int(&end_sum, &combination) {
             if combination_sum == (parsed_sum as i64) {
                 return Some(combination);
             }
@@ -44,7 +44,7 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
     None
 }
 
-fn combine_map_with_str(str: &str, map: &HashMap<char, u8>) -> Option<i64> {
+fn word_to_int(str: &str, map: &HashMap<char, u8>) -> Option<i64> {
     let mut addend_digits = String::from(str);
     for (char, value) in map {
         addend_digits = addend_digits.replace(*char, &value.to_string());
