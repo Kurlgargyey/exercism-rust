@@ -3,7 +3,7 @@ use permutohedron::heap_recursive;
 use std::collections::HashMap;
 
 pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
-    let chars = get_chars(input);
+    let chars = unique_letters(input);
     let value_combos = generate_permutations(&chars).unwrap();
 
     let mut possible_combinations: Vec<HashMap<_, _>> = Vec::new();
@@ -55,10 +55,11 @@ fn combine_map_with_str(str: &str, map: &HashMap<char, u8>) -> Option<i64> {
     Some(addend_digits.parse::<i64>().unwrap())
 }
 
-fn get_chars(input: &str) -> Vec<char> {
+fn unique_letters(input: &str) -> Vec<char> {
     let mut chars = input
         .chars()
         .filter(|c| c.is_alphabetic())
+        .map(|char| char.to_ascii_uppercase())
         .collect::<Vec<char>>();
     chars.sort();
     chars.dedup();
