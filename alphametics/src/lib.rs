@@ -71,9 +71,8 @@ fn generate_permutations(chars: &Vec<char>) -> Option<Vec<Vec<i32>>> {
     match char_count {
         u if u > 10 => { None }
         u if u == 10 => {
-            let combination = vec![vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9]];
             Some(
-                combination
+                vec![vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
                     .into_iter()
                     .flat_map(|mut combination| {
                         let mut permutations = Vec::new();
