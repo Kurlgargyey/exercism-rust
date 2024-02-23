@@ -21,9 +21,7 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
                 continue 'combo;
             };
         }
-        let combination_sum: i64 = int_addends
-            .iter()
-            .sum();
+        let combination_sum: i64 = int_addends.iter().sum();
         if let Some(parsed_sum) = word_to_int(&end_sum, &combination) {
             if combination_sum == (parsed_sum as i64) {
                 return Some(combination);
@@ -91,7 +89,10 @@ fn generate_permutations(chars: &Vec<char>) -> Option<Vec<Vec<i32>>> {
     }
 }
 
-fn generate_possible_maps(value_combos: Vec<Vec<i32>>, chars: &Vec<char>) -> Vec<HashMap<_, u8>> {
+fn generate_possible_maps(
+    value_combos: Vec<Vec<i32>>,
+    chars: &Vec<char>
+) -> Vec<HashMap<char, u8>> {
     let mut possible_combinations: Vec<HashMap<_, _>> = Vec::new();
 
     for combo in value_combos {
