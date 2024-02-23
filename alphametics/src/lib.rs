@@ -6,16 +6,7 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
     let chars = unique_letters(input);
     let value_combos = generate_permutations(&chars).unwrap();
 
-    let mut possible_combinations: Vec<HashMap<_, _>> = Vec::new();
-
-    for combo in value_combos {
-        let mut combo_map = HashMap::new();
-        let mut chars_iter = chars.iter();
-        for value in combo {
-            combo_map.insert(*chars_iter.next().unwrap(), value as u8);
-        }
-        possible_combinations.push(combo_map);
-    }
+    let mut possible_combinations = generate_possible_maps(value_combos, &chars);
 
     let mut components = input.split(" == ");
     let addends: Vec<&str> = components.next().unwrap().split(" + ").collect();
@@ -32,7 +23,6 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
         }
         let combination_sum: i64 = int_addends
             .iter()
-            .map(|i| *i as i64)
             .sum();
         if let Some(parsed_sum) = word_to_int(&end_sum, &combination) {
             if combination_sum == (parsed_sum as i64) {
@@ -99,4 +89,18 @@ fn generate_permutations(chars: &Vec<char>) -> Option<Vec<Vec<i32>>> {
             )
         }
     }
+}
+
+fn generate_possible_maps(value_combos: Vec<Vec<i32>>, chars: &Vec<char>) -> Vec<HashMap<_, u8>> {
+    let mut possible_combinations: Vec<HashMap<_, _>> = Vec::new();
+
+    for combo in value_combos {
+        let mut combo_map = HashMap::new();
+        let mut chars_iter = chars.iter();
+        for value in combo {
+            combo_map.insert(*chars_iter.next().unwrap(), value as u8);
+        }
+        possible_combinations.push(combo_map);
+    }
+    possible_combinations
 }
