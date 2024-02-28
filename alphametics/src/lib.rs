@@ -1,45 +1,71 @@
 use itertools::Itertools;
-use std::collections::HashMap;
+use std::{ collections::HashMap, error::Error };
+
+#[derive(Debug)]
+enum Errors {
+    LeadingZero,
+    SumMismatch,
+    EmptyMap,
+}
 
 pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
     let chars = unique_letters(input);
-    let value_combos = generate_permutations(&chars).unwrap();
-
-    let possible_combinations = generate_possible_maps(value_combos, &chars);
-
-    let mut components = input.split(" == ");
-    let addends: Vec<&str> = components.next().unwrap().split(" + ").collect();
-    let end_sum = components.next().unwrap();
-
-    'combo: for combination in possible_combinations {
-        let mut int_addends = vec![];
-        for addend in &addends {
-            if let Some(parsed_addend) = word_to_int(*addend, &combination) {
-                int_addends.push(parsed_addend);
-            } else {
-                continue 'combo;
-            };
-        }
-        let combination_sum: i64 = int_addends.iter().sum();
-        if let Some(parsed_sum) = word_to_int(&end_sum, &combination) {
-            if combination_sum == (parsed_sum as i64) {
-                return Some(combination);
-            }
-        };
-    }
-
-    None
-}
-
-fn word_to_int(str: &str, map: &HashMap<char, u8>) -> Option<i64> {
-    let mut addend_digits = String::from(str);
-    for (char, value) in map {
-        addend_digits = addend_digits.replace(*char, &value.to_string());
-    }
-    if addend_digits.starts_with('0') {
+    if chars.len() > 10 {
         return None;
     }
-    Some(addend_digits.parse::<i64>().unwrap())
+    let mut components = input.split(" == ");
+    let addends: Vec<&str> = components.next().unwrap().split(" + ").collect();
+    let target = components.next().unwrap();
+
+    let permutations = (0..=9).permutations(chars.len());
+    let mut combinations = permutations.map(|permutation| {
+        let mut combo_map = HashMap::new();
+        let mut chars_iter = chars.iter();
+        for value in permutation {
+            combo_map.insert(*chars_iter.next().unwrap(), value as u8);
+        }
+        combo_map
+    });
+
+    loop {
+        let result = check_map(combinations.next()?, &addends, target);
+        if let Ok(combo) = result {
+            return Some(combo);
+        }
+    }
+}
+
+fn check_map<'a>(
+    combination: HashMap<char, u8>,
+    addends: &Vec<&str>,
+    target: &str
+) -> Result<HashMap<char, u8>, Errors> {
+    let parsed_target = parse_string(&combination, target)?;
+    let combination_sum: i64 = parse_addends(&combination, &addends)?;
+
+    if combination_sum == (parsed_target as i64) {
+        return Ok(combination);
+    }
+    Err(Errors::SumMismatch)
+}
+
+fn parse_addends(combination: &HashMap<char, u8>, addends: &Vec<&str>) -> Result<i64, Errors> {
+    let mut int_addends = vec![];
+    for addend in addends {
+        int_addends.push(parse_string(&combination, addend)?);
+    }
+    Ok(int_addends.into_iter().sum())
+}
+
+fn parse_string(combination: &HashMap<char, u8>, str: &str) -> Result<i64, Errors> {
+    let mut digits = String::from(str);
+    for (char, value) in combination {
+        digits = digits.replace(*char, &value.to_string());
+    }
+    if digits.starts_with('0') {
+        return Err(Errors::LeadingZero);
+    }
+    Ok(digits.parse::<i64>().unwrap())
 }
 
 fn unique_letters(input: &str) -> Vec<char> {
@@ -53,46 +79,6 @@ fn unique_letters(input: &str) -> Vec<char> {
     chars
 }
 
-fn generate_permutations(chars: &Vec<char>) -> Option<Vec<Vec<i32>>> {
-    let char_count = chars.len();
-
-    match char_count {
-        u if u > 10 => { None }
-        /*        u if u == 10 => {
-            Some(
-                vec![vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
-                    .into_iter()
-                    .flat_map(|mut combination| {
-                        let mut permutations = Vec::new();
-                        heap_recursive(&mut combination, |permutation| {
-                            permutations.push(permutation.to_vec());
-                        });
-                        permutations
-                    })
-                    .collect()
-            )
-        } */
-        _ => { Some((0..=9).permutations(char_count).collect()) }
-    }
-}
-
-fn generate_possible_maps(
-    value_combos: Vec<Vec<i32>>,
-    chars: &Vec<char>
-) -> Vec<HashMap<char, u8>> {
-    let mut possible_combinations: Vec<HashMap<_, _>> = Vec::new();
-
-    for combo in value_combos {
-        let mut combo_map = HashMap::new();
-        let mut chars_iter = chars.iter();
-        for value in combo {
-            combo_map.insert(*chars_iter.next().unwrap(), value as u8);
-        }
-        possible_combinations.push(combo_map);
-    }
-    possible_combinations
-}
-
-fn generate_combinations(char_count: usize) -> Vec<Vec<i32>> {
-    (0..=9).permutations(char_count).collect()
+fn possible_combinations(chars: &Vec<char>) -> () {
+    todo!("make a function out of this!")
 }
