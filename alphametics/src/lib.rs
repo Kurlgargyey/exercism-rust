@@ -1,5 +1,4 @@
-use combinations::Combinations;
-use permutohedron::heap_recursive;
+use itertools::Itertools;
 use std::collections::HashMap;
 
 pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
@@ -59,7 +58,7 @@ fn generate_permutations(chars: &Vec<char>) -> Option<Vec<Vec<i32>>> {
 
     match char_count {
         u if u > 10 => { None }
-        u if u == 10 => {
+        /*        u if u == 10 => {
             Some(
                 vec![vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
                     .into_iter()
@@ -72,20 +71,8 @@ fn generate_permutations(chars: &Vec<char>) -> Option<Vec<Vec<i32>>> {
                     })
                     .collect()
             )
-        }
-        _ => {
-            Some(
-                Combinations::new(vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9], char_count)
-                    .flat_map(|mut combination| {
-                        let mut permutations = Vec::new();
-                        heap_recursive(&mut combination, |permutation| {
-                            permutations.push(permutation.to_vec());
-                        });
-                        permutations
-                    })
-                    .collect()
-            )
-        }
+        } */
+        _ => { Some((0..=9).permutations(char_count).collect()) }
     }
 }
 
@@ -107,5 +94,5 @@ fn generate_possible_maps(
 }
 
 fn generate_combinations(char_count: usize) -> Vec<Vec<i32>> {
-    let digits = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    (0..=9).permutations(char_count).collect()
 }
