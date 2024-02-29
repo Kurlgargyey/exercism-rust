@@ -1,84 +1,87 @@
+use std::collections::{ HashMap, HashSet };
 use itertools::Itertools;
-use std::{ collections::HashMap, error::Error };
-
-#[derive(Debug)]
-enum Errors {
-    LeadingZero,
-    SumMismatch,
-    EmptyMap,
-}
 
 pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
-    let chars = unique_letters(input);
-    if chars.len() > 10 {
+    let solver = Solver::new(input);
+    if solver.char_count > 10 {
         return None;
     }
-    let mut components = input.split(" == ");
-    let addends: Vec<&str> = components.next().unwrap().split(" + ").collect();
-    let target = components.next().unwrap();
 
-    let permutations = (0..=9).permutations(chars.len());
-    let mut combinations = permutations.map(|permutation| {
-        let mut combo_map = HashMap::new();
-        let mut chars_iter = chars.iter();
-        for value in permutation {
-            combo_map.insert(*chars_iter.next().unwrap(), value as u8);
-        }
-        combo_map
-    });
-
-    loop {
-        let result = check_map(combinations.next()?, &addends, target);
-        if let Ok(combo) = result {
-            return Some(combo);
+    for permutation in (0..=9).permutations(solver.char_count) {
+        let checksum = solver.generate_checksum(&permutation);
+        if checksum == 0 {
+            let possible_solution = HashMap::from_iter(
+                solver.weights.clone().into_keys().zip(permutation.into_iter())
+            );
+            if
+                solver.leading_chars
+                    .iter()
+                    .any(|leading| *possible_solution.get(&leading).unwrap() == 0)
+            {
+                continue;
+            }
+            return Some(possible_solution);
         }
     }
+
+    None
 }
 
-fn check_map<'a>(
-    combination: HashMap<char, u8>,
-    addends: &Vec<&str>,
-    target: &str
-) -> Result<HashMap<char, u8>, Errors> {
-    let parsed_target = parse_string(&combination, target)?;
-    let combination_sum: i64 = parse_addends(&combination, &addends)?;
+struct Solver {
+    leading_chars: HashSet<char>,
+    char_count: usize,
+    weights: HashMap<char, i64>,
+}
 
-    if combination_sum == (parsed_target as i64) {
-        return Ok(combination);
+impl Solver {
+    pub fn new(input: &str) -> Self {
+        let words = input
+            .split(|c| (c == '+' || c == '='))
+            .filter(|word| !word.is_empty())
+            .map(|word| word.trim());
+        let leading_chars = words.clone().fold(HashSet::new(), |mut acc, word| {
+            acc.insert(word.chars().nth(0).unwrap());
+            acc
+        });
+        let char_count = words
+            .clone()
+            .fold(HashSet::new(), |acc, word|
+                word.chars().fold(acc, |mut acc, char| {
+                    acc.insert(char);
+                    acc
+                })
+            )
+            .len();
+        let weights = Self::weigh_chars(&words.collect());
+        Solver { leading_chars, char_count, weights }
     }
-    Err(Errors::SumMismatch)
-}
 
-fn parse_addends(combination: &HashMap<char, u8>, addends: &Vec<&str>) -> Result<i64, Errors> {
-    let mut int_addends = vec![];
-    for addend in addends {
-        int_addends.push(parse_string(&combination, addend)?);
+    pub fn generate_checksum(&self, values: &Vec<u8>) -> i64 {
+        values
+            .iter()
+            .zip(self.weights.values())
+            .fold(0_i64, |sum, (number, weight)| sum + (*number as i64) * *weight)
     }
-    Ok(int_addends.into_iter().sum())
-}
 
-fn parse_string(combination: &HashMap<char, u8>, str: &str) -> Result<i64, Errors> {
-    let mut digits = String::from(str);
-    for (char, value) in combination {
-        digits = digits.replace(*char, &value.to_string());
+    fn weigh_chars(words: &Vec<&str>) -> HashMap<char, i64> {
+        let mut result = HashMap::new();
+        for word in words.iter().take(words.len() - 1) {
+            word.chars()
+                .rev()
+                .enumerate()
+                .fold(&mut result, |acc, (i, c)| {
+                    *acc.entry(c).or_default() += (10_i64).pow(i as u32);
+                    acc
+                });
+        }
+        words[words.len() - 1]
+            .chars()
+            .rev()
+            .enumerate()
+            .fold(&mut result, |acc, (i, c)| {
+                *acc.entry(c).or_default() -= (10_i64).pow(i as u32);
+                acc
+            });
+        result
     }
-    if digits.starts_with('0') {
-        return Err(Errors::LeadingZero);
-    }
-    Ok(digits.parse::<i64>().unwrap())
-}
-
-fn unique_letters(input: &str) -> Vec<char> {
-    let mut chars = input
-        .chars()
-        .filter(|c| c.is_alphabetic())
-        .map(|char| char.to_ascii_uppercase())
-        .collect::<Vec<char>>();
-    chars.sort();
-    chars.dedup();
-    chars
-}
-
-fn possible_combinations(chars: &Vec<char>) -> () {
-    todo!("make a function out of this!")
 }
