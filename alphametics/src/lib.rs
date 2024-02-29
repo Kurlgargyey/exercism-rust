@@ -62,8 +62,8 @@ impl Solver {
 
     fn weigh_chars(terms: &Vec<&str>) -> HashMap<char, i64> {
         let mut result = HashMap::new();
-        for word in terms.iter().take(terms.len() - 1) {
-            word.chars()
+        for term in terms.iter().take(terms.len() - 1) {
+            term.chars()
                 .rev()
                 .enumerate()
                 .fold(&mut result, |acc, (i, c)| {
@@ -85,14 +85,14 @@ impl Solver {
     fn split_terms(input: &str) -> Result<Vec<&str>, Error> {
         let terms: Vec<&str> = input
             .split(|c| (c == '+' || c == '='))
-            .filter(|word| !word.is_empty())
-            .map(|word| word.trim())
+            .filter(|term| !term.is_empty())
+            .map(|term| term.trim())
             .collect();
         if
             terms
                 .iter()
                 .take(terms.len() - 1)
-                .any(|word| word.len() > terms[terms.len() - 1].len())
+                .any(|term| term.len() > terms[terms.len() - 1].len())
         {
             return Err(Error::OverlongAddend);
         }
@@ -100,8 +100,8 @@ impl Solver {
     }
 
     fn find_leading_chars(terms: &Vec<&str>) -> HashSet<char> {
-        terms.iter().fold(HashSet::new(), |mut acc, word| {
-            acc.insert(word.chars().nth(0).unwrap());
+        terms.into_iter().fold(HashSet::new(), |mut acc, term| {
+            acc.insert(term.chars().nth(0).unwrap());
             acc
         })
     }
@@ -109,8 +109,8 @@ impl Solver {
     fn count_unique_chars(terms: &Vec<&str>) -> Result<usize, Error> {
         let char_count = terms
             .iter()
-            .fold(HashSet::new(), |acc, word|
-                word.chars().fold(acc, |mut acc, char| {
+            .fold(HashSet::new(), |acc, term|
+                term.chars().fold(acc, |mut acc, char| {
                     acc.insert(char);
                     acc
                 })
