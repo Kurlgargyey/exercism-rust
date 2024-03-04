@@ -26,29 +26,31 @@ impl BowlingGame {
     pub fn roll(&mut self, pins: u16) -> Result<(), Error> {
         self.validate_throw(pins)?;
         self.score_throw(pins);
-        self.calculate_doubling_throws(pins);
-        self.calculate_frame(pins);
+        if !self.is_past_last_frame() {
+            self.mark_doubling_throws(pins);
+        }
+        self.progress_frame_state(pins);
         Ok(())
     }
 
     pub fn score(&self) -> Option<u16> {
-        if self.game_is_complete() {
+        if self.is_complete() {
             return Some(self.score);
         }
 
         None
     }
 
-    fn game_is_complete(&self) -> bool {
-        self.past_last_frame() && self.doubling_throws.is_empty()
+    fn is_complete(&self) -> bool {
+        self.is_past_last_frame() && self.doubling_throws.is_empty()
     }
 
-    fn past_last_frame(&self) -> bool {
+    fn is_past_last_frame(&self) -> bool {
         self.frame >= 10
     }
 
     fn validate_throw(&self, pins: u16) -> Result<(), Error> {
-        if self.game_is_complete() {
+        if self.is_complete() {
             return Err(Error::GameComplete);
         }
         if pins > self.pins_in_frame {
@@ -58,9 +60,13 @@ impl BowlingGame {
     }
 
     fn score_throw(&mut self, pins: u16) {
-        if !self.past_last_frame() {
+        if !self.is_past_last_frame() {
             self.score += pins;
         }
+        self.score_doubling_throws(pins)
+    }
+
+    fn score_doubling_throws(&mut self, pins: u16) {
         self.doubling_throws = self.doubling_throws
             .iter()
             .map(|throw_count| {
@@ -71,10 +77,7 @@ impl BowlingGame {
             .collect();
     }
 
-    fn calculate_doubling_throws(&mut self, pins: u16) {
-        if self.past_last_frame() {
-            return;
-        }
+    fn mark_doubling_throws(&mut self, pins: u16) {
         if pins == self.pins_in_frame {
             match self.throws_in_frame {
                 2 => self.doubling_throws.push(2),
@@ -83,7 +86,7 @@ impl BowlingGame {
         }
     }
 
-    fn calculate_frame(&mut self, pins: u16) {
+    fn progress_frame_state(&mut self, pins: u16) {
         self.pins_in_frame -= pins;
         self.throws_in_frame -= 1;
         if self.pins_in_frame == 0 || self.throws_in_frame == 0 {
