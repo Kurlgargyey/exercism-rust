@@ -35,11 +35,7 @@ impl BowlingGame {
         if self.game_is_complete() {
             return Some(self.score);
         }
-        println!(
-            "Game has not finished yet! We are at frame {:?} and the score is {:?}.",
-            self.frame,
-            self.score
-        );
+
         None
     }
 
