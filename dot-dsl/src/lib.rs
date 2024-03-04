@@ -8,7 +8,11 @@ pub mod graph {
     }
 
     pub mod graph_items {
-        pub struct Edge;
+        use std::collections::HashMap;
+        pub struct Edge {
+            nodes: Vec<Node>,
+            attrs: HashMap<String, String>,
+        }
         pub struct Node;
     }
 
