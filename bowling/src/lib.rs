@@ -62,7 +62,9 @@ impl BowlingGame {
     }
 
     fn score_throw(&mut self, pins: u16) {
-        self.score += pins;
+        if !self.past_last_frame() {
+            self.score += pins;
+        }
         self.doubling_throws = self.doubling_throws
             .iter()
             .map(|throw_count| {
