@@ -1,22 +1,14 @@
 pub mod graph {
-    use std::collections::HashMap;
-    use crate::graph::graph_items::edge::Edge;
-    use crate::graph::graph_items::node::Node;
-    #[derive(Debug, PartialEq, Eq)]
-    pub struct Graph {
-        pub nodes: Vec<Node>,
-        pub edges: Vec<Edge>,
-        pub attrs: HashMap<String, String>,
-    }
-
     pub mod graph_items {
         pub mod edge {
             use std::collections::HashMap;
-            use crate::graph::Node;
-            #[derive(Debug, PartialEq, Eq)]
+            use super::node::Node;
+            use crate::graph::Builder;
+            #[derive(Debug, PartialEq, Eq, Clone)]
             pub struct Edge {
                 nodes: Vec<Node>,
                 attrs: HashMap<String, String>,
+                edges: Vec<Edge>,
             }
 
             impl Edge {
@@ -27,16 +19,30 @@ pub mod graph {
                     Edge {
                         nodes,
                         attrs: HashMap::<String, String>::new(),
+                        edges: Vec::<Edge>::new(),
                     }
+                }
+            }
+
+            impl Builder for Edge {
+                fn nodes(&mut self) -> &mut Vec<Node> {
+                    &mut self.nodes
+                }
+                fn edges(&mut self) -> &mut Vec<Edge> {
+                    &mut self.edges
+                }
+                fn attrs(&mut self) -> &mut HashMap<String, String> {
+                    &mut self.attrs
                 }
             }
         }
         pub mod node {
             use std::collections::HashMap;
-            use crate::graph::Edge;
-            #[derive(Debug, PartialEq, Eq)]
+            use super::edge::Edge;
+            use crate::graph::Builder;
+            #[derive(Debug, PartialEq, Eq, Clone)]
             pub struct Node {
-                name: String,
+                nodes: Vec<Node>,
                 edges: Vec<Edge>,
                 attrs: HashMap<String, String>,
             }
@@ -45,13 +51,35 @@ pub mod graph {
                 pub fn new(name: &str) -> Self {
                     let name = name.to_string();
                     Node {
-                        name,
+                        nodes: Vec::<Node>::new(),
                         edges: Vec::<Edge>::new(),
                         attrs: HashMap::<String, String>::new(),
                     }
                 }
             }
+            impl Builder for Node {
+                fn nodes(&mut self) -> &mut Vec<Node> {
+                    let result = Vec::<Node>::new();
+                    result.push(self)
+                    &mut result
+                }
+                fn edges(&mut self) -> &mut Vec<Edge> {
+                    &mut self.edges
+                }
+                fn attrs(&mut self) -> &mut HashMap<String, String> {
+                    &mut self.attrs
+                }
+            }
         }
+    }
+    use std::collections::HashMap;
+    use self::graph_items::edge::Edge;
+    use self::graph_items::node::Node;
+    #[derive(Debug, PartialEq, Eq, Clone)]
+    pub struct Graph {
+        pub nodes: Vec<Node>,
+        pub edges: Vec<Edge>,
+        pub attrs: HashMap<String, String>,
     }
 
     impl Graph {
@@ -62,14 +90,46 @@ pub mod graph {
                 attrs: HashMap::<String, String>::new(),
             }
         }
-        pub fn with_nodes(&self, nodes: &Vec<Node>) -> Self {
-            todo!("with nodes")
+    }
+
+    impl Builder for Graph {
+        fn nodes(&mut self) -> &mut Vec<Node> {
+            &mut self.nodes
         }
-        pub fn with_attrs(&self, attrs: &Vec<(&str, &str)>) -> Self {
-            todo!("with attrs")
+        fn edges(&mut self) -> &mut Vec<Edge> {
+            &mut self.edges
         }
-        pub fn with_edges(&self, edges: &Vec<Edge>) -> Self {
-            todo!("with edges")
+        fn attrs(&mut self) -> &mut HashMap<String, String> {
+            &mut self.attrs
+        }
+    }
+    pub trait Builder {
+        fn nodes(&mut self) -> &mut Vec<Node>;
+        fn edges(&mut self) -> &mut Vec<Edge>;
+        fn attrs(&mut self) -> &mut HashMap<String, String>;
+
+        fn with_nodes(&mut self, nodes: &Vec<Node>) -> &Self {
+            for node in nodes {
+                self.nodes().push(node.clone());
+            }
+            self
+        }
+        fn with_attrs(&mut self, attrs: &[(&str, &str)]) -> &Self {
+            for (attr, value) in attrs {
+                self.attrs()
+                    .entry(attr.to_string())
+                    .and_modify(|e| {
+                        *e = value.to_string();
+                    })
+                    .or_insert(value.to_string());
+            }
+            self
+        }
+        fn with_edges(&mut self, edges: &Vec<Edge>) -> &Self {
+            for edge in edges {
+                self.edges().push(edge.clone());
+            }
+            self
         }
     }
 }
