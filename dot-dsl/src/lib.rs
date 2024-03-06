@@ -1,4 +1,40 @@
 pub mod graph {
+    use std::collections::HashMap;
+    use self::graph_items::edge::Edge;
+    use self::graph_items::node::Node;
+    use self::builders::*;
+    #[derive(Debug, PartialEq, Eq, Clone)]
+    pub struct Graph {
+        pub nodes: Vec<Node>,
+        pub edges: Vec<Edge>,
+        pub attrs: HashMap<String, String>,
+    }
+
+    impl Graph {
+        pub fn new() -> Self {
+            Graph {
+                nodes: Vec::<Node>::new(),
+                edges: Vec::<Edge>::new(),
+                attrs: HashMap::<String, String>::new(),
+            }
+        }
+    }
+
+    impl Nodes for Graph {
+        fn nodes(&mut self) -> &mut Vec<Node> {
+            &mut self.nodes
+        }
+    }
+    impl Edges for Graph {
+        fn edges(&mut self) -> &mut Vec<Edge> {
+            &mut self.edges
+        }
+    }
+    impl Attributes for Graph {
+        fn attrs(&mut self) -> &mut HashMap<String, String> {
+            &mut self.attrs
+        }
+    }
     pub mod graph_items {
         pub mod edge {
             use std::collections::HashMap;
@@ -68,43 +104,6 @@ pub mod graph {
             }
         }
     }
-    use std::collections::HashMap;
-    use self::graph_items::edge::Edge;
-    use self::graph_items::node::Node;
-    use self::builders::*;
-    #[derive(Debug, PartialEq, Eq, Clone)]
-    pub struct Graph {
-        pub nodes: Vec<Node>,
-        pub edges: Vec<Edge>,
-        pub attrs: HashMap<String, String>,
-    }
-
-    impl Graph {
-        pub fn new() -> Self {
-            Graph {
-                nodes: Vec::<Node>::new(),
-                edges: Vec::<Edge>::new(),
-                attrs: HashMap::<String, String>::new(),
-            }
-        }
-    }
-
-    impl Nodes for Graph {
-        fn nodes(&mut self) -> &mut Vec<Node> {
-            &mut self.nodes
-        }
-    }
-    impl Edges for Graph {
-        fn edges(&mut self) -> &mut Vec<Edge> {
-            &mut self.edges
-        }
-    }
-    impl Attributes for Graph {
-        fn attrs(&mut self) -> &mut HashMap<String, String> {
-            &mut self.attrs
-        }
-    }
-
     pub mod builders {
         use std::collections::HashMap;
         use crate::graph::graph_items::node::Node;
