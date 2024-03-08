@@ -48,15 +48,9 @@ pub mod graph {
         }
         pub fn with_edges(mut self, edges: &Vec<Edge>) -> Self {
             for edge in edges {
-                self.edges().push(edge.clone());
+                self.edges.push(edge.clone());
             }
             self
-        }
-    }
-
-    impl Edges for Graph {
-        fn edges(&mut self) -> &mut Vec<Edge> {
-            &mut self.edges
         }
     }
     pub mod graph_items {
