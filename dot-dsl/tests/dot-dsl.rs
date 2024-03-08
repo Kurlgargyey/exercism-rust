@@ -15,7 +15,7 @@ fn empty_graph() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn graph_with_one_node() {
     let nodes = vec![Node::new("a")];
 
@@ -29,7 +29,7 @@ fn graph_with_one_node() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn graph_with_one_node_with_keywords() {
     let nodes = vec![Node::new("a").with_attrs(&[("color", "green")])];
 
@@ -39,14 +39,11 @@ fn graph_with_one_node_with_keywords() {
 
     assert!(graph.attrs.is_empty());
 
-    assert_eq!(
-        graph.nodes,
-        vec![Node::new("a").with_attrs(&[("color", "green")])]
-    );
+    assert_eq!(graph.nodes, vec![Node::new("a").with_attrs(&[("color", "green")])]);
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn graph_with_one_edge() {
     let edges = vec![Edge::new("a", "b")];
 
@@ -60,7 +57,7 @@ fn graph_with_one_edge() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn graph_with_one_edge_with_keywords() {
     let edges = vec![Edge::new("a", "b").with_attrs(&[("color", "blue")])];
 
@@ -70,14 +67,11 @@ fn graph_with_one_edge_with_keywords() {
 
     assert!(graph.attrs.is_empty());
 
-    assert_eq!(
-        graph.edges,
-        vec![Edge::new("a", "b").with_attrs(&[("color", "blue")])]
-    );
+    assert_eq!(graph.edges, vec![Edge::new("a", "b").with_attrs(&[("color", "blue")])]);
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn graph_with_one_attribute() {
     let graph = Graph::new().with_attrs(&[("foo", "1")]);
 
@@ -93,78 +87,77 @@ fn graph_with_one_attribute() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn graph_with_attributes() {
     let nodes = vec![
         Node::new("a").with_attrs(&[("color", "green")]),
         Node::new("c"),
-        Node::new("b").with_attrs(&[("label", "Beta!")]),
+        Node::new("b").with_attrs(&[("label", "Beta!")])
     ];
 
-    let edges = vec![
-        Edge::new("b", "c"),
-        Edge::new("a", "b").with_attrs(&[("color", "blue")]),
-    ];
+    let edges = vec![Edge::new("b", "c"), Edge::new("a", "b").with_attrs(&[("color", "blue")])];
 
     let attrs = vec![("foo", "1"), ("title", "Testing Attrs"), ("bar", "true")];
 
-    let expected_attrs = hashmap! {
+    let expected_attrs =
+        hashmap! {
         "foo".to_string() => "1".to_string(),
         "title".to_string() => "Testing Attrs".to_string(),
         "bar".to_string() => "true".to_string(),
     };
 
-    let graph = Graph::new()
-        .with_nodes(&nodes)
-        .with_edges(&edges)
-        .with_attrs(&attrs);
+    let graph = Graph::new().with_nodes(&nodes).with_edges(&edges).with_attrs(&attrs);
 
     assert_eq!(
         graph.nodes,
         vec![
             Node::new("a").with_attrs(&[("color", "green")]),
             Node::new("c"),
-            Node::new("b").with_attrs(&[("label", "Beta!")]),
+            Node::new("b").with_attrs(&[("label", "Beta!")])
         ]
     );
 
     assert_eq!(
         graph.edges,
-        vec![
-            Edge::new("b", "c"),
-            Edge::new("a", "b").with_attrs(&[("color", "blue")]),
-        ]
+        vec![Edge::new("b", "c"), Edge::new("a", "b").with_attrs(&[("color", "blue")])]
     );
 
     assert_eq!(graph.attrs, expected_attrs);
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn edges_store_attributes() {
     let nodes = vec![
         Node::new("a").with_attrs(&[("color", "green")]),
         Node::new("c"),
-        Node::new("b").with_attrs(&[("label", "Beta!")]),
+        Node::new("b").with_attrs(&[("label", "Beta!")])
     ];
 
     let edges = vec![
         Edge::new("b", "c"),
-        Edge::new("a", "b").with_attrs(&[("color", "blue"), ("fill", "darkblue")]),
+        Edge::new("a", "b").with_attrs(
+            &[
+                ("color", "blue"),
+                ("fill", "darkblue"),
+            ]
+        )
     ];
 
     let attrs = vec![("foo", "1"), ("title", "Testing Attrs"), ("bar", "true")];
 
-    let graph = Graph::new()
-        .with_nodes(&nodes)
-        .with_edges(&edges)
-        .with_attrs(&attrs);
+    let graph = Graph::new().with_nodes(&nodes).with_edges(&edges).with_attrs(&attrs);
 
     assert_eq!(
         graph.edges,
         vec![
             Edge::new("b", "c"),
-            Edge::new("a", "b").with_attrs(&[("color", "blue"), ("fill", "darkblue")]),
+            Edge::new("a", "b").with_attrs(
+                &[
+                    ("color", "blue"),
+                    ("fill", "darkblue"),
+                ]
+            )
         ]
     );
 
@@ -177,15 +170,19 @@ fn edges_store_attributes() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn graph_nodes_store_attributes() {
-    let attributes = [("foo", "bar"), ("bat", "baz"), ("bim", "bef")];
+    let attributes = [
+        ("foo", "bar"),
+        ("bat", "baz"),
+        ("bim", "bef"),
+    ];
     let graph = Graph::new().with_nodes(
         &["a", "b", "c"]
             .iter()
             .zip(attributes.iter())
             .map(|(name, &attr)| Node::new(name).with_attrs(&[attr]))
-            .collect::<Vec<_>>(),
+            .collect::<Vec<_>>()
     );
 
     let a = graph.node("a").expect("node a must be stored");

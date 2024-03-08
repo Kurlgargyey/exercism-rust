@@ -32,8 +32,8 @@ pub mod graph {
             }
             self
         }
-        pub fn attr(&self, attr: &str) -> Option<&String> {
-            self.attrs.get(attr)
+        pub fn attr(&self, attr: &str) -> Option<&str> {
+            if let Some(attr) = self.attrs.get(attr) { Some(attr) } else { None }
         }
         pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
             for (attr, value) in attrs {
@@ -97,7 +97,7 @@ pub mod graph {
                     self
                 }
                 pub fn attr(&self, attr: &str) -> Option<&str> {
-                    Some(self.attrs.get(attr).unwrap().as_str())
+                    if let Some(attr) = self.attrs.get(attr) { Some(attr) } else { None }
                 }
                 pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
                     for (attr, value) in attrs {
@@ -133,7 +133,7 @@ pub mod graph {
                     }
                 }
                 pub fn attr(&self, attr: &str) -> Option<&str> {
-                    Some(self.attrs.get(attr).unwrap().as_str())
+                    if let Some(attr) = self.attrs.get(attr) { Some(attr) } else { None }
                 }
                 pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
                     for (attr, value) in attrs {
