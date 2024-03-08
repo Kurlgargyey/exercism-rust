@@ -18,21 +18,45 @@ pub mod graph {
                 attrs: HashMap::<String, String>::new(),
             }
         }
-    }
-
-    impl Nodes for Graph {
-        fn nodes(&mut self) -> &mut Vec<Node> {
-            &mut self.nodes
+        pub fn node(&self, node: &str) -> Option<Node> {
+            for self_node in &self.nodes {
+                if self_node.name == node.to_string() {
+                    return Some(self_node.clone());
+                }
+            }
+            None
+        }
+        pub fn with_nodes(mut self, nodes: &Vec<Node>) -> Self {
+            for node in nodes {
+                self.nodes.push(node.clone());
+            }
+            self
+        }
+        pub fn attr(&self, attr: &str) -> Option<&String> {
+            self.attrs.get(attr)
+        }
+        pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
+            for (attr, value) in attrs {
+                self.attrs
+                    .entry(attr.to_string())
+                    .and_modify(|e| {
+                        *e = value.to_string();
+                    })
+                    .or_insert(value.to_string());
+            }
+            self
+        }
+        pub fn with_edges(mut self, edges: &Vec<Edge>) -> Self {
+            for edge in edges {
+                self.edges().push(edge.clone());
+            }
+            self
         }
     }
+
     impl Edges for Graph {
         fn edges(&mut self) -> &mut Vec<Edge> {
             &mut self.edges
-        }
-    }
-    impl Attributes for Graph {
-        fn attrs(&mut self) -> &mut HashMap<String, String> {
-            &mut self.attrs
         }
     }
     pub mod graph_items {
@@ -58,16 +82,33 @@ pub mod graph {
                         edges: Vec::<Edge>::new(),
                     }
                 }
-            }
-
-            impl Nodes for Edge {
-                fn nodes(&mut self) -> &mut Vec<Node> {
-                    &mut self.nodes
+                pub fn node(&self, node: &str) -> Option<Node> {
+                    for self_node in &self.nodes {
+                        if self_node.name == node.to_string() {
+                            return Some(self_node.clone());
+                        }
+                    }
+                    None
                 }
-            }
-            impl Attributes for Edge {
-                fn attrs(&mut self) -> &mut HashMap<String, String> {
-                    &mut self.attrs
+                pub fn with_nodes(mut self, nodes: &Vec<Node>) -> Self {
+                    for node in nodes {
+                        self.nodes.push(node.clone());
+                    }
+                    self
+                }
+                pub fn attr(&self, attr: &str) -> Option<&str> {
+                    Some(self.attrs.get(attr).unwrap().as_str())
+                }
+                pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
+                    for (attr, value) in attrs {
+                        self.attrs
+                            .entry(attr.to_string())
+                            .and_modify(|e| {
+                                *e = value.to_string();
+                            })
+                            .or_insert(value.to_string());
+                    }
+                    self
                 }
             }
         }
@@ -77,7 +118,7 @@ pub mod graph {
             use crate::graph::builders::*;
             #[derive(Debug, PartialEq, Eq, Clone)]
             pub struct Node {
-                name: String,
+                pub name: String,
                 edges: Vec<Edge>,
                 attrs: HashMap<String, String>,
             }
@@ -91,15 +132,25 @@ pub mod graph {
                         attrs: HashMap::<String, String>::new(),
                     }
                 }
-            }
-            impl Edges for Node {
-                fn edges(&mut self) -> &mut Vec<Edge> {
-                    &mut self.edges
+                pub fn attr(&self, attr: &str) -> Option<&str> {
+                    Some(self.attrs.get(attr).unwrap().as_str())
                 }
-            }
-            impl Attributes for Node {
-                fn attrs(&mut self) -> &mut HashMap<String, String> {
-                    &mut self.attrs
+                pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
+                    for (attr, value) in attrs {
+                        self.attrs
+                            .entry(attr.to_string())
+                            .and_modify(|e| {
+                                *e = value.to_string();
+                            })
+                            .or_insert(value.to_string());
+                    }
+                    self
+                }
+                pub fn with_edges(mut self, edges: &Vec<Edge>) -> Self {
+                    for edge in edges {
+                        self.edges.push(edge.clone());
+                    }
+                    self
                 }
             }
         }
