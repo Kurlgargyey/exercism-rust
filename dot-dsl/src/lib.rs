@@ -1,8 +1,57 @@
 pub mod graph {
+    macro_rules! implement_attrs {
+        () => {
+                pub fn attr(&self, attr: &str) -> Option<&str> {
+                if let Some(attr) = self.attrs.get(attr) { Some(attr) } else { None }
+                }
+                pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
+                    for (attr, value) in attrs {
+                        self.attrs
+                            .entry(attr.to_string())
+                            .and_modify(|e| {
+                                *e = value.to_string();
+                            })
+                            .or_insert(value.to_string());
+                    }
+                    self
+                }
+        };
+    }
+
+    macro_rules! implement_edges {
+        () => {
+            pub fn with_edges(mut self, edges: &Vec<Edge>) -> Self {
+            for edge in edges {
+                self.edges.push(edge.clone());
+            }
+            self
+        }
+        };
+    }
+
+    macro_rules! implement_nodes {
+        () => {
+        pub fn node(&self, node: &str) -> Option<Node> {
+            for self_node in &self.nodes {
+                if self_node.name == node.to_string() {
+                    return Some(self_node.clone());
+                }
+            }
+            None
+        }
+        pub fn with_nodes(mut self, nodes: &Vec<Node>) -> Self {
+            for node in nodes {
+                self.nodes.push(node.clone());
+            }
+            self
+        }
+        };
+    }
+
     use std::collections::HashMap;
     use self::graph_items::edge::Edge;
     use self::graph_items::node::Node;
-    use self::builders::*;
+
     #[derive(Debug, PartialEq, Eq, Clone)]
     pub struct Graph {
         pub nodes: Vec<Node>,
@@ -18,51 +67,19 @@ pub mod graph {
                 attrs: HashMap::<String, String>::new(),
             }
         }
-        pub fn node(&self, node: &str) -> Option<Node> {
-            for self_node in &self.nodes {
-                if self_node.name == node.to_string() {
-                    return Some(self_node.clone());
-                }
-            }
-            None
-        }
-        pub fn with_nodes(mut self, nodes: &Vec<Node>) -> Self {
-            for node in nodes {
-                self.nodes.push(node.clone());
-            }
-            self
-        }
-        pub fn attr(&self, attr: &str) -> Option<&str> {
-            if let Some(attr) = self.attrs.get(attr) { Some(attr) } else { None }
-        }
-        pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
-            for (attr, value) in attrs {
-                self.attrs
-                    .entry(attr.to_string())
-                    .and_modify(|e| {
-                        *e = value.to_string();
-                    })
-                    .or_insert(value.to_string());
-            }
-            self
-        }
-        pub fn with_edges(mut self, edges: &Vec<Edge>) -> Self {
-            for edge in edges {
-                self.edges.push(edge.clone());
-            }
-            self
-        }
+        implement_nodes!();
+        implement_edges!();
+        implement_attrs!();
     }
     pub mod graph_items {
         pub mod edge {
             use std::collections::HashMap;
             use super::node::Node;
-            use crate::graph::builders::*;
+
             #[derive(Debug, PartialEq, Eq, Clone)]
             pub struct Edge {
                 nodes: Vec<Node>,
                 attrs: HashMap<String, String>,
-                edges: Vec<Edge>,
             }
 
             impl Edge {
@@ -73,43 +90,16 @@ pub mod graph {
                     Edge {
                         nodes,
                         attrs: HashMap::<String, String>::new(),
-                        edges: Vec::<Edge>::new(),
                     }
                 }
-                pub fn node(&self, node: &str) -> Option<Node> {
-                    for self_node in &self.nodes {
-                        if self_node.name == node.to_string() {
-                            return Some(self_node.clone());
-                        }
-                    }
-                    None
-                }
-                pub fn with_nodes(mut self, nodes: &Vec<Node>) -> Self {
-                    for node in nodes {
-                        self.nodes.push(node.clone());
-                    }
-                    self
-                }
-                pub fn attr(&self, attr: &str) -> Option<&str> {
-                    if let Some(attr) = self.attrs.get(attr) { Some(attr) } else { None }
-                }
-                pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
-                    for (attr, value) in attrs {
-                        self.attrs
-                            .entry(attr.to_string())
-                            .and_modify(|e| {
-                                *e = value.to_string();
-                            })
-                            .or_insert(value.to_string());
-                    }
-                    self
-                }
+                implement_nodes!();
+                implement_attrs!();
             }
         }
         pub mod node {
             use std::collections::HashMap;
             use super::edge::Edge;
-            use crate::graph::builders::*;
+
             #[derive(Debug, PartialEq, Eq, Clone)]
             pub struct Node {
                 pub name: String,
@@ -126,63 +116,9 @@ pub mod graph {
                         attrs: HashMap::<String, String>::new(),
                     }
                 }
-                pub fn attr(&self, attr: &str) -> Option<&str> {
-                    if let Some(attr) = self.attrs.get(attr) { Some(attr) } else { None }
-                }
-                pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
-                    for (attr, value) in attrs {
-                        self.attrs
-                            .entry(attr.to_string())
-                            .and_modify(|e| {
-                                *e = value.to_string();
-                            })
-                            .or_insert(value.to_string());
-                    }
-                    self
-                }
-                pub fn with_edges(mut self, edges: &Vec<Edge>) -> Self {
-                    for edge in edges {
-                        self.edges.push(edge.clone());
-                    }
-                    self
-                }
-            }
-        }
-    }
-    pub mod builders {
-        use std::collections::HashMap;
-        use crate::graph::graph_items::node::Node;
-        use crate::graph::graph_items::edge::Edge;
-        pub trait Nodes {
-            fn nodes(&mut self) -> &mut Vec<Node>;
-            fn with_nodes(&mut self, nodes: &Vec<Node>) -> &Self {
-                for node in nodes {
-                    self.nodes().push(node.clone());
-                }
-                self
-            }
-        }
-        pub trait Edges {
-            fn edges(&mut self) -> &mut Vec<Edge>;
-            fn with_edges(&mut self, edges: &Vec<Edge>) -> &Self {
-                for edge in edges {
-                    self.edges().push(edge.clone());
-                }
-                self
-            }
-        }
-        pub trait Attributes {
-            fn attrs(&mut self) -> &mut HashMap<String, String>;
-            fn with_attrs(&mut self, attrs: &[(&str, &str)]) -> &Self {
-                for (attr, value) in attrs {
-                    self.attrs()
-                        .entry(attr.to_string())
-                        .and_modify(|e| {
-                            *e = value.to_string();
-                        })
-                        .or_insert(value.to_string());
-                }
-                self
+
+                implement_edges!();
+                implement_attrs!();
             }
         }
     }
