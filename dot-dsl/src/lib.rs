@@ -2,7 +2,7 @@ pub mod graph {
     macro_rules! implement_attrs {
         () => {
                 pub fn attr(&self, attr: &str) -> Option<&str> {
-                if let Some(attr) = self.attrs.get(attr) { Some(attr) } else { None }
+                    if let Some(attr) = self.attrs.get(attr) { Some(attr) } else { None }
                 }
                 pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
                     for (attr, value) in attrs {
@@ -21,11 +21,11 @@ pub mod graph {
     macro_rules! implement_edges {
         () => {
             pub fn with_edges(mut self, edges: &Vec<Edge>) -> Self {
-            for edge in edges {
-                self.edges.push(edge.clone());
+                for edge in edges {
+                    self.edges.push(edge.clone());
+                }
+                self
             }
-            self
-        }
         };
     }
 
