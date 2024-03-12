@@ -7,15 +7,8 @@ pub fn hamming_distance(s1: &str, s2: &str) -> Option<usize> {
                 s1
                     .chars()
                     .zip(s2.chars())
-                    .fold(0_usize, |mut acc, (l1, l2)| {
-                        match l1 == l2 {
-                            true => (),
-                            false => {
-                                acc += 1;
-                            }
-                        }
-                        acc
-                    })
+                    .filter(|(l1, l2)| l1 != l2)
+                    .count()
             )
         }
         false => None,
