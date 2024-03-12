@@ -1,8 +1,5 @@
 fn process_distance_case(strand_pair: [&str; 2], expected_distance: Option<usize>) {
-    assert_eq!(
-        hamming::hamming_distance(strand_pair[0], strand_pair[1]),
-        expected_distance
-    );
+    assert_eq!(hamming::hamming_distance(strand_pair[0], strand_pair[1]), expected_distance);
 }
 
 #[test]
@@ -11,21 +8,21 @@ fn empty_strands() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// disallow first strand longer
 fn disallow_first_strand_longer() {
     process_distance_case(["AATG", "AAA"], None);
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// disallow second strand longer
 fn disallow_second_strand_longer() {
     process_distance_case(["ATA", "AGTG"], None);
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn first_string_is_longer() {
     process_distance_case(["AAA", "AA"], None);
 }
