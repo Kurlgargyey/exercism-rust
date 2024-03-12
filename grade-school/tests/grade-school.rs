@@ -1,7 +1,9 @@
 use grade_school as school;
 
 fn to_owned(v: &[&str]) -> Vec<String> {
-    v.iter().map(|s| s.to_string()).collect()
+    v.iter()
+        .map(|s| s.to_string())
+        .collect()
 }
 
 #[test]
@@ -11,7 +13,7 @@ fn grades_for_empty_school() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn grades_for_one_student() {
     let mut s = school::School::new();
     s.add(2, "Aimee");
@@ -19,7 +21,7 @@ fn grades_for_one_student() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn grades_for_several_students_are_sorted() {
     let mut s = school::School::new();
     s.add(2, "Aimee");
@@ -29,7 +31,7 @@ fn grades_for_several_students_are_sorted() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn grades_when_several_students_have_the_same_grade() {
     let mut s = school::School::new();
     s.add(2, "Aimee");
@@ -39,14 +41,14 @@ fn grades_when_several_students_have_the_same_grade() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn grade_for_empty_school() {
     let s = school::School::new();
     assert_eq!(s.grade(1), Vec::<String>::new());
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn grade_when_no_students_have_that_grade() {
     let mut s = school::School::new();
     s.add(7, "Logan");
@@ -54,7 +56,7 @@ fn grade_when_no_students_have_that_grade() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn grade_for_one_student() {
     let mut s = school::School::new();
     s.add(2, "Aimee");
@@ -62,7 +64,7 @@ fn grade_for_one_student() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn grade_returns_students_sorted_by_name() {
     let mut s = school::School::new();
     s.add(2, "James");
@@ -72,7 +74,7 @@ fn grade_returns_students_sorted_by_name() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn add_students_to_different_grades() {
     let mut s = school::School::new();
     s.add(3, "Chelsea");
