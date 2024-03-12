@@ -28,58 +28,58 @@ fn first_string_is_longer() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn second_string_is_longer() {
     process_distance_case(["A", "AA"], None);
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// single letter identical strands
 fn single_letter_identical_strands() {
     process_distance_case(["A", "A"], Some(0));
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// small distance
 fn single_letter_different_strands() {
     process_distance_case(["G", "T"], Some(1));
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// long identical strands
 fn long_identical_strands() {
     process_distance_case(["GGACTGAAATCTG", "GGACTGAAATCTG"], Some(0));
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn no_difference_between_identical_strands() {
     process_distance_case(["GGACTGA", "GGACTGA"], Some(0));
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn complete_hamming_distance_in_small_strand() {
     process_distance_case(["ACT", "GGA"], Some(3));
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn small_hamming_distance_in_the_middle_somewhere() {
     process_distance_case(["GGACG", "GGTCG"], Some(1));
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn larger_distance() {
     process_distance_case(["ACCAGGG", "ACTATGG"], Some(2));
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// large distance in off-by-one strand
 fn long_different_strands() {
     process_distance_case(["GGACGGATTCTG", "AGGACGGATTCT"], Some(9));
