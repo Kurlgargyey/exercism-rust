@@ -30,13 +30,12 @@ pub fn nucleotide_counts(dna: &str) -> Result<HashMap<char, usize>, char> {
         ('G', 0),
         ('T', 0),
     ]);
-    dna.chars().try_fold(result, |mut acc, nuc| {
-        match nuc {
-            c if "ACGT".contains(c) => {
-                *acc.get_mut(&nuc).unwrap() += 1;
-                Ok(acc)
-            }
-            _ => { Err(nuc) }
+    dna.chars().try_fold(result, |mut acc, cand| {
+        if let Some(nuc) = acc.get_mut(&cand) {
+            *nuc += 1;
+            Ok(acc)
+        } else {
+            Err(cand)
         }
     })
 }
