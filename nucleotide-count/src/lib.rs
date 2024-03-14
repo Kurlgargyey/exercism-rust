@@ -31,11 +31,8 @@ pub fn nucleotide_counts(dna: &str) -> Result<HashMap<char, usize>, char> {
         ('T', 0),
     ]);
     dna.chars().try_fold(result, |mut acc, cand| {
-        if let Some(nuc) = acc.get_mut(&cand) {
-            *nuc += 1;
-            Ok(acc)
-        } else {
-            Err(cand)
-        }
+        let nuc = acc.get_mut(&cand).ok_or(cand)?;
+        *nuc += 1;
+        Ok(acc)
     })
 }
