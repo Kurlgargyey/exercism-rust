@@ -1,11 +1,42 @@
 use std::collections::HashMap;
 
 pub fn count(nucleotide: char, dna: &str) -> Result<usize, char> {
-    dna.chars()
-        .filter(|c| c == nucleotide)
-        .count()
+    match nucleotide {
+        c if "ACGT".contains(c) =>
+            Ok(
+                dna
+                    .chars()
+                    .try_fold(0, |count, candidate| {
+                        checked_count(count, candidate, nucleotide)
+                    })?
+            ),
+        _ => Err(nucleotide),
+    }
+}
+
+fn checked_count(count: usize, candidate: char, target: char) -> Result<usize, char> {
+    match candidate {
+        c if "ACGT".contains(c) => {
+            if candidate == target { Ok(count + 1) } else { Ok(count) }
+        }
+        _ => { Err(candidate) }
+    }
 }
 
 pub fn nucleotide_counts(dna: &str) -> Result<HashMap<char, usize>, char> {
-    todo!("How much of every nucleotide type is contained inside DNA string '{dna}'?");
+    let result = HashMap::<char, usize>::from([
+        ('A', 0),
+        ('C', 0),
+        ('G', 0),
+        ('T', 0),
+    ]);
+    dna.chars().try_fold(result, |mut acc, nuc| {
+        match nuc {
+            c if "ACGT".contains(c) => {
+                *acc.get_mut(&nuc).unwrap() += 1;
+                Ok(acc)
+            }
+            _ => { Err(nuc) }
+        }
+    })
 }
