@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 pub fn count(nucleotide: char, dna: &str) -> Result<usize, char> {
-    str.chars()
+    dna.chars()
         .filter(|c| c == nucleotide)
         .count()
 }
