@@ -8,12 +8,27 @@ pub struct Palindrome(u64);
 impl Palindrome {
     /// Create a `Palindrome` only if `value` is in fact a palindrome when represented in base ten. Otherwise, `None`.
     pub fn new(value: u64) -> Option<Palindrome> {
-        todo!("if the value {value} is a palindrome return Some, otherwise return None");
+        let string = value.to_string();
+        match string.is_palindrome() {
+            true => Some(Palindrome(value)),
+            false => None,
+        }
     }
 
     /// Get the value of this palindrome.
     pub fn into_inner(self) -> u64 {
-        todo!("return inner value of a Palindrome");
+        self.0
+    }
+}
+trait PalindromeCheck {
+    fn is_palindrome(&self) -> bool;
+}
+
+impl PalindromeCheck for String {
+    fn is_palindrome(&self) -> bool {
+        self.chars()
+            .zip(self.chars().rev())
+            .all(|(start, end)| start == end)
     }
 }
 
