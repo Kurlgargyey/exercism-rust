@@ -1,25 +1,15 @@
 use std::collections::HashMap;
 
 pub fn count(nucleotide: char, dna: &str) -> Result<usize, char> {
-    match nucleotide {
-        c if "ACGT".contains(c) =>
-            Ok(
-                dna
-                    .chars()
-                    .try_fold(0, |count, candidate| {
-                        checked_count(count, candidate, nucleotide)
-                    })?
-            ),
-        _ => Err(nucleotide),
-    }
+    dna.chars().try_fold(0, |count, candidate| { checked_count(count, candidate, nucleotide) })
 }
 
 fn checked_count(count: usize, candidate: char, target: char) -> Result<usize, char> {
-    match candidate {
-        c if "ACGT".contains(c) => {
-            if candidate == target { Ok(count + 1) } else { Ok(count) }
-        }
-        _ => { Err(candidate) }
+    let valid_nucs = "ACGT";
+    match (valid_nucs.contains(candidate), valid_nucs.contains(target)) {
+        (false, _) => Err(candidate),
+        (_, false) => Err(target),
+        _ => if candidate == target { Ok(count + 1) } else { Ok(count) }
     }
 }
 
