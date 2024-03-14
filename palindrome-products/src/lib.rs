@@ -33,7 +33,13 @@ impl PalindromeCheck for String {
 }
 
 pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
-    todo!(
-        "returns the minimum and maximum number of palindromes of the products of two factors in the range {min} to {max}"
-    );
+    let curr = min;
+    let mut result_min = Palindrome::new(0)?;
+    let mut result_max = Palindrome::new(99999)?;
+    for i in min..=max {
+        if let Some(palindrome) = Palindrome::new(curr) {
+            result_min = palindrome;
+        }
+    }
+    Some((result_min, result_max))
 }
