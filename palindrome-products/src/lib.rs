@@ -1,3 +1,5 @@
+use std::collections::BinaryHeap;
+
 /// `Palindrome` is a newtype which only exists when the contained value is a palindrome number in base ten.
 ///
 /// A struct with a single field which is used to constrain behavior like this is called a "newtype", and its use is
@@ -42,9 +44,35 @@ pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome
 }
 
 fn generate_products(min: u64, max: u64) -> Vec<u64> {
+    let mut products = Vec::<u64>::new();
+    let mut range: Vec<u64> = (min.pow(2)..=max.pow(2)).collect();
+
+    for i in min..=max {
+        range.retain(|number| {
+            if number % i == 0 && (min..=max).contains(&(number / i)) {
+                products.push(*number);
+                return false;
+            }
+            true
+        });
+    }
+
+    products.into_iter().collect()
+    /*
+    (min..=max)
+        .fold(products, |mut set, number| {
+            for number2 in min..=max {
+                set.insert(number * number2);
+            }
+            set
+        })
+        .into_iter()
+        .collect()
+    */
+    /*
     (0..=max.pow(2))
-        .filter(|number| {
-            (min..=max).any(|factor1|
+    .filter(|number| {
+        (min..=max).any(|factor1|
                 (min..=max).any(|factor2| {
                     let test = number % factor1 == 0 && number / factor1 == factor2;
                     if test {
@@ -55,6 +83,7 @@ fn generate_products(min: u64, max: u64) -> Vec<u64> {
             )
         })
         .collect()
+    */
 }
 
 fn first_palindrome(numbers: &Vec<u64>) -> Option<Palindrome> {
