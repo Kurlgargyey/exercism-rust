@@ -52,7 +52,7 @@ fn finds_the_smallest_palindrome_from_single_digit_factors() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// finds the largest palindrome from single digit factors
 fn finds_the_largest_palindrome_from_single_digit_factors() {
     process_largest_case((1, 9), Some(9));
@@ -101,28 +101,28 @@ fn find_the_largest_palindrome_from_four_digit_factors() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// empty result for smallest if no palindrome in the range
 fn empty_result_for_smallest_if_no_palindrome_in_the_range() {
     process_smallest_case((1002, 1003), None);
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// empty result for largest if no palindrome in the range
 fn empty_result_for_largest_if_no_palindrome_in_the_range() {
     process_largest_case((15, 15), None);
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// error result for smallest if min is more than max
 fn error_result_for_smallest_if_min_is_more_than_max() {
     process_smallest_case((10000, 1), None);
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// error result for largest if min is more than max
 fn error_result_for_largest_if_min_is_more_than_max() {
     process_largest_case((2, 1), None);

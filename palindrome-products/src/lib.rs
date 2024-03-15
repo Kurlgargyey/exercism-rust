@@ -33,13 +33,35 @@ impl PalindromeCheck for String {
 }
 
 pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
-    let curr = min;
-    let mut result_min = Palindrome::new(0)?;
-    let mut result_max = Palindrome::new(99999)?;
-    for i in min..=max {
-        if let Some(palindrome) = Palindrome::new(curr) {
-            result_min = palindrome;
+    let mut products = generate_products(min, max);
+    products.sort();
+    println!("sorted vec of products: {:?}", products);
+    let min_pal = first_palindrome(&products)?;
+    let max_pal = first_palindrome(&products.into_iter().rev().collect())?;
+    Some((min_pal, max_pal))
+}
+
+fn generate_products(min: u64, max: u64) -> Vec<u64> {
+    (0..=max.pow(2))
+        .filter(|number| {
+            (min..=max).any(|factor1|
+                (min..=max).any(|factor2| {
+                    let test = number % factor1 == 0 && number / factor1 == factor2;
+                    if test {
+                        println!("{:?} is the product of {:?} and {:?}!", number, factor1, factor2);
+                    }
+                    test
+                })
+            )
+        })
+        .collect()
+}
+
+fn first_palindrome(numbers: &Vec<u64>) -> Option<Palindrome> {
+    for i in numbers {
+        if let Some(palindrome) = Palindrome::new(*i) {
+            return Some(palindrome);
         }
     }
-    Some((result_min, result_max))
+    None
 }
