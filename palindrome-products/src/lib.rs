@@ -71,10 +71,10 @@ impl PalindromeProductCheck for u64 {
 }
 
 pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
-    let mut range = min.pow(2)..=max.pow(2);
-    let smallest_palindrome = range.find_map(|candidate|
-        candidate.new_palindrome_product(&min, &max)
-    )?;
+    let range = min.pow(2)..=max.pow(2);
+    let smallest_palindrome = range
+        .clone()
+        .find_map(|candidate| candidate.new_palindrome_product(&min, &max))?;
 
     let mut rev_range = range
         .clone()
