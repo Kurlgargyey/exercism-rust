@@ -22,7 +22,7 @@ impl Palindrome {
 trait PalindromeCheck {
     fn is_palindrome(&self) -> bool;
 }
-
+//checking for palindromity(?) using 2 inverse char arrays (exits the comparison early on a mismatch and can't overflow)
 impl PalindromeCheck for String {
     fn is_palindrome(&self) -> bool {
         self.chars()
@@ -31,6 +31,7 @@ impl PalindromeCheck for String {
     }
 }
 
+//checking for palindromity(?) using integer math and building a reversed number to compare
 impl PalindromeCheck for u64 {
     fn is_palindrome(&self) -> bool {
         let mut number = *self;
