@@ -8,8 +8,7 @@ pub struct Palindrome(u64);
 impl Palindrome {
     /// Create a `Palindrome` only if `value` is in fact a palindrome when represented in base ten. Otherwise, `None`.
     pub fn new(value: u64) -> Option<Palindrome> {
-        let string = value.to_string();
-        match string.is_palindrome() {
+        match value.to_string().is_palindrome() {
             true => Some(Palindrome(value)),
             false => None,
         }
