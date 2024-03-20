@@ -8,7 +8,7 @@ pub struct Palindrome(u64);
 impl Palindrome {
     /// Create a `Palindrome` only if `value` is in fact a palindrome when represented in base ten. Otherwise, `None`.
     pub fn new(value: u64) -> Option<Palindrome> {
-        match value.is_palindrome() {
+        match value.to_string().is_palindrome() {
             true => Some(Palindrome(value)),
             false => None,
         }
@@ -62,7 +62,7 @@ trait PalindromeProductCheck {
 
 impl PalindromeProductCheck for u64 {
     fn is_palindrome_product_of(&self, min: &u64, max: &u64) -> bool {
-        self.is_palindrome() && self.is_product_of(*min, *max)
+        self.to_string().is_palindrome() && self.is_product_of(*min, *max)
     }
 
     fn new_palindrome_product(&self, min: &u64, max: &u64) -> Option<Palindrome> {
