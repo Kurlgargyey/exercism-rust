@@ -46,12 +46,12 @@ impl PalindromeCheck for u64 {
 }
 
 trait ProductCheck {
-    fn is_product_of(&self, min: u64, max: u64) -> bool;
+    fn is_product_of(&self, min: &u64, max: &u64) -> bool;
 }
 
 impl ProductCheck for u64 {
-    fn is_product_of(&self, min: u64, max: u64) -> bool {
-        (min..=max).any(|i| { self % i == 0 && (min..=max).contains(&(self / i)) })
+    fn is_product_of(&self, min: &u64, max: &u64) -> bool {
+        (*min..=*max).any(|i| { self % i == 0 && (min..=max).contains(&&(self / i)) })
     }
 }
 
@@ -61,7 +61,7 @@ trait PalindromeProductCheck {
 
 impl PalindromeProductCheck for u64 {
     fn is_palindrome_product_of(&self, min: &u64, max: &u64) -> bool {
-        self.to_string().is_palindrome() && self.is_product_of(*min, *max)
+        self.to_string().is_palindrome() && self.is_product_of(min, max)
     }
 }
 
