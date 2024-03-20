@@ -72,10 +72,7 @@ pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome
     )?;
 
     let largest_palindrome = Palindrome::new(
-        valid_range
-            .clone()
-            .rev()
-            .find(|candidate| candidate.is_palindrome_product_of(&min, &max))?
+        valid_range.rev().find(|candidate| candidate.is_palindrome_product_of(&min, &max))?
     )?;
 
     Some((smallest_palindrome, largest_palindrome))
