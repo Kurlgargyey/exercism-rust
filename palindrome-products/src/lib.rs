@@ -66,14 +66,16 @@ impl PalindromeProductCheck for u64 {
 }
 
 pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
-    let range = min.pow(2)..=max.pow(2);
+    let valid_range = min.pow(2)..=max.pow(2);
     let smallest_palindrome = Palindrome::new(
-        range.clone().find(|candidate| candidate.is_palindrome_product_of(&min, &max))?
+        valid_range.clone().find(|candidate| candidate.is_palindrome_product_of(&min, &max))?
     )?;
 
-    let mut rev_range = range.clone().rev();
     let largest_palindrome = Palindrome::new(
-        rev_range.find(|candidate| candidate.is_palindrome_product_of(&min, &max))?
+        valid_range
+            .clone()
+            .rev()
+            .find(|candidate| candidate.is_palindrome_product_of(&min, &max))?
     )?;
 
     Some((smallest_palindrome, largest_palindrome))
