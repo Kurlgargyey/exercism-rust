@@ -94,7 +94,7 @@ fn find_smallest_palindrome_from_four_digit_factors() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 /// find the largest palindrome from four digit factors
 fn find_the_largest_palindrome_from_four_digit_factors() {
     process_largest_case((1000, 9999), Some(99000099));
