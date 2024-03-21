@@ -8,10 +8,7 @@ pub struct Palindrome(u64);
 impl Palindrome {
     /// Create a `Palindrome` only if `value` is in fact a palindrome when represented in base ten. Otherwise, `None`.
     pub fn new(value: u64) -> Option<Palindrome> {
-        match value.to_string().is_palindrome() {
-            true => Some(Palindrome(value)),
-            false => None,
-        }
+        value.is_palindrome_string().then_some(Palindrome(value))
     }
 
     /// Get the value of this palindrome.
@@ -19,18 +16,22 @@ impl Palindrome {
         self.0
     }
 }
-trait PalindromeCheck {
-    fn is_palindrome(&self) -> bool;
+trait PalindromeCheckString {
+    fn is_palindrome_string(&self) -> bool;
 }
 //checking for palindromity(?) using 2 inverse char arrays (exits the comparison early on a mismatch and can't overflow)
-impl PalindromeCheck for String {
-    fn is_palindrome(&self) -> bool {
-        self.chars()
-            .zip(self.chars().rev())
+impl PalindromeCheckString for u64 {
+    fn is_palindrome_string(&self) -> bool {
+        self.to_string()
+            .chars()
+            .zip(self.to_string().chars().rev())
             .all(|(start, end)| start == end)
     }
 }
 
+trait PalindromeCheck {
+    fn is_palindrome(&self) -> bool;
+}
 //checking for palindromity(?) using integer math and building a reversed number to compare
 impl PalindromeCheck for u64 {
     fn is_palindrome(&self) -> bool {
@@ -61,7 +62,7 @@ trait PalindromeProductCheck {
 
 impl PalindromeProductCheck for u64 {
     fn is_palindrome_product_of(&self, min: &u64, max: &u64) -> bool {
-        self.to_string().is_palindrome() && self.is_product_of(min, max)
+        self.is_palindrome_string() && self.is_product_of(min, max)
     }
 }
 
