@@ -8,11 +8,10 @@ pub fn translate(input: &str) -> String {
 }
 
 fn parse_beginning(input: &str) -> String {
-    let mut input_iter = input.chars();
     let vowels = "aeiou";
     let mut beginning = "".to_string();
 
-    for char in &mut input_iter {
+    for char in input.chars() {
         match char {
             c if c == 'u' && beginning.ends_with("q") => {
                 beginning.push(char);
