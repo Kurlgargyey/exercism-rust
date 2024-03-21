@@ -9,7 +9,7 @@ pub struct Palindrome(u64);
 impl Palindrome {
     /// Create a `Palindrome` only if `value` is in fact a palindrome when represented in base ten. Otherwise, `None`.
     pub fn new(value: u64) -> Option<Palindrome> {
-        value.is_palindrome_string().then_some(Palindrome(value))
+        value.is_palindrome_log().then_some(Palindrome(value))
     }
 
     /// Get the value of this palindrome.
@@ -23,9 +23,10 @@ trait PalindromeCheckString {
 //checking for palindromity(?) using 2 inverse char arrays (exits the comparison early on a mismatch and can't overflow)
 impl PalindromeCheckString for u64 {
     fn is_palindrome_string(&self) -> bool {
-        self.to_string()
+        let string = self.to_string();
+        string
             .chars()
-            .zip(self.to_string().chars().rev())
+            .zip(string.chars().rev())
             .all(|(start, end)| start == end)
     }
 }
@@ -50,7 +51,7 @@ impl PalindromeCheck for u64 {
 trait PalindromeLogCheck {
     fn is_palindrome_log(&self) -> bool;
 }
-//checking for palindromity(?) using integer math and building a reversed number to compare
+//checking for palindromity(?) using integer math without the risk for overflowing
 impl PalindromeLogCheck for u64 {
     fn is_palindrome_log(&self) -> bool {
         std::iter
