@@ -1,4 +1,4 @@
-#![feature(test)]
+//#![feature(test)]
 /// Determine whether a sentence is a pangram.
 
 const BITFIELD: bool = true;
@@ -43,7 +43,7 @@ fn is_pangram_bitfield_to_lower(sentence: &str) -> bool {
 
     ALL_26_BITS_SET == letter_flags
 }
-
+/*
 extern crate test;
 mod tests {
     #[cfg(test)]
@@ -67,3 +67,4 @@ mod tests {
         b.iter(|| is_pangram_iter(test::black_box(sentence)));
     }
 }
+*/
