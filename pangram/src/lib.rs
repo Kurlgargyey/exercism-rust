@@ -1,8 +1,6 @@
 //#![feature(test)]
 /// Determine whether a sentence is a pangram.
 
-const BITFIELD: bool = true;
-
 pub fn is_pangram(sentence: &str) -> bool {
     is_pangram_bitfield_to_lower(sentence)
 }
