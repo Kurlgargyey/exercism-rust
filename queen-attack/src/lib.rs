@@ -24,27 +24,15 @@ impl ChessPosition {
 
 impl Queen {
     pub fn new(position: ChessPosition) -> Self {
-        let mut diagonals = Vec::<ChessPosition>::new();
-        for position in successors(Some(position.clone()), |pos| {
-            ChessPosition::new(pos.rank - 1, pos.file + 1)
-        }) {
-            diagonals.push(position);
-        }
-        for position in successors(Some(position.clone()), |pos| {
-            ChessPosition::new(pos.rank + 1, pos.file + 1)
-        }) {
-            diagonals.push(position);
-        }
-        for position in successors(Some(position.clone()), |pos| {
-            ChessPosition::new(pos.rank + 1, pos.file - 1)
-        }) {
-            diagonals.push(position);
-        }
-        for position in successors(Some(position.clone()), |pos| {
-            ChessPosition::new(pos.rank - 1, pos.file - 1)
-        }) {
-            diagonals.push(position);
-        }
+        let diagonals = vec![(-1, 1), (1, 1), (1, -1), (-1, -1)]
+            .into_iter()
+            .flat_map(|(rank_mv, file_mv)|
+                successors(Some(position.clone()), |pos|
+                    ChessPosition::new(pos.rank + rank_mv, pos.file + file_mv)
+                ).collect::<Vec<ChessPosition>>()
+            )
+            .collect();
+
         Queen { position, diagonals }
     }
 
