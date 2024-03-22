@@ -9,7 +9,7 @@ pub struct Palindrome(u64);
 impl Palindrome {
     /// Create a `Palindrome` only if `value` is in fact a palindrome when represented in base ten. Otherwise, `None`.
     pub fn new(value: u64) -> Option<Palindrome> {
-        value.is_palindrome_log().then_some(Palindrome(value))
+        value.is_palindrome().then_some(Palindrome(value))
     }
 
     /// Get the value of this palindrome.
@@ -55,9 +55,10 @@ trait PalindromeLogCheck {
 impl PalindromeLogCheck for u64 {
     fn is_palindrome_log(&self) -> bool {
         std::iter
-            ::successors(Some(((10u64).pow(self.ilog10()), 1u64)), |&(hi, lo)| {
-                (hi > lo * 100).then_some((hi / 10, lo * 10))
-            })
+            ::successors(
+                Some(((10u64).pow(self.checked_ilog10().or(Some(1)).unwrap()), 1u64)),
+                |&(hi, lo)| { (hi > lo * 100).then_some((hi / 10, lo * 10)) }
+            )
             .all(|(hi, lo)| (self / hi) % 10 == (self / lo) % 10)
     }
 }
@@ -138,10 +139,13 @@ mod tests {
         let max = 99;
         b.iter(|| palindrome_products(min, max));
     }
+
+    const MIN: u64 = (2_u64).pow(20);
+    const MAX: u64 = (2_u64).pow(21);
     #[bench]
     fn is_palindrome_log_bench(b: &mut Bencher) {
         b.iter(|| {
-            for number in (2_u64).pow(8)..=(2_u64).pow(12) {
+            for number in MIN..=MAX {
                 number.is_palindrome_log();
             }
         });
@@ -149,7 +153,7 @@ mod tests {
     #[bench]
     fn is_palindrome_string_bench(b: &mut Bencher) {
         b.iter(|| {
-            for number in (2_u64).pow(8)..=(2_u64).pow(12) {
+            for number in MIN..=MAX {
                 number.is_palindrome_string();
             }
         });
@@ -157,8 +161,8 @@ mod tests {
     #[bench]
     fn is_palindrome_bench(b: &mut Bencher) {
         b.iter(|| {
-            for number in (2_u64).pow(8)..=(2_u64).pow(12) {
-                number.is_palindrome_string();
+            for number in MIN..=MAX {
+                number.is_palindrome();
             }
         });
     }
