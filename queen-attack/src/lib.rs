@@ -1,5 +1,3 @@
-use std::iter::successors;
-
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct ChessPosition {
     rank: i32,
