@@ -1,10 +1,7 @@
 use itertools::Itertools;
 
 pub fn translate(input: &str) -> String {
-    input
-        .split_ascii_whitespace()
-        .map(|word| translate_word(word))
-        .join(" ")
+    input.split_ascii_whitespace().map(translate_word).join(" ")
 }
 
 fn parse_beginning(input: &str) -> String {
