@@ -3,25 +3,46 @@ pub struct Dna(String);
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Rna(String);
-
+const DNA_NUCLEOTIDES: &'static str = "GCTA";
+const RNA_NUCLEOTIDES: &'static str = "CGAU";
 impl Dna {
-    const DNA_NUCLEOTIDES: String = "ACGT";
     pub fn new(dna: &str) -> Result<Dna, usize> {
-        let result = String::new();
-        for ch in dna.chars() {
-            result.push(ch);
+        let mut result = String::new();
+        for (idx, ch) in dna.chars().enumerate() {
+            if crate::DNA_NUCLEOTIDES.contains(ch) {
+                result.push(ch);
+            } else {
+                return Err(idx);
+            }
         }
+        Ok(Dna(result))
     }
 
     pub fn into_rna(self) -> Rna {
-        todo!("Transform Dna {self:?} into corresponding Rna");
+        Rna(
+            self.0
+                .chars()
+                .map(|ch|
+                    crate::RNA_NUCLEOTIDES
+                        .chars()
+                        .nth(crate::DNA_NUCLEOTIDES.find(ch).unwrap())
+                        .unwrap()
+                )
+                .collect()
+        )
     }
 }
 
 impl Rna {
     pub fn new(rna: &str) -> Result<Rna, usize> {
-        todo!(
-            "Construct new Rna from '{rna}' string. If string contains invalid nucleotides return index of first invalid nucleotide"
-        );
+        let mut result = String::new();
+        for (idx, ch) in rna.chars().enumerate() {
+            if crate::RNA_NUCLEOTIDES.contains(ch) {
+                result.push(ch);
+            } else {
+                return Err(idx);
+            }
+        }
+        Ok(Rna(result))
     }
 }
