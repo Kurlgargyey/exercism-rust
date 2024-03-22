@@ -75,7 +75,7 @@ fn can_attack_on_second_diagonal() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn can_attack_on_third_diagonal() {
     let white_queen = Queen::new(ChessPosition::new(2, 2).unwrap());
     let black_queen = Queen::new(ChessPosition::new(1, 1).unwrap());
@@ -83,7 +83,7 @@ fn can_attack_on_third_diagonal() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn can_attack_on_fourth_diagonal() {
     let white_queen = Queen::new(ChessPosition::new(1, 7).unwrap());
     let black_queen = Queen::new(ChessPosition::new(0, 6).unwrap());
@@ -91,7 +91,7 @@ fn can_attack_on_fourth_diagonal() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn cannot_attack_if_falling_diagonals_are_only_the_same_when_reflected_across_the_longest_falling_diagonal() {
     let white_queen = Queen::new(ChessPosition::new(4, 1).unwrap());
     let black_queen = Queen::new(ChessPosition::new(2, 5).unwrap());
