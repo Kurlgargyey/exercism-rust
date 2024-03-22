@@ -37,13 +37,8 @@ impl Queen {
     }
 
     pub fn can_attack(&self, other: &Queen) -> bool {
-        if self.position.rank == other.position.rank {
-            return true;
-        } else if self.position.file == other.position.file {
-            return true;
-        } else if self.diagonals.contains(&other.position) {
-            return true;
-        }
-        false
+        self.position.rank == other.position.rank ||
+            self.position.file == other.position.file ||
+            self.diagonals.contains(&other.position)
     }
 }
