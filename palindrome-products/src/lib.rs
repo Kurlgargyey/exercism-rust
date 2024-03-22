@@ -96,26 +96,6 @@ pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome
     Some((smallest_palindrome, largest_palindrome))
 }
 
-/*
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Palindrome(u64);
-
-impl Palindrome {
-    pub fn new(x: u64) -> Option<Palindrome> {
-        std::iter
-            ::successors(Some(((10u64).pow(x.ilog10()), 1u64)), |&(hi, lo)| {
-                (hi > lo * 100).then_some((hi / 10, lo * 10))
-            })
-            .all(|(hi, lo)| (x / hi) % 10 == (x / lo) % 10)
-            .then_some(Palindrome(x))
-    }
-
-    pub fn into_inner(self) -> u64 {
-        self.0
-    }
-}
-*/
-
 fn palindrome_products_iter(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
     (min..=max)
         .flat_map(|i| (i..=max).filter_map(move |j| Palindrome::new(i * j)))
