@@ -24,7 +24,12 @@ impl ChessPosition {
 
 impl Queen {
     pub fn new(position: ChessPosition) -> Self {
-        let diagonals = vec![(-1, 1), (1, 1), (1, -1), (-1, -1)]
+        let diagonals: Vec<_> = [
+            (-1, 1),
+            (1, 1),
+            (1, -1),
+            (-1, -1),
+        ]
             .into_iter()
             .flat_map(|(rank_mv, file_mv)|
                 successors(Some(position.clone()), |pos|
@@ -33,7 +38,10 @@ impl Queen {
             )
             .collect();
 
-        Queen { position, diagonals }
+        Queen {
+            position,
+            diagonals,
+        }
     }
 
     pub fn can_attack(&self, other: &Queen) -> bool {
