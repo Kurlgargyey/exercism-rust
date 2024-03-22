@@ -7,15 +7,11 @@ const DNA_NUCLEOTIDES: &'static str = "GCTA";
 const RNA_NUCLEOTIDES: &'static str = "CGAU";
 impl Dna {
     pub fn new(dna: &str) -> Result<Dna, usize> {
-        let mut result = String::new();
-        for (idx, ch) in dna.chars().enumerate() {
-            if crate::DNA_NUCLEOTIDES.contains(ch) {
-                result.push(ch);
-            } else {
-                return Err(idx);
-            }
+        if let Some(bad_idx) = dna.find(|c| !crate::DNA_NUCLEOTIDES.contains(c)) {
+            return Err(bad_idx);
         }
-        Ok(Dna(result))
+
+        Ok(Dna(dna.to_string()))
     }
 
     pub fn into_rna(self) -> Rna {
@@ -35,14 +31,10 @@ impl Dna {
 
 impl Rna {
     pub fn new(rna: &str) -> Result<Rna, usize> {
-        let mut result = String::new();
-        for (idx, ch) in rna.chars().enumerate() {
-            if crate::RNA_NUCLEOTIDES.contains(ch) {
-                result.push(ch);
-            } else {
-                return Err(idx);
-            }
+        if let Some(bad_idx) = rna.find(|c| !crate::RNA_NUCLEOTIDES.contains(c)) {
+            return Err(bad_idx);
         }
-        Ok(Rna(result))
+
+        Ok(Rna(rna.to_string()))
     }
 }
