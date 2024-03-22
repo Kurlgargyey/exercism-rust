@@ -13,7 +13,8 @@ pub struct Queen {
 
 impl ChessPosition {
     pub fn new(rank: i32, file: i32) -> Option<Self> {
-        (matches!(rank, 0..=7) && matches!(file, 0..=7)).then_some(ChessPosition {
+        let board_range = 0..=7;
+        (board_range.contains(&rank) && board_range.contains(&file)).then_some(ChessPosition {
             rank,
             file,
         })
