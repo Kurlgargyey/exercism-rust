@@ -9,7 +9,6 @@ pub struct ChessPosition {
 #[derive(Debug)]
 pub struct Queen {
     position: ChessPosition,
-    diagonals: Vec<ChessPosition>,
 }
 
 impl ChessPosition {
@@ -24,29 +23,15 @@ impl ChessPosition {
 
 impl Queen {
     pub fn new(position: ChessPosition) -> Self {
-        let diagonals: Vec<_> = [
-            (-1, 1),
-            (1, 1),
-            (1, -1),
-            (-1, -1),
-        ]
-            .into_iter()
-            .flat_map(|(rank_mv, file_mv)|
-                successors(Some(position), |pos|
-                    ChessPosition::new(pos.rank + rank_mv, pos.file + file_mv)
-                ).collect::<Vec<ChessPosition>>()
-            )
-            .collect();
-
         Queen {
             position,
-            diagonals,
         }
     }
 
     pub fn can_attack(&self, other: &Queen) -> bool {
         self.position.rank == other.position.rank ||
             self.position.file == other.position.file ||
-            self.diagonals.contains(&other.position)
+            (self.position.rank - other.position.rank).abs() ==
+                (self.position.file - other.position.file).abs()
     }
 }
