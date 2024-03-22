@@ -32,7 +32,7 @@ impl Queen {
         ]
             .into_iter()
             .flat_map(|(rank_mv, file_mv)|
-                successors(Some(position.clone()), |pos|
+                successors(Some(position), |pos|
                     ChessPosition::new(pos.rank + rank_mv, pos.file + file_mv)
                 ).collect::<Vec<ChessPosition>>()
             )
