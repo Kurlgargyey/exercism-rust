@@ -7,8 +7,7 @@ pub fn encode(source: &str) -> String {
         let mut prev = queue.pop_front().unwrap();
         let mut count = 1;
 
-        while !queue.is_empty() {
-            let curr = queue.pop_front().unwrap();
+        for curr in queue {
             if curr == prev {
                 count += 1;
             } else {
@@ -31,12 +30,11 @@ pub fn encode(source: &str) -> String {
 pub fn decode(source: &str) -> String {
     let mut result = String::new();
     if !source.is_empty() {
-        let mut queue: VecDeque<_> = source.chars().collect();
+        let queue: VecDeque<_> = source.chars().collect();
         let mut count_string = String::new();
         let mut count = 1;
 
-        while !queue.is_empty() {
-            let curr = queue.pop_front().unwrap();
+        for curr in queue {
             match curr {
                 c if c.is_numeric() => count_string.push(curr),
                 _ => {
