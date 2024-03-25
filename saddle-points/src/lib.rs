@@ -4,17 +4,21 @@ pub fn find_saddle_points(input: &[Vec<u64>]) -> Vec<(usize, usize)> {
         let maximum = row
             .iter()
             .enumerate()
-            .fold(None, |acc, (col_idx, height)| {
-                if acc == None || *height > acc.1 {
-                    Some(((row_idx, col_idx), *height))
+            .fold(None, |acc: Option<((usize, usize), &u64)>, (col_idx, height)| {
+                if acc == None || height > acc.unwrap().1 {
+                    Some(((row_idx, col_idx), height))
                 } else {
                     acc
                 }
             });
+        if let Some(row_maximum) = maximum {
+            row_maxima.push(row_maximum);
+        }
     }
     let mut results = Vec::<(usize, usize)>::new();
     for ((row, col), height) in row_maxima {
-        if input.iter().all(|row| !row[col] > *height) {
+        println!("checking whether {height} is the smallest value in col {col} of vec {input:?}");
+        if input.iter().all(|row| row[col] >= *height) {
             results.push((row, col));
         }
     }
