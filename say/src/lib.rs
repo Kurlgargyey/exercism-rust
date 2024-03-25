@@ -63,39 +63,20 @@ pub fn encode(n: u64) -> String {
             }
             result
         }
-        1000..=999_999 => { encode_large_numbers(n, larger_numbers, 1, units) }
-        1_000_000..=999_999_999 => { encode_large_numbers(n, larger_numbers, 2, units) }
-        1_000_000_000..=999_999_999_999 => { encode_large_numbers(n, larger_numbers, 3, units) }
-        1_000_000_000_000..=999_999_999_999_999 => {
-            encode_large_numbers(n, larger_numbers, 4, units)
-        }
+        1000..=999_999 => { encode_large_numbers(n, larger_numbers, 1) }
+        1_000_000..=999_999_999 => { encode_large_numbers(n, larger_numbers, 2) }
+        1_000_000_000..=999_999_999_999 => { encode_large_numbers(n, larger_numbers, 3) }
+        1_000_000_000_000..=999_999_999_999_999 => { encode_large_numbers(n, larger_numbers, 4) }
         1_000_000_000_000_000..=999_999_999_999_999_999 => {
-            encode_large_numbers(n, larger_numbers, 5, units)
+            encode_large_numbers(n, larger_numbers, 5)
         }
-        1_000_000_000_000_000_000..=u64::MAX => {
-            encode_large_numbers(n, larger_numbers, 6, units)
-        }
+        1_000_000_000_000_000_000..=u64::MAX => { encode_large_numbers(n, larger_numbers, 6) }
 
         _ => "".to_string(),
     }
 }
 
-fn encode_tens(n: u64, units: &[&str], tens: &[&str]) -> String {
-    let ten_val = n / 10;
-    let unit_val = n % 10;
-    let mut result = tens[ten_val as usize].to_string();
-    if unit_val > 0 {
-        result.push('-');
-        result.push_str(units[unit_val as usize]);
-    }
-    result
-}
-fn encode_large_numbers(
-    n: u64,
-    number_strings: &[&str],
-    power_of_thousand: usize,
-    units: &[&str]
-) -> String {
+fn encode_large_numbers(n: u64, number_strings: &[&str], power_of_thousand: usize) -> String {
     let magnitude_val = n / (1000_u64).pow(power_of_thousand as u32);
     let remainder_val = n % (1000_u64).pow(power_of_thousand as u32);
     let mut result = encode(magnitude_val);
