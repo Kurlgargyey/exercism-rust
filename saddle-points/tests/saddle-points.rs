@@ -67,7 +67,7 @@ fn can_identify_saddle_point_in_bottom_right_corner() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn can_identify_saddle_points_in_a_non_square_matrix() {
     let input = &[vec![3, 1, 3], vec![3, 2, 4]];
     let output = find_sorted_saddle_points(input);
@@ -79,7 +79,7 @@ fn can_identify_saddle_points_in_a_non_square_matrix() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn can_identify_that_saddle_points_in_a_single_column_matrix_are_those_with_the_minimum_value() {
     let input = &[vec![2], vec![1], vec![4], vec![1]];
     let output = find_sorted_saddle_points(input);
@@ -91,7 +91,7 @@ fn can_identify_that_saddle_points_in_a_single_column_matrix_are_those_with_the_
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn can_identify_that_saddle_points_in_a_single_row_matrix_are_those_with_the_maximum_value() {
     let input = &[vec![2, 5, 3, 5]];
     let output = find_sorted_saddle_points(input);
