@@ -7,7 +7,7 @@ fn zero() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn one() {
     let input = 1;
     let output = say::encode(input);
@@ -16,7 +16,7 @@ fn one() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn fourteen() {
     let input = 14;
     let output = say::encode(input);
@@ -25,7 +25,7 @@ fn fourteen() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn twenty() {
     let input = 20;
     let output = say::encode(input);
@@ -34,7 +34,7 @@ fn twenty() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn twenty_two() {
     let input = 22;
     let output = say::encode(input);
@@ -43,7 +43,7 @@ fn twenty_two() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn thirty() {
     let input = 30;
     let output = say::encode(input);
@@ -52,7 +52,7 @@ fn thirty() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn ninety_nine() {
     let input = 99;
     let output = say::encode(input);
@@ -146,7 +146,8 @@ fn one_billion() {
 fn a_big_number() {
     let input = 987654321123;
     let output = say::encode(input);
-    let expected = "nine hundred eighty-seven billion six hundred fifty-four million three hundred twenty-one thousand one hundred twenty-three";
+    let expected =
+        "nine hundred eighty-seven billion six hundred fifty-four million three hundred twenty-one thousand one hundred twenty-three";
     assert_eq!(output, expected);
 }
 
@@ -155,7 +156,8 @@ fn a_big_number() {
 fn max_i64() {
     let input = 9223372036854775807;
     let output = say::encode(input);
-    let expected = "nine quintillion two hundred twenty-three quadrillion three hundred seventy-two trillion thirty-six billion eight hundred fifty-four million seven hundred seventy-five thousand eight hundred seven";
+    let expected =
+        "nine quintillion two hundred twenty-three quadrillion three hundred seventy-two trillion thirty-six billion eight hundred fifty-four million seven hundred seventy-five thousand eight hundred seven";
     assert_eq!(output, expected);
 }
 
@@ -164,6 +166,7 @@ fn max_i64() {
 fn max_u64() {
     let input = 18446744073709551615;
     let output = say::encode(input);
-    let expected = "eighteen quintillion four hundred forty-six quadrillion seven hundred forty-four trillion seventy-three billion seven hundred nine million five hundred fifty-one thousand six hundred fifteen";
+    let expected =
+        "eighteen quintillion four hundred forty-six quadrillion seven hundred forty-four trillion seventy-three billion seven hundred nine million five hundred fifty-one thousand six hundred fifteen";
     assert_eq!(output, expected);
 }
