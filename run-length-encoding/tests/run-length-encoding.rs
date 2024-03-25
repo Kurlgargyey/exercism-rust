@@ -81,7 +81,7 @@ fn decode_string_with_no_single_characters() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn decode_single_characters_with_repeated_characters() {
     let input = "12WB12W3B24WB";
     let output = rle::decode(input);
@@ -90,7 +90,7 @@ fn decode_single_characters_with_repeated_characters() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn decode_multiple_whitespace_mixed_in_string() {
     let input = "2 hs2q q2w2 ";
     let output = rle::decode(input);
@@ -99,7 +99,7 @@ fn decode_multiple_whitespace_mixed_in_string() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn decode_lowercase_string() {
     let input = "2a3b4c";
     let output = rle::decode(input);
@@ -108,7 +108,7 @@ fn decode_lowercase_string() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn consistency_encode_followed_by_decode_gives_original_string() {
     let input = "zzz ZZ  zZ";
     let output = rle::decode(&rle::encode(input));
