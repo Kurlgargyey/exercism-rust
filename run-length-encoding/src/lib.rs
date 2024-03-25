@@ -2,6 +2,12 @@ use std::collections::VecDeque;
 
 pub fn encode(source: &str) -> String {
     let mut result = String::new();
+    fn push_char_count(result: &mut String, char: &char, count: &i32) {
+        if *count > 1 {
+            result.push_str(&count.to_string());
+        }
+        result.push(*char);
+    }
     if !source.is_empty() {
         let mut queue: VecDeque<_> = source.chars().collect();
         let mut prev = queue.pop_front().unwrap();
@@ -11,18 +17,12 @@ pub fn encode(source: &str) -> String {
             if curr == prev {
                 count += 1;
             } else {
-                if count > 1 {
-                    result.push_str(&count.to_string());
-                }
-                result.push(prev);
+                push_char_count(&mut result, &prev, &count);
                 prev = curr;
                 count = 1;
             }
         }
-        if count > 1 {
-            result.push_str(&count.to_string());
-        }
-        result.push(prev);
+        push_char_count(&mut result, &prev, &count);
     }
     result
 }
