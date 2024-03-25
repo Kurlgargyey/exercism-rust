@@ -45,7 +45,7 @@ fn can_identify_multiple_saddle_points_in_a_column() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn can_identify_multiple_saddle_points_in_a_row() {
     let input = &[vec![6, 7, 8], vec![5, 5, 5], vec![7, 5, 6]];
     let output = find_sorted_saddle_points(input);
@@ -58,7 +58,7 @@ fn can_identify_multiple_saddle_points_in_a_row() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn can_identify_saddle_point_in_bottom_right_corner() {
     let input = &[vec![8, 7, 9], vec![6, 7, 6], vec![3, 2, 5]];
     let output = find_sorted_saddle_points(input);
