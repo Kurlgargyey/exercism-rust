@@ -1,5 +1,3 @@
-use std::arch::x86_64::_mm_stream_si64;
-
 pub fn encode(n: u64) -> String {
     let units = &["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
     let teens = &[
@@ -71,8 +69,6 @@ pub fn encode(n: u64) -> String {
             encode_large_numbers(n, larger_numbers, 5)
         }
         1_000_000_000_000_000_000..=u64::MAX => { encode_large_numbers(n, larger_numbers, 6) }
-
-        _ => "".to_string(),
     }
 }
 
