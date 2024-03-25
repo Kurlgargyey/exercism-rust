@@ -46,23 +46,6 @@ pub fn encode(n: u64) -> String {
         " quintillion",
     ];
 
-    fn encode_large_numbers(
-        n: u64,
-        number_strings: &[&str],
-        order_of_magnitude: u32,
-        units: &[&str]
-    ) -> String {
-        let magnitude_val = n / (10u64).pow(order_of_magnitude);
-        let remainder_val = n % (10u64).pow(order_of_magnitude);
-        let mut result = units[magnitude_val as usize].to_string();
-        result.push_str(number_strings[(order_of_magnitude - 3) as usize]);
-        if remainder_val > 0 {
-            result.push(' ');
-            result.push_str(encode(remainder_val).as_str());
-        }
-        result
-    }
-
     match n {
         0..=9 => units[n as usize].to_string(),
         10..=19 => {
@@ -81,4 +64,21 @@ pub fn encode(n: u64) -> String {
 
         _ => encode_large_numbers(n, larger_numbers, n.checked_ilog10().unwrap_or(0) + 1, units),
     }
+}
+
+fn encode_large_numbers(
+    n: u64,
+    number_strings: &[&str],
+    order_of_magnitude: u32,
+    units: &[&str]
+) -> String {
+    let magnitude_val = n / (10u64).pow(order_of_magnitude);
+    let remainder_val = n % (10u64).pow(order_of_magnitude);
+    let mut result = units[magnitude_val as usize].to_string();
+    result.push_str(number_strings[(order_of_magnitude - 3) as usize]);
+    if remainder_val > 0 {
+        result.push(' ');
+        result.push_str(encode(remainder_val).as_str());
+    }
+    result
 }
