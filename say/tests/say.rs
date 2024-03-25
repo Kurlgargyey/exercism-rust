@@ -115,7 +115,7 @@ fn one_thousand_two_hundred_thirty_four() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn one_million() {
     let input = 1000000;
     let output = say::encode(input);
@@ -124,7 +124,7 @@ fn one_million() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn one_million_two_thousand_three_hundred_forty_five() {
     let input = 1002345;
     let output = say::encode(input);
@@ -133,7 +133,7 @@ fn one_million_two_thousand_three_hundred_forty_five() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn one_billion() {
     let input = 1000000000;
     let output = say::encode(input);
@@ -142,7 +142,7 @@ fn one_billion() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn a_big_number() {
     let input = 987654321123;
     let output = say::encode(input);
@@ -152,7 +152,7 @@ fn a_big_number() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn max_i64() {
     let input = 9223372036854775807;
     let output = say::encode(input);
@@ -162,9 +162,9 @@ fn max_i64() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn max_u64() {
-    let input = 18446744073709551615;
+    let input = 18_446_744_073_709_551_615;
     let output = say::encode(input);
     let expected =
         "eighteen quintillion four hundred forty-six quadrillion seven hundred forty-four trillion seventy-three billion seven hundred nine million five hundred fifty-one thousand six hundred fifteen";
