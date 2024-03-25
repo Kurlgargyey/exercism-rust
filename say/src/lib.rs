@@ -1,5 +1,16 @@
 pub fn encode(n: u64) -> String {
-    let units = &["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    let units: &[&str; 10] = &[
+        "zero",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+    ];
     let teens = &[
         "pad for indexing",
         "eleven",
@@ -25,6 +36,23 @@ pub fn encode(n: u64) -> String {
         "ninety",
     ];
 
+    fn encode_large_numbers(
+        n: u64,
+        number_string: &str,
+        order_of_magnitude: u64,
+        units: &[&str]
+    ) -> String {
+        let magnitude_val = n / order_of_magnitude;
+        let remainder_val = n % order_of_magnitude;
+        let mut result = units[magnitude_val as usize].to_string();
+        result.push_str(number_string);
+        if remainder_val > 0 {
+            result.push(' ');
+            result.push_str(encode(remainder_val).as_str());
+        }
+        result
+    }
+
     match n {
         0..=9 => units[n as usize].to_string(),
         10..=19 => {
@@ -40,28 +68,8 @@ pub fn encode(n: u64) -> String {
             }
             result
         }
-        100..=999 => {
-            let hundreds_val = n / 100;
-            let remainder_val = n % 100;
-            let mut result = units[hundreds_val as usize].to_string();
-            result.push_str(" hundred");
-            if remainder_val > 0 {
-                result.push(' ');
-                result.push_str(encode(remainder_val).as_str());
-            }
-            result
-        }
-        1000..=9999 => {
-            let thousands_val = n / 1000;
-            let remainder_val = n % 1000;
-            let mut result = units[thousands_val as usize].to_string();
-            result.push_str(" thousand");
-            if remainder_val > 0 {
-                result.push(' ');
-                result.push_str(encode(remainder_val).as_str());
-            }
-            result
-        }
+        100..=999 => encode_large_numbers(n, " hundred", 100, units),
+        1000..=9999 => encode_large_numbers(n, " thousand", 1000, units),
         _ => "".to_string(),
     }
 }
