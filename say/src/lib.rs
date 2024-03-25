@@ -1,16 +1,5 @@
 pub fn encode(n: u64) -> String {
-    let units: &[&str; 10] = &[
-        "zero",
-        "one",
-        "two",
-        "three",
-        "four",
-        "five",
-        "six",
-        "seven",
-        "eight",
-        "nine",
-    ];
+    let units = &["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
     let teens = &[
         "pad for indexing",
         "eleven",
