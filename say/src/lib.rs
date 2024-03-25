@@ -1,3 +1,5 @@
+use std::arch::x86_64::_mm_stream_si64;
+
 pub fn encode(n: u64) -> String {
     let units = &["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
     let teens = &[
@@ -50,11 +52,32 @@ pub fn encode(n: u64) -> String {
             }
             result
         }
+        100..=999 => {
+            let hundreds_val = n / 100;
+            let remainder_val = n % 100;
+            let mut result = units[hundreds_val as usize].to_string();
+            result.push_str(larger_numbers[0]);
+            if remainder_val > 0 {
+                result.push(' ');
+                result.push_str(&encode(remainder_val));
+            }
+            result
+        }
 
-        _ => encode_large_numbers(n, larger_numbers, n.checked_ilog10().unwrap_or(0) + 1, units),
+        _ => "".to_string(),
     }
 }
 
+fn encode_tens(n: u64, units: &[&str], tens: &[&str]) -> String {
+    let ten_val = n / 10;
+    let unit_val = n % 10;
+    let mut result = tens[ten_val as usize].to_string();
+    if unit_val > 0 {
+        result.push('-');
+        result.push_str(units[unit_val as usize]);
+    }
+    result
+}
 fn encode_large_numbers(
     n: u64,
     number_strings: &[&str],
@@ -62,12 +85,7 @@ fn encode_large_numbers(
     units: &[&str]
 ) -> String {
     let magnitude_val = n / (10u64).pow(order_of_magnitude);
-    let remainder_val = n % (10u64).pow(order_of_magnitude);
     let mut result = units[magnitude_val as usize].to_string();
     result.push_str(number_strings[(order_of_magnitude - 3) as usize]);
-    if remainder_val > 0 {
-        result.push(' ');
-        result.push_str(encode(remainder_val).as_str());
-    }
     result
 }
