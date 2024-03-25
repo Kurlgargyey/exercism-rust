@@ -37,7 +37,6 @@ pub fn decode(source: &str) -> String {
 
         while !queue.is_empty() {
             let curr = queue.pop_front().unwrap();
-            println!("checking {curr}, current count is {count_string}");
             match curr {
                 c if c.is_numeric() => count_string.push(curr),
                 _ => {
@@ -45,8 +44,7 @@ pub fn decode(source: &str) -> String {
                         count = count_string.parse::<i32>().expect("invalid character count");
                         count_string.clear();
                     }
-                    println!("found alphabetic char {curr}, pushing {count} times!");
-                    for i in 0..count {
+                    for _ in 0..count {
                         result.push(curr);
                     }
                     count = 1;
