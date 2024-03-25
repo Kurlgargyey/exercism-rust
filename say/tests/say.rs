@@ -61,7 +61,7 @@ fn ninety_nine() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn one_hundred() {
     let input = 100;
     let output = say::encode(input);
@@ -70,7 +70,7 @@ fn one_hundred() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn one_hundred_twenty_three() {
     let input = 123;
     let output = say::encode(input);
@@ -79,7 +79,7 @@ fn one_hundred_twenty_three() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn two_hundred() {
     let input = 200;
     let output = say::encode(input);
@@ -88,7 +88,7 @@ fn two_hundred() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn nine_hundred_ninety_nine() {
     let input = 999;
     let output = say::encode(input);
@@ -97,7 +97,7 @@ fn nine_hundred_ninety_nine() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn one_thousand() {
     let input = 1000;
     let output = say::encode(input);
