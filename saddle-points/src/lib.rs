@@ -11,8 +11,13 @@ pub fn find_saddle_points(input: &[Vec<u64>]) -> Vec<(usize, usize)> {
                     acc
                 }
             });
+
         if let Some(row_maximum) = maximum {
-            row_maxima.push(row_maximum);
+            for (col_idx, value) in row.iter().enumerate() {
+                if value == row_maximum.1 {
+                    row_maxima.push(((row_idx, col_idx), value));
+                }
+            }
         }
     }
     let mut results = Vec::<(usize, usize)>::new();
