@@ -106,7 +106,7 @@ fn one_thousand() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn one_thousand_two_hundred_thirty_four() {
     let input = 1234;
     let output = say::encode(input);
