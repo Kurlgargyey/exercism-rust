@@ -55,8 +55,16 @@ impl<T> SimpleLinkedList<T> {
 
     #[must_use]
     pub fn rev(self) -> SimpleLinkedList<T> {
-        let members = Vec::from(self);
-        SimpleLinkedList::from_iter(members.into_iter().rev())
+        let mut list = Self::new();
+        if self.len == 0 {
+            return list;
+        }
+        let mut cur_node = self.head;
+        while let Some(node) = cur_node {
+            list.push(node.value);
+            cur_node = node.next;
+        }
+        list
     }
 }
 
@@ -84,17 +92,9 @@ impl<T> From<SimpleLinkedList<T>> for Vec<T> {
     fn from(linked_list: SimpleLinkedList<T>) -> Vec<T> {
         let mut members = Vec::<T>::new();
         let mut curr = linked_list.head;
-        loop {
-            if let Some(head) = curr {
-                members.push(head.value);
-                if let Some(next) = head.next {
-                    curr = Some(next);
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
+        while let Some(head) = curr {
+            members.push(head.value);
+            curr = head.next;
         }
         members.into_iter().rev().collect()
     }
