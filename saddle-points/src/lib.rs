@@ -5,7 +5,8 @@ pub fn find_saddle_points(input: &[Vec<u64>]) -> Vec<(usize, usize)> {
             .iter()
             .enumerate()
             .fold(None, |acc: Option<((usize, usize), &u64)>, (col_idx, height)| {
-                if acc == None || height > acc.unwrap().1 {
+                let curr_tallest = acc.unwrap().1;
+                if acc == None || height > curr_tallest {
                     Some(((row_idx, col_idx), height))
                 } else {
                     acc
@@ -13,16 +14,17 @@ pub fn find_saddle_points(input: &[Vec<u64>]) -> Vec<(usize, usize)> {
             });
 
         if let Some(row_maximum) = maximum {
-            for (col_idx, value) in row.iter().enumerate() {
-                if value == row_maximum.1 {
-                    row_maxima.push(((row_idx, col_idx), value));
+            let tallest_tree = row_maximum.1;
+            for (col_idx, height) in row.iter().enumerate() {
+                if height == tallest_tree {
+                    row_maxima.push(((row_idx, col_idx), height));
                 }
             }
         }
     }
     let mut results = Vec::<(usize, usize)>::new();
     for ((row, col), height) in row_maxima {
-        println!("checking whether {height} is the smallest value in col {col} of vec {input:?}");
+        println!("checking whether {height} is the lowest height in col {col} of vec {input:?}");
         if input.iter().all(|row| row[col] >= *height) {
             results.push((row, col));
         }
