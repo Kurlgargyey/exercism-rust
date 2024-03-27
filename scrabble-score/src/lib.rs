@@ -31,7 +31,9 @@ pub fn score(word: &str) -> u64 {
         ('Z', 10),
     ]);
     word.chars().fold(0_u64, |mut acc, ch| {
-        acc += scores[&ch.to_ascii_uppercase()] as u64;
+        if ch.is_ascii() {
+            acc += scores[&ch.to_ascii_uppercase()] as u64;
+        }
         acc
     })
 }
