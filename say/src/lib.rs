@@ -46,12 +46,12 @@ const LARGER_NUMBERS: &[&str] = &[
 pub fn encode(n: u64) -> String {
     match n {
         0..=999 => encode_small_numbers(n).unwrap(),
-        1000..=999_999 => { encode_large_numbers(n, 1) }
-        1_000_000..=999_999_999 => { encode_large_numbers(n, 2) }
-        1_000_000_000..=999_999_999_999 => { encode_large_numbers(n, 3) }
-        1_000_000_000_000..=999_999_999_999_999 => { encode_large_numbers(n, 4) }
-        1_000_000_000_000_000..=999_999_999_999_999_999 => { encode_large_numbers(n, 5) }
-        1_000_000_000_000_000_000..=u64::MAX => { encode_large_numbers(n, 6) }
+        1000..=999_999 => encode_large_numbers(n, 1),
+        1_000_000..=999_999_999 => encode_large_numbers(n, 2),
+        1_000_000_000..=999_999_999_999 => encode_large_numbers(n, 3),
+        1_000_000_000_000..=999_999_999_999_999 => encode_large_numbers(n, 4),
+        1_000_000_000_000_000..=999_999_999_999_999_999 => encode_large_numbers(n, 5),
+        1_000_000_000_000_000_000..=u64::MAX => encode_large_numbers(n, 6),
     }
 }
 
