@@ -1,12 +1,16 @@
 pub struct SimpleLinkedList<T> {
     // Delete this field
     // dummy is needed to avoid unused parameter error during compilation
-    dummy: ::std::marker::PhantomData<T>,
+    value: Option<T>,
+    next: Option<&SimpleLinkedList<T>>,
 }
 
 impl<T> SimpleLinkedList<T> {
     pub fn new() -> Self {
-        todo!()
+        SimpleLinkedList {
+            value: None,
+            next: None,
+        }
     }
 
     // You may be wondering why it's necessary to have is_empty()
