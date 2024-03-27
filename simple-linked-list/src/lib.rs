@@ -1,14 +1,20 @@
-#[derive(Clone, Debug)]
+type Link<T> = Option<Box<Node<T>>>;
+
 pub struct SimpleLinkedList<T> {
-    value: Option<T>,
-    next: Option<Box<SimpleLinkedList<T>>>,
+    head: Link<T>,
+    len: usize,
 }
 
-impl<T> SimpleLinkedList<T> where T: Clone {
+struct Node<T> {
+    value: T,
+    next: Link<T>,
+}
+
+impl<T> SimpleLinkedList<T> {
     pub fn new() -> Self {
         SimpleLinkedList {
-            value: None,
-            next: None,
+            head: None,
+            len: 0,
         }
     }
 
@@ -18,49 +24,33 @@ impl<T> SimpleLinkedList<T> where T: Clone {
     // whereas is_empty() is almost always cheap.
     // (Also ask yourself whether len() is expensive for SimpleLinkedList)
     pub fn is_empty(&self) -> bool {
-        self.value.is_none()
+        self.len == 0
     }
 
     pub fn len(&self) -> usize {
-        let mut len = 0;
-        let mut curr = Some(self);
-        loop {
-            if let Some(&SimpleLinkedList { value: Some(_), next: _ }) = curr {
-                len += 1;
-            } else {
-                break;
-            }
-            if let Some(&SimpleLinkedList { value: _, next: Some(ref next) }) = curr {
-                curr = Some(next);
-            } else {
-                break;
-            }
-        }
-        len
+        self.len
     }
 
     pub fn push(&mut self, element: T) {
-        let value = Some(element);
-        let curr_value = self.value.clone();
-        let curr_next = self.next.clone();
-        let new_next = SimpleLinkedList { value: curr_value, next: curr_next };
-        self.value = value;
-        self.next = Some(Box::new(new_next));
+        let value = element;
+        let next = self.head.take();
+        self.head = Some(Box::new(Node { value, next }));
+        self.len += 1;
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        let curr_value = self.value.clone();
-        if let Some(curr_next) = self.next.clone() {
-            *self = *curr_next;
-        } else {
-            self.value = None;
+        if let Some(head) = self.head.take() {
+            if let Some(next) = head.next {
+                self.head = Some(next);
+            }
+            self.len -= 1;
+            return Some(head.value);
         }
-
-        curr_value
+        None
     }
 
     pub fn peek(&self) -> Option<&T> {
-        if let Some(value) = &self.value { Some(value) } else { None }
+        if let Some(ref head) = self.head { Some(&head.value) } else { None }
     }
 
     #[must_use]
@@ -70,7 +60,7 @@ impl<T> SimpleLinkedList<T> where T: Clone {
     }
 }
 
-impl<T> FromIterator<T> for SimpleLinkedList<T> where T: Clone {
+impl<T> FromIterator<T> for SimpleLinkedList<T> {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         iter.into_iter().fold(SimpleLinkedList::new(), |mut acc, item| {
             acc.push(item);
@@ -90,18 +80,18 @@ impl<T> FromIterator<T> for SimpleLinkedList<T> where T: Clone {
 // of IntoIterator is that implementing that interface is fairly complicated, and
 // demands more of the student than we expect at this point in the track.
 
-impl<T> From<SimpleLinkedList<T>> for Vec<T> where T: Clone {
+impl<T> From<SimpleLinkedList<T>> for Vec<T> {
     fn from(linked_list: SimpleLinkedList<T>) -> Vec<T> {
         let mut members = Vec::<T>::new();
-        let mut curr = Some(&linked_list);
+        let mut curr = linked_list.head;
         loop {
-            if let Some(&SimpleLinkedList { value: Some(ref value), next: _ }) = curr {
-                members.push(value.clone());
-            } else {
-                break;
-            }
-            if let Some(&SimpleLinkedList { value: _, next: Some(ref next) }) = curr {
-                curr = Some(next);
+            if let Some(head) = curr {
+                members.push(head.value);
+                if let Some(next) = head.next {
+                    curr = Some(next);
+                } else {
+                    break;
+                }
             } else {
                 break;
             }
