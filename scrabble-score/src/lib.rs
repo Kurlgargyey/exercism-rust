@@ -30,10 +30,11 @@ pub fn score(word: &str) -> u64 {
         ('Q', 10),
         ('Z', 10),
     ]);
-    word.chars().fold(0_u64, |mut acc, ch| {
-        if ch.is_ascii() {
+    word.chars()
+        .filter(|ch| ch.is_ascii())
+        .fold(0_u64, |mut acc, ch| {
             acc += scores[&ch.to_ascii_uppercase()] as u64;
-        }
-        acc
-    })
+
+            acc
+        })
 }
