@@ -40,9 +40,7 @@ impl<T> SimpleLinkedList<T> {
 
     pub fn pop(&mut self) -> Option<T> {
         if let Some(head) = self.head.take() {
-            if let Some(next) = head.next {
-                self.head = Some(next);
-            }
+            self.head = head.next;
             self.len -= 1;
             return Some(head.value);
         }
