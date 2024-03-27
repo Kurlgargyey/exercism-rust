@@ -56,9 +56,6 @@ impl<T> SimpleLinkedList<T> {
     #[must_use]
     pub fn rev(self) -> SimpleLinkedList<T> {
         let mut list = Self::new();
-        if self.len == 0 {
-            return list;
-        }
         let mut cur_node = self.head;
         while let Some(node) = cur_node {
             list.push(node.value);
