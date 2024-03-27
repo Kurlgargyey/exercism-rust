@@ -5,8 +5,7 @@ pub fn find_saddle_points(input: &[Vec<u64>]) -> Vec<(usize, usize)> {
             .iter()
             .enumerate()
             .fold(None, |acc: Option<((usize, usize), &u64)>, (col_idx, height)| {
-                let curr_tallest = acc.unwrap().1;
-                if acc == None || height > curr_tallest {
+                if acc == None || height > acc.unwrap().1 {
                     Some(((row_idx, col_idx), height))
                 } else {
                     acc
