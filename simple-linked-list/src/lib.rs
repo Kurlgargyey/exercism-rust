@@ -1,5 +1,3 @@
-use std::{ array::IntoIter, fmt::Display };
-
 #[derive(Clone, Debug)]
 pub struct SimpleLinkedList<T> {
     value: Option<T>,
