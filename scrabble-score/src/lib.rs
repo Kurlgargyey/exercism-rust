@@ -32,9 +32,5 @@ pub fn score(word: &str) -> u64 {
     ]);
     word.chars()
         .filter(|ch| ch.is_ascii())
-        .fold(0_u64, |mut acc, ch| {
-            acc += scores[&ch.to_ascii_uppercase()] as u64;
-
-            acc
-        })
+        .fold(0_u64, |acc, ch| { acc + (scores[&ch.to_ascii_uppercase()] as u64) })
 }
