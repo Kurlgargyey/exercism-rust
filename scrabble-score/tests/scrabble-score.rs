@@ -7,7 +7,7 @@ fn lowercase_letter() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn uppercase_letter() {
     let input = "A";
     let output = scrabble_score::score(input);
@@ -16,7 +16,7 @@ fn uppercase_letter() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn valuable_letter() {
     let input = "f";
     let output = scrabble_score::score(input);
@@ -25,7 +25,7 @@ fn valuable_letter() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn short_word() {
     let input = "at";
     let output = scrabble_score::score(input);
@@ -34,7 +34,7 @@ fn short_word() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn short_valuable_word() {
     let input = "zoo";
     let output = scrabble_score::score(input);
@@ -43,7 +43,7 @@ fn short_valuable_word() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn medium_word() {
     let input = "street";
     let output = scrabble_score::score(input);
@@ -52,7 +52,7 @@ fn medium_word() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn medium_valuable_word() {
     let input = "quirky";
     let output = scrabble_score::score(input);
@@ -61,7 +61,7 @@ fn medium_valuable_word() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn long_mixed_case_word() {
     let input = "OxyphenButazone";
     let output = scrabble_score::score(input);
@@ -70,7 +70,7 @@ fn long_mixed_case_word() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn english_like_word() {
     let input = "pinata";
     let output = scrabble_score::score(input);
@@ -79,7 +79,7 @@ fn english_like_word() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn empty_input() {
     let input = "";
     let output = scrabble_score::score(input);
@@ -88,7 +88,7 @@ fn empty_input() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn entire_alphabet_available() {
     let input = "abcdefghijklmnopqrstuvwxyz";
     let output = scrabble_score::score(input);
@@ -97,7 +97,7 @@ fn entire_alphabet_available() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn non_english_scrabble_letters_do_not_score() {
     let input = "piñata";
     let output = scrabble_score::score(input);
@@ -106,7 +106,7 @@ fn non_english_scrabble_letters_do_not_score() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn german_letters_do_not_score() {
     let input = "STRAßE";
     let output = scrabble_score::score(input);
