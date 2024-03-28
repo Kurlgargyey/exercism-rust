@@ -6,8 +6,7 @@ pub fn tally(match_results: &str) -> String {
     let matches = match_results.split("\n");
 
     for result in matches {
-        let mut results = result.split(';');
-        let (home_team, away_team, outcome) = (results.nth(0), results.nth(1), results.nth(2));
+        tally.push(result);
     }
 
     tally.to_string()
@@ -18,7 +17,20 @@ impl<'a> Tally<'a> {
     fn new() -> Self {
         Tally(HashMap::<&'a str, Team<'a>>::new())
     }
-    fn push(&mut self, results: &str) {}
+    fn push(&mut self, result: &str) {
+        let mut details = result.split(';');
+        let (home_team, away_team, outcome) = (
+            details.nth(0).expect("incorrectly formatted row! (missing home team)"),
+            details.nth(1).expect("incorrectly formatted row! (missing away team)"),
+            details.nth(2).expect("incorrectly formatted row! (missing outcome)"),
+        );
+        match outcome {
+            "win" =>
+            "draw" =>
+            "loss" =>
+            _ =>
+        }
+    }
 }
 
 impl ToString for Tally<'_> {
