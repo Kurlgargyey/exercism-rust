@@ -25,12 +25,14 @@ impl<'a> Tally<'a> {
             details.nth(2).expect("incorrectly formatted row! (missing outcome)"),
         );
         match outcome {
-            "win" =>
-            "draw" =>
-            "loss" =>
-            _ =>
+            "win" => self.mark_win(home_team, away_team),
+            "draw" => self.mark_draw(home_team, away_team),
+            "loss" => self.mark_win(away_team, home_team),
+            _ => (),
         }
     }
+    fn mark_win(home_team: &str, away_team: &str) {}
+    fn mark_draw(home_team: &str, away_team: &str) {}
 }
 
 impl ToString for Tally<'_> {
