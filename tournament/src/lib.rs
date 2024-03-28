@@ -31,8 +31,8 @@ impl<'a> Tally<'a> {
             _ => (),
         }
     }
-    fn mark_win(home_team: &str, away_team: &str) {}
-    fn mark_draw(home_team: &str, away_team: &str) {}
+    fn mark_win(&mut self, home_team: &str, away_team: &str) {}
+    fn mark_draw(&mut self, home_team: &str, away_team: &str) {}
 }
 
 impl ToString for Tally<'_> {
