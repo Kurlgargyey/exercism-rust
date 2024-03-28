@@ -1,4 +1,48 @@
-use std::collections::HashMap;
+use std::collections::{ HashMap, BTreeSet };
+
+pub fn tally(match_results: &str) -> String {
+    let mut tally = Tally::new();
+
+    let matches = match_results.split("\n");
+
+    for result in matches {
+        let mut results = result.split(';');
+        let (home_team, away_team, outcome) = (results.nth(0), results.nth(1), results.nth(2));
+    }
+
+    tally.to_string()
+}
+struct Tally<'a>(HashMap<&'a str, Team<'a>>);
+
+impl<'a> Tally<'a> {
+    fn new() -> Self {
+        Tally(HashMap::<&'a str, Team<'a>>::new())
+    }
+    fn push(&mut self, results: &str) {}
+}
+
+impl ToString for Tally<'_> {
+    fn to_string(&self) -> String {
+        let mut ordered_teams = BTreeSet::<&Team>::new();
+
+        for team in self.0.values() {
+            ordered_teams.insert(team);
+        }
+
+        let team_stats = ordered_teams
+            .into_iter()
+            .map(|team| team.to_string())
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        let mut result = create_header();
+        if !team_stats.is_empty() {
+            result.push_str("\n");
+            result.push_str(&team_stats);
+        }
+        result
+    }
+}
 
 #[derive(PartialEq, Eq, PartialOrd)]
 struct Team<'a> {
@@ -31,21 +75,6 @@ impl ToString for Team<'_> {
     }
 }
 
-pub fn tally(match_results: &str) -> String {
-    let header = create_row("Team", "MP", "W", "D", "L", "P");
-    let mut row = Vec::<&str>::new();
-    row.push(&header);
-    let matches = match_results.split("\n");
-
-    for result in matches {
-        let mut results = result.split(';');
-        let (home_team, away_team, outcome) = (results.nth(0), results.nth(1), results.nth(2));
-    }
-
-    let table = row.join("\n");
-    table
-}
-
 fn create_row(
     team: &str,
     matches: &str,
@@ -63,4 +92,8 @@ fn create_row(
         losses,
         points
     )
+}
+
+fn create_header() -> String {
+    create_row("Team", "MP", "W", "D", "L", "P")
 }
