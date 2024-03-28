@@ -3,26 +3,34 @@ use std::collections::{ HashMap, BTreeSet };
 pub fn tally(match_results: &str) -> String {
     let mut tally = Tally::new();
 
-    let matches = match_results.split("\n");
+    let matches: Vec<_> = match_results.split("\n").collect();
 
-    for result in matches {
-        tally.push(result);
+    if !matches.is_empty() {
+        for result in matches {
+            tally.push(result);
+        }
     }
 
     tally.to_string()
 }
+
+#[derive(Debug)]
 struct Tally<'a>(HashMap<&'a str, Team<'a>>);
 
 impl<'a> Tally<'a> {
     fn new() -> Self {
         Tally(HashMap::<&'a str, Team<'a>>::new())
     }
-    fn push(&mut self, result: &str) {
+    fn push(&mut self, result: &'a str) {
         let mut details = result.split(';');
+        if details.clone().count() != 3 {
+            return;
+        }
+
         let (home_team, away_team, outcome) = (
-            details.nth(0).expect("incorrectly formatted row! (missing home team)"),
-            details.nth(1).expect("incorrectly formatted row! (missing away team)"),
-            details.nth(2).expect("incorrectly formatted row! (missing outcome)"),
+            details.next().unwrap(),
+            details.next().unwrap(),
+            details.next().unwrap(),
         );
         match outcome {
             "win" => self.mark_win(home_team, away_team),
@@ -31,13 +39,31 @@ impl<'a> Tally<'a> {
             _ => (),
         }
     }
-    fn mark_win(&mut self, home_team: &str, away_team: &str) {}
-    fn mark_draw(&mut self, home_team: &str, away_team: &str) {}
+    fn mark_win(&mut self, home_team: &'a str, away_team: &'a str) {
+        let home_team = self.0.entry(home_team).or_insert(Team::new(home_team));
+        home_team.matches += 1;
+        home_team.wins += 1;
+        home_team.points += 3;
+        let away_team = self.0.entry(away_team).or_insert(Team::new(away_team));
+        away_team.matches += 1;
+        away_team.losses += 1;
+    }
+    fn mark_draw(&mut self, home_team: &'a str, away_team: &'a str) {
+        let home_team = self.0.entry(home_team).or_insert(Team::new(home_team));
+        home_team.matches += 1;
+        home_team.draws += 1;
+        home_team.points += 1;
+        let away_team = self.0.entry(away_team).or_insert(Team::new(away_team));
+        away_team.matches += 1;
+        away_team.draws += 1;
+        away_team.points += 1;
+    }
 }
 
 impl ToString for Tally<'_> {
     fn to_string(&self) -> String {
         let mut ordered_teams = BTreeSet::<&Team>::new();
+        println!("building string representation of {:?}", ordered_teams);
 
         for team in self.0.values() {
             ordered_teams.insert(team);
@@ -45,6 +71,7 @@ impl ToString for Tally<'_> {
 
         let team_stats = ordered_teams
             .into_iter()
+            .rev()
             .map(|team| team.to_string())
             .collect::<Vec<String>>()
             .join("\n");
@@ -58,7 +85,7 @@ impl ToString for Tally<'_> {
     }
 }
 
-#[derive(PartialEq, Eq, PartialOrd)]
+#[derive(PartialEq, Eq, PartialOrd, Debug)]
 struct Team<'a> {
     name: &'a str,
     matches: usize,
@@ -68,7 +95,11 @@ struct Team<'a> {
     points: usize,
 }
 
-impl Team<'_> {}
+impl<'a> Team<'a> {
+    fn new(name: &'a str) -> Self {
+        Team { name, matches: 0, wins: 0, draws: 0, losses: 0, points: 0 }
+    }
+}
 
 impl Ord for Team<'_> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
