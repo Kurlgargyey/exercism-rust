@@ -16,7 +16,7 @@ fn trivial_spiral() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn spiral_of_size_2() {
     let input = 2;
     let output = spiral_matrix::spiral_matrix(input);
@@ -28,7 +28,7 @@ fn spiral_of_size_2() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn spiral_of_size_3() {
     let input = 3;
     let output = spiral_matrix::spiral_matrix(input);
@@ -41,7 +41,7 @@ fn spiral_of_size_3() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn spiral_of_size_4() {
     let input = 4;
     let output = spiral_matrix::spiral_matrix(input);
@@ -55,7 +55,7 @@ fn spiral_of_size_4() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn spiral_of_size_5() {
     let input = 5;
     let output = spiral_matrix::spiral_matrix(input);
