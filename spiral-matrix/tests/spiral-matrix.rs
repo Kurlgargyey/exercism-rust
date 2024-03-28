@@ -7,7 +7,7 @@ fn empty_spiral() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn trivial_spiral() {
     let input = 1;
     let output = spiral_matrix::spiral_matrix(input);
@@ -20,7 +20,10 @@ fn trivial_spiral() {
 fn spiral_of_size_2() {
     let input = 2;
     let output = spiral_matrix::spiral_matrix(input);
-    let expected: [[u32; 2]; 2] = [[1, 2], [4, 3]];
+    let expected: [[u32; 2]; 2] = [
+        [1, 2],
+        [4, 3],
+    ];
     assert_eq!(output, expected);
 }
 
@@ -29,7 +32,11 @@ fn spiral_of_size_2() {
 fn spiral_of_size_3() {
     let input = 3;
     let output = spiral_matrix::spiral_matrix(input);
-    let expected: [[u32; 3]; 3] = [[1, 2, 3], [8, 9, 4], [7, 6, 5]];
+    let expected: [[u32; 3]; 3] = [
+        [1, 2, 3],
+        [8, 9, 4],
+        [7, 6, 5],
+    ];
     assert_eq!(output, expected);
 }
 

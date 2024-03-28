@@ -56,7 +56,12 @@ pub fn spiral_matrix(size: u32) -> Vec<Vec<u32>> {
 }
 
 fn cell_ahead_is_empty_and_valid(matrix: &Vec<Vec<u32>>, pos: Position) -> bool {
-    matrix[pos.x][pos.y] == 0
+    if let Some(row) = matrix.get(pos.x) {
+        if let Some(val) = row.get(pos.y) {
+            return *val == 0;
+        }
+    }
+    false
 }
 
 fn set_cell(matrix: &mut Vec<Vec<u32>>, pos: Position, val: u32) {
