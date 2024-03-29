@@ -90,20 +90,20 @@ impl<'a> Team<'a> {
     }
     fn wins(&self) -> u16 {
         self.outcomes
-            .into_iter()
-            .filter(|outcome| *outcome == Outcome::Win)
+            .iter()
+            .filter(|outcome| **outcome == Outcome::Win)
             .count() as u16
     }
     fn draws(&self) -> u16 {
         self.outcomes
-            .into_iter()
-            .filter(|outcome| *outcome == Outcome::Draw)
+            .iter()
+            .filter(|outcome| **outcome == Outcome::Draw)
             .count() as u16
     }
     fn losses(&self) -> u16 {
         self.outcomes
-            .into_iter()
-            .filter(|outcome| *outcome == Outcome::Loss)
+            .iter()
+            .filter(|outcome| **outcome == Outcome::Loss)
             .count() as u16
     }
     fn points(&self) -> u16 {
