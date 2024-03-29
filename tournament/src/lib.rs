@@ -27,16 +27,19 @@ impl<'a> Tally<'a> {
             return;
         }
 
-        let (home_team, away_team, outcome) = (
-            details.next().unwrap(),
-            details.next().unwrap(),
-            details.next().unwrap(),
-        );
-        match outcome {
-            "win" => self.mark_win(home_team, away_team),
-            "draw" => self.mark_draw(home_team, away_team),
-            "loss" => self.mark_win(away_team, home_team),
-            _ => (),
+        if
+            let (Some(home_team), Some(away_team), Some(outcome)) = (
+                details.next(),
+                details.next(),
+                details.next(),
+            )
+        {
+            match outcome {
+                "win" => self.mark_win(home_team, away_team),
+                "draw" => self.mark_draw(home_team, away_team),
+                "loss" => self.mark_win(away_team, home_team),
+                _ => (),
+            }
         }
     }
     fn mark_win(&mut self, home_team: &'a str, away_team: &'a str) {
