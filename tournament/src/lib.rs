@@ -39,22 +39,15 @@ impl<'a> Tally<'a> {
     }
     fn mark_win(&mut self, home_team: &'a str, away_team: &'a str) {
         let home_team = self.0.entry(home_team).or_insert(Team::new(home_team));
-        home_team.matches += 1;
-        home_team.wins += 1;
-        home_team.points += 3;
+        home_team.mark_win();
         let away_team = self.0.entry(away_team).or_insert(Team::new(away_team));
-        away_team.matches += 1;
-        away_team.losses += 1;
+        away_team.mark_loss()
     }
     fn mark_draw(&mut self, home_team: &'a str, away_team: &'a str) {
         let home_team = self.0.entry(home_team).or_insert(Team::new(home_team));
-        home_team.matches += 1;
-        home_team.draws += 1;
-        home_team.points += 1;
+        home_team.mark_draw();
         let away_team = self.0.entry(away_team).or_insert(Team::new(away_team));
-        away_team.matches += 1;
-        away_team.draws += 1;
-        away_team.points += 1;
+        away_team.mark_draw()
     }
 }
 
@@ -94,6 +87,21 @@ struct Team<'a> {
 impl<'a> Team<'a> {
     fn new(name: &'a str) -> Self {
         Team { name, matches: 0, wins: 0, draws: 0, losses: 0, points: 0 }
+    }
+
+    fn mark_win(&mut self) {
+        self.matches += 1;
+        self.wins += 1;
+        self.points += 3;
+    }
+    fn mark_loss(&mut self) {
+        self.matches += 1;
+        self.losses += 1;
+    }
+    fn mark_draw(&mut self) {
+        self.matches += 1;
+        self.draws += 1;
+        self.points += 1;
     }
 }
 
