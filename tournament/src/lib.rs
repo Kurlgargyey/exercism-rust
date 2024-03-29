@@ -5,10 +5,8 @@ pub fn tally(match_results: &str) -> String {
 
     let matches: Vec<_> = match_results.split("\n").collect();
 
-    if !matches.is_empty() {
-        for result in matches {
-            tally.push(result);
-        }
+    for result in matches {
+        tally.push(result);
     }
 
     tally.to_string()
