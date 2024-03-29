@@ -1,4 +1,4 @@
-use std::collections::{ HashMap, BTreeSet };
+use std::{ cmp::Ordering, collections::{ BTreeMap, HashMap } };
 
 pub fn tally(match_results: &str) -> String {
     let mut tally = Tally::new();
@@ -62,17 +62,20 @@ impl<'a> Tally<'a> {
 
 impl ToString for Tally<'_> {
     fn to_string(&self) -> String {
-        let mut ordered_teams = BTreeSet::<&Team>::new();
-        println!("building string representation of {:?}", ordered_teams);
+        let mut ordered_teams = Vec::<&Team>::new();
 
         for team in self.0.values() {
-            ordered_teams.insert(team);
+            ordered_teams.push(team);
         }
+        ordered_teams.sort();
+        println!("building string representation of {:?}", ordered_teams);
 
         let team_stats = ordered_teams
             .into_iter()
-            .rev()
-            .map(|team| team.to_string())
+            .map(|team| {
+                println!("{} scored {} points.", team.name, team.points);
+                team.to_string()
+            })
             .collect::<Vec<String>>()
             .join("\n");
 
@@ -85,7 +88,7 @@ impl ToString for Tally<'_> {
     }
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Debug)]
+#[derive(Eq, Debug)]
 struct Team<'a> {
     name: &'a str,
     matches: usize,
@@ -101,9 +104,25 @@ impl<'a> Team<'a> {
     }
 }
 
+impl PartialEq for Team<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.points == other.points && self.name == other.name
+    }
+}
+
 impl Ord for Team<'_> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.points.cmp(&other.points)
+        let point_order = self.points.cmp(&other.points);
+        if point_order == Ordering::Equal {
+            return self.name.cmp(other.name);
+        }
+        point_order.reverse()
+    }
+}
+
+impl PartialOrd for Team<'_> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
 
