@@ -1,4 +1,4 @@
-use std::{ cmp::Ordering, collections::{ BTreeMap, HashMap } };
+use std::{ cmp::Ordering, collections::{ BTreeSet, HashMap } };
 
 pub fn tally(match_results: &str) -> String {
     let mut tally = Tally::new();
@@ -62,12 +62,12 @@ impl<'a> Tally<'a> {
 
 impl ToString for Tally<'_> {
     fn to_string(&self) -> String {
-        let mut ordered_teams = Vec::<&Team>::new();
+        let mut ordered_teams = BTreeSet::<&Team>::new();
 
         for team in self.0.values() {
-            ordered_teams.push(team);
+            ordered_teams.insert(team);
         }
-        ordered_teams.sort();
+        //ordered_teams.sort();
         println!("building string representation of {:?}", ordered_teams);
 
         let team_stats = ordered_teams
