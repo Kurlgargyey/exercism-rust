@@ -39,15 +39,15 @@ impl<'a> Tally<'a> {
     }
     fn mark_win(&mut self, home_team: &'a str, away_team: &'a str) {
         let home_team = self.0.entry(home_team).or_insert(Team::new(home_team));
-        home_team.mark_win();
+        home_team.mark_outcome(Outcome::Win);
         let away_team = self.0.entry(away_team).or_insert(Team::new(away_team));
-        away_team.mark_loss()
+        away_team.mark_outcome(Outcome::Loss)
     }
     fn mark_draw(&mut self, home_team: &'a str, away_team: &'a str) {
         let home_team = self.0.entry(home_team).or_insert(Team::new(home_team));
-        home_team.mark_draw();
+        home_team.mark_outcome(Outcome::Draw);
         let away_team = self.0.entry(away_team).or_insert(Team::new(away_team));
-        away_team.mark_draw()
+        away_team.mark_outcome(Outcome::Draw)
     }
 }
 
@@ -112,14 +112,8 @@ impl<'a> Team<'a> {
             .map(|outcome| *outcome as u16)
             .sum()
     }
-    fn mark_win(&mut self) {
-        self.outcomes.push(Outcome::Win)
-    }
-    fn mark_loss(&mut self) {
-        self.outcomes.push(Outcome::Loss)
-    }
-    fn mark_draw(&mut self) {
-        self.outcomes.push(Outcome::Draw)
+    fn mark_outcome(&mut self, outcome: Outcome) {
+        self.outcomes.push(outcome)
     }
 }
 
