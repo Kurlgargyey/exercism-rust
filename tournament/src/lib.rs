@@ -74,7 +74,7 @@ impl ToString for Tally<'_> {
     }
 }
 
-#[derive(Eq, Debug)]
+#[derive(Eq, PartialEq, PartialOrd, Debug)]
 struct Team<'a> {
     name: &'a str,
     matches: usize,
@@ -105,12 +105,6 @@ impl<'a> Team<'a> {
     }
 }
 
-impl PartialEq for Team<'_> {
-    fn eq(&self, other: &Self) -> bool {
-        self.points == other.points && self.name == other.name
-    }
-}
-
 impl Ord for Team<'_> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         let point_order = self.points.cmp(&other.points);
@@ -118,12 +112,6 @@ impl Ord for Team<'_> {
             return self.name.cmp(other.name);
         }
         point_order.reverse()
-    }
-}
-
-impl PartialOrd for Team<'_> {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
     }
 }
 
