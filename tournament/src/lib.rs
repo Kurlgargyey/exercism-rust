@@ -23,9 +23,6 @@ impl<'a> Tally<'a> {
     }
     fn push(&mut self, result: &'a str) {
         let mut details = result.split(';');
-        if details.clone().count() != 3 {
-            return;
-        }
 
         if
             let (Some(home_team), Some(away_team), Some(outcome)) = (
