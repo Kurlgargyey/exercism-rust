@@ -77,41 +77,59 @@ impl ToString for Tally<'_> {
 #[derive(Eq, PartialEq, PartialOrd, Debug)]
 struct Team<'a> {
     name: &'a str,
-    matches: usize,
-    wins: usize,
-    draws: usize,
-    losses: usize,
-    points: usize,
+    outcomes: Vec<Outcome>,
 }
 
 impl<'a> Team<'a> {
     fn new(name: &'a str) -> Self {
-        Team { name, matches: 0, wins: 0, draws: 0, losses: 0, points: 0 }
+        Team { name, outcomes: Vec::<Outcome>::new() }
     }
 
+    fn matches(&self) -> u16 {
+        self.outcomes.len() as u16
+    }
+    fn wins(&self) -> u16 {
+        self.outcomes
+            .iter()
+            .filter(|outcome| **outcome == Outcome::Win)
+            .count() as u16
+    }
+    fn draws(&self) -> u16 {
+        self.outcomes
+            .iter()
+            .filter(|outcome| **outcome == Outcome::Draw)
+            .count() as u16
+    }
+    fn losses(&self) -> u16 {
+        self.outcomes
+            .iter()
+            .filter(|outcome| **outcome == Outcome::Loss)
+            .count() as u16
+    }
+    fn points(&self) -> u16 {
+        self.outcomes
+            .iter()
+            .map(|outcome| *outcome as u16)
+            .sum()
+    }
     fn mark_win(&mut self) {
-        self.matches += 1;
-        self.wins += 1;
-        self.points += 3;
+        self.outcomes.push(Outcome::Win)
     }
     fn mark_loss(&mut self) {
-        self.matches += 1;
-        self.losses += 1;
+        self.outcomes.push(Outcome::Loss)
     }
     fn mark_draw(&mut self) {
-        self.matches += 1;
-        self.draws += 1;
-        self.points += 1;
+        self.outcomes.push(Outcome::Draw)
     }
 }
 
 impl Ord for Team<'_> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        let point_order = self.points.cmp(&other.points);
+        let point_order = self.points().cmp(&other.points()).reverse();
         if point_order == Ordering::Equal {
             return self.name.cmp(other.name);
         }
-        point_order.reverse()
+        point_order
     }
 }
 
@@ -119,13 +137,20 @@ impl ToString for Team<'_> {
     fn to_string(&self) -> String {
         create_row(
             self.name,
-            &self.matches.to_string(),
-            &self.wins.to_string(),
-            &self.draws.to_string(),
-            &self.losses.to_string(),
-            &self.points.to_string()
+            &self.matches().to_string(),
+            &self.wins().to_string(),
+            &self.draws().to_string(),
+            &self.losses().to_string(),
+            &self.points().to_string()
         )
     }
+}
+
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Clone, Copy)]
+enum Outcome {
+    Win = 3,
+    Loss = 0,
+    Draw = 1,
 }
 
 fn create_row(
