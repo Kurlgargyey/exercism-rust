@@ -67,15 +67,10 @@ impl ToString for Tally<'_> {
         for team in self.0.values() {
             ordered_teams.insert(team);
         }
-        //ordered_teams.sort();
-        println!("building string representation of {:?}", ordered_teams);
 
         let team_stats = ordered_teams
             .into_iter()
-            .map(|team| {
-                println!("{} scored {} points.", team.name, team.points);
-                team.to_string()
-            })
+            .map(|team| { team.to_string() })
             .collect::<Vec<String>>()
             .join("\n");
 
