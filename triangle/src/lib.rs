@@ -1,12 +1,14 @@
-pub struct Triangle;
+pub struct Triangle([u64; 3]);
 
 impl Triangle {
     pub fn build(sides: [u64; 3]) -> Option<Triangle> {
-        todo!("Construct new Triangle from following sides: {sides:?}. Return None if the sides are invalid.");
+        Some(Triangle(sides))
     }
 
     pub fn is_equilateral(&self) -> bool {
-        todo!("Determine if the Triangle is equilateral.");
+        let mut sides = self.0.into_iter();
+        let first = sides.next().unwrap();
+        sides.all(|side| side == first)
     }
 
     pub fn is_scalene(&self) -> bool {

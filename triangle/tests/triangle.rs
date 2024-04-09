@@ -9,7 +9,7 @@ mod equilateral {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn any_side_is_unequal() {
         let input = [2, 3, 2];
         let output = Triangle::build(input).unwrap();
@@ -17,7 +17,7 @@ mod equilateral {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn no_sides_are_equal() {
         let input = [5, 4, 6];
         let output = Triangle::build(input).unwrap();
@@ -25,7 +25,7 @@ mod equilateral {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     #[cfg(feature = "generic")]
     fn sides_may_be_floats() {
         let input = [0.5, 0.5, 0.5];
@@ -38,7 +38,7 @@ mod isosceles {
     use triangle::Triangle;
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn last_two_sides_are_equal() {
         let input = [3, 4, 4];
         let output = Triangle::build(input).unwrap();
