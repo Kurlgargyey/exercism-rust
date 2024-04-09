@@ -46,7 +46,7 @@ mod isosceles {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn first_two_sides_are_equal() {
         let input = [4, 4, 3];
         let output = Triangle::build(input).unwrap();
@@ -54,7 +54,7 @@ mod isosceles {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn first_and_last_sides_are_equal() {
         let input = [4, 3, 4];
         let output = Triangle::build(input).unwrap();
@@ -62,7 +62,7 @@ mod isosceles {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn equilateral_triangles_are_also_isosceles() {
         let input = [4, 4, 4];
         let output = Triangle::build(input).unwrap();
@@ -70,7 +70,7 @@ mod isosceles {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn no_sides_are_equal() {
         let input = [2, 3, 4];
         let output = Triangle::build(input).unwrap();
@@ -78,7 +78,7 @@ mod isosceles {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     #[cfg(feature = "generic")]
     fn sides_may_be_floats() {
         let input = [0.5, 0.4, 0.5];
@@ -91,7 +91,7 @@ mod scalene {
     use triangle::Triangle;
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn no_sides_are_equal() {
         let input = [5, 4, 6];
         let output = Triangle::build(input).unwrap();
@@ -99,7 +99,7 @@ mod scalene {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn all_sides_are_equal() {
         let input = [4, 4, 4];
         let output = Triangle::build(input).unwrap();
@@ -107,7 +107,7 @@ mod scalene {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn first_and_second_sides_are_equal() {
         let input = [4, 4, 3];
         let output = Triangle::build(input).unwrap();
@@ -115,7 +115,7 @@ mod scalene {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn first_and_third_sides_are_equal() {
         let input = [3, 4, 3];
         let output = Triangle::build(input).unwrap();
@@ -123,7 +123,7 @@ mod scalene {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn second_and_third_sides_are_equal() {
         let input = [4, 3, 3];
         let output = Triangle::build(input).unwrap();
@@ -131,7 +131,7 @@ mod scalene {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     #[cfg(feature = "generic")]
     fn sides_may_be_floats() {
         let input = [0.5, 0.4, 0.6];
@@ -144,7 +144,7 @@ mod invalid {
     use triangle::Triangle;
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn all_zero_sides_is_not_a_triangle() {
         let input = [0, 0, 0];
         let output = Triangle::build(input);
@@ -152,7 +152,7 @@ mod invalid {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn first_triangle_inequality_violation() {
         let input = [1, 1, 3];
         let output = Triangle::build(input);
@@ -160,7 +160,7 @@ mod invalid {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn second_triangle_inequality_violation() {
         let input = [1, 3, 1];
         let output = Triangle::build(input);
@@ -168,7 +168,7 @@ mod invalid {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn third_triangle_inequality_violation() {
         let input = [3, 1, 1];
         let output = Triangle::build(input);
@@ -176,7 +176,7 @@ mod invalid {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     fn may_not_violate_triangle_inequality() {
         let input = [7, 3, 2];
         let output = Triangle::build(input);
