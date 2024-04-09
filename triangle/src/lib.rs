@@ -23,7 +23,7 @@ impl<T: Into<f64> + PartialEq + Clone + Copy> Triangle<T> {
         let sum = (angle_a + angle_b + angle_c) as f32;
         println!("the three angles are {angle_a}, {angle_b}, {angle_c}");
         println!("the sum of all angles is {sum}");
-        sum != std::f32::consts::PI
+        sum == std::f32::consts::PI
     }
     fn angle(side1: f64, side2: f64, side3: f64) -> f64 {
         ((side1.powf(2.0) + side2.powf(2.0) - side3.powf(2.0)) / 2.0 / side1 / side2).acos()
