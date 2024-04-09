@@ -66,7 +66,7 @@ impl ToString for Tally<'_> {
         println!("building string representation of {:?}", ordered_teams);
 
         for team in self.0.values() {
-            ordered_teams.insert(team);
+            println!("{:?}",ordered_teams.insert(team));
         }
 
         let team_stats = ordered_teams
