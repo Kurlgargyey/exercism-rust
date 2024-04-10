@@ -1,11 +1,13 @@
-#[derive(PartialEq, Eq, Debug)]
+use gcd;
+
+#[derive(PartialEq, Eq, Debug, Default)]
 pub enum Bucket {
-    One,
+    #[default] One,
     Two,
 }
 
 /// A struct to hold your results in.
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Default)]
 pub struct BucketStats {
     /// The total number of "moves" it should take to reach the desired number of liters, including
     /// the first fill.
@@ -21,9 +23,17 @@ pub fn solve(
     capacity_1: u8,
     capacity_2: u8,
     goal: u8,
-    start_bucket: &Bucket,
+    start_bucket: &Bucket
 ) -> Option<BucketStats> {
-    todo!(
-        "Given one bucket of capacity {capacity_1}, another of capacity {capacity_2}, starting with {start_bucket:?}, find pours to reach {goal}, or None if impossible"
-    );
+    if !solvable(capacity_1, capacity_2, goal) {
+        return None;
+    }
+
+    use Bucket::*;
+
+    Some(BucketStats::default())
+}
+
+fn solvable(capacity_1: u8, capacity_2: u8, goal: u8) -> bool {
+    !(goal > capacity_1 && goal > capacity_2) && goal % gcd::binary_u8(capacity_1, capacity_2) == 0
 }

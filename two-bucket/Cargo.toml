@@ -2,3 +2,6 @@
 edition = "2021"
 name = "two-bucket"
 version = "1.4.0"
+
+[dependencies]
+gcd = "2.3.0"
