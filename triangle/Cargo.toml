@@ -7,4 +7,9 @@ version = "0.0.0"
 generic = []
 
 [dependencies]
+criterion = "0.5.1"
 itertools = "0.12.1"
+
+[[bench]]
+name = "bench_triangle_detection"
+harness = false
