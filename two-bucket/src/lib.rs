@@ -13,16 +13,26 @@ pub struct Jug {
 }
 
 impl Jug {
-    pub fn empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.content == 0
     }
 
-    pub fn full(&self) -> bool {
+    pub fn is_full(&self) -> bool {
         self.content == self.capacity
     }
 
-    pub fn free(&self) -> u8 {
+    pub fn free_capacity(&self) -> u8 {
         self.capacity - self.content
+    }
+
+    pub fn fill(&mut self, amount: u8) {
+        self.content = std::cmp::min(self.capacity, self.content + amount);
+    }
+
+    pub fn pour(&mut self, other: &mut Jug) {
+        let other_free = other.free_capacity();
+        other.fill(self.content);
+        self.content -= other_free;
     }
 }
 
@@ -48,8 +58,10 @@ pub fn solve(
     if !solvable(capacity_1, capacity_2, goal) {
         return None;
     }
-
     use Bucket::*;
+
+    let mut jug_1 = Jug { id: One, capacity: capacity_1, content: 0 };
+    let mut jug_2 = Jug { id: Two, capacity: capacity_2, content: 0 };
 
     Some(BucketStats::default())
 }
