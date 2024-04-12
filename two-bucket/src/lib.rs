@@ -107,9 +107,10 @@ fn pour_continually(service: &mut Jug, target: &mut Jug, goal: u8) {
         println!("Service jug ({:?}) is empty!", service.id);
         service.fill_up();
     } else if target.capacity == goal {
+        println!("Target jug capacity ({:?}) fits the goal!", service.id);
         target.fill_up()
     } else if target.is_full() {
-        println!("target jug ({:?}) is empty!", target.id);
+        println!("Target jug ({:?}) is full!", target.id);
         target.dump();
     } else {
         println!("Pouring!");
