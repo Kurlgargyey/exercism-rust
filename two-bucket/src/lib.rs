@@ -25,10 +25,6 @@ impl Jug {
         self.capacity - self.content
     }
 
-    pub fn fill(&mut self, amount: u8) {
-        self.content = std::cmp::min(self.capacity, self.content + amount);
-    }
-
     pub fn fill_up(&mut self) {
         self.content = self.capacity;
     }
@@ -38,7 +34,7 @@ impl Jug {
 
     pub fn pour(&mut self, other: &mut Jug) {
         let other_free = other.free_capacity();
-        other.fill(self.content);
+        other.content = std::cmp::min(other.capacity, other.content + self.content);
         self.content -= std::cmp::min(other_free, self.content);
     }
 }
