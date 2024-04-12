@@ -29,10 +29,17 @@ impl Jug {
         self.content = std::cmp::min(self.capacity, self.content + amount);
     }
 
+    pub fn fill_up(&mut self) {
+        self.content = self.capacity;
+    }
+    pub fn dump(&mut self) {
+        self.content = 0;
+    }
+
     pub fn pour(&mut self, other: &mut Jug) {
         let other_free = other.free_capacity();
         other.fill(self.content);
-        self.content -= other_free;
+        self.content -= std::cmp::min(other_free, self.content);
     }
 }
 
@@ -60,13 +67,46 @@ pub fn solve(
     }
     use Bucket::*;
 
+    let mut moves = 1;
     let mut jug_1 = Jug { id: One, capacity: capacity_1, content: 0 };
     let mut jug_2 = Jug { id: Two, capacity: capacity_2, content: 0 };
 
-    Some(BucketStats::default())
+    match start_bucket {
+        One => {
+            while jug_1.content != goal && jug_2.content != goal {
+                moves += 1;
+                pour_continually(&mut jug_1, &mut jug_2);
+            }
+        }
+        Two => {
+            while jug_1.content != goal && jug_2.content != goal {
+                moves += 1;
+                pour_continually(&mut jug_2, &mut jug_1);
+            }
+        }
+    }
+
+    let (goal_bucket, other_bucket) = if jug_1.content == goal {
+        (jug_1.id, jug_2.content)
+    } else {
+        (jug_2.id, jug_1.content)
+    };
+
+    Some(BucketStats { moves, goal_bucket, other_bucket })
 }
 
 fn solvable(capacity_1: u8, capacity_2: u8, goal: u8) -> bool {
     goal <= std::cmp::max(capacity_1, capacity_2) &&
         goal % gcd::binary_u8(capacity_1, capacity_2) == 0
+}
+
+fn pour_continually(service: &mut Jug, target: &mut Jug) {
+    if service.is_empty() {
+        service.fill_up();
+    }
+    if target.is_full() {
+        target.dump();
+    } else {
+        service.pour(target);
+    }
 }
