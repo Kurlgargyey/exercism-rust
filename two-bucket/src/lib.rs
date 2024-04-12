@@ -76,14 +76,14 @@ pub fn solve(
             while jug_1.content != goal && jug_2.content != goal {
                 moves += 1;
                 println!("Move number {}", moves);
-                pour_continually(&mut jug_1, &mut jug_2);
+                pour_continually(&mut jug_1, &mut jug_2, goal);
             }
         }
         Two => {
             while jug_1.content != goal && jug_2.content != goal {
                 moves += 1;
                 println!("Move number {}", moves);
-                pour_continually(&mut jug_2, &mut jug_1);
+                pour_continually(&mut jug_2, &mut jug_1, goal);
             }
         }
     }
@@ -102,10 +102,12 @@ fn solvable(capacity_1: u8, capacity_2: u8, goal: u8) -> bool {
         goal % gcd::binary_u8(capacity_1, capacity_2) == 0
 }
 
-fn pour_continually(service: &mut Jug, target: &mut Jug) {
+fn pour_continually(service: &mut Jug, target: &mut Jug, goal: u8) {
     if service.is_empty() {
         println!("Service jug ({:?}) is empty!", service.id);
         service.fill_up();
+    } else if target.capacity == goal {
+        target.fill_up()
     } else if target.is_full() {
         println!("target jug ({:?}) is empty!", target.id);
         target.dump();
