@@ -12,7 +12,7 @@ fn measure_using_bucket_one_of_size_3_and_bucket_two_of_size_5_start_with_bucket
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn measure_using_bucket_one_of_size_3_and_bucket_two_of_size_5_start_with_bucket_two() {
     let output = solve(3, 5, 1, &Bucket::Two);
     let expected = Some(BucketStats {
@@ -24,7 +24,7 @@ fn measure_using_bucket_one_of_size_3_and_bucket_two_of_size_5_start_with_bucket
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn measure_using_bucket_one_of_size_7_and_bucket_two_of_size_11_start_with_bucket_one() {
     let output = solve(7, 11, 2, &Bucket::One);
     let expected = Some(BucketStats {

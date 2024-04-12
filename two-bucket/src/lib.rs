@@ -67,7 +67,7 @@ pub fn solve(
     }
     use Bucket::*;
 
-    let mut moves = 1;
+    let mut moves = 0;
     let mut jug_1 = Jug { id: One, capacity: capacity_1, content: 0 };
     let mut jug_2 = Jug { id: Two, capacity: capacity_2, content: 0 };
 
@@ -75,12 +75,14 @@ pub fn solve(
         One => {
             while jug_1.content != goal && jug_2.content != goal {
                 moves += 1;
+                println!("Move number {}", moves);
                 pour_continually(&mut jug_1, &mut jug_2);
             }
         }
         Two => {
             while jug_1.content != goal && jug_2.content != goal {
                 moves += 1;
+                println!("Move number {}", moves);
                 pour_continually(&mut jug_2, &mut jug_1);
             }
         }
@@ -102,11 +104,13 @@ fn solvable(capacity_1: u8, capacity_2: u8, goal: u8) -> bool {
 
 fn pour_continually(service: &mut Jug, target: &mut Jug) {
     if service.is_empty() {
+        println!("Service jug ({:?}) is empty!", service.id);
         service.fill_up();
-    }
-    if target.is_full() {
+    } else if target.is_full() {
+        println!("target jug ({:?}) is empty!", target.id);
         target.dump();
     } else {
+        println!("Pouring!");
         service.pour(target);
     }
 }
