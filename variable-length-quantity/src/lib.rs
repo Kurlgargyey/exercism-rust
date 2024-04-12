@@ -18,10 +18,10 @@ fn encode(number: u32) -> Vec<u8> {
     let preceding_byte: u8 = 0b10000000;
     let final_byte: u8 = 0b01111111;
     result.push(final_byte & number.to_ne_bytes().iter().next().unwrap());
-    number = number << 7;
+    number = number >> 7;
     while number != 0 {
         result.push(preceding_byte | number.to_ne_bytes().iter().next().unwrap());
-        number = number << 7;
+        number = number >> 7;
     }
     result
 }

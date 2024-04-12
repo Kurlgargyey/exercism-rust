@@ -9,7 +9,7 @@ fn zero() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn arbitrary_single_byte() {
     let input = &[64];
     let output = vlq::to_bytes(input);
@@ -18,7 +18,7 @@ fn arbitrary_single_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn largest_single_byte() {
     let input = &[127];
     let output = vlq::to_bytes(input);
@@ -158,7 +158,21 @@ fn many_multi_byte_values() {
     let input = &[8192, 1193046, 268435455, 0, 16383, 16384];
     let output = vlq::to_bytes(input);
     let expected = vec![
-        0xc0, 0x0, 0xc8, 0xe8, 0x56, 0xff, 0xff, 0xff, 0x7f, 0x0, 0xff, 0x7f, 0x81, 0x80, 0x0,
+        0xc0,
+        0x0,
+        0xc8,
+        0xe8,
+        0x56,
+        0xff,
+        0xff,
+        0xff,
+        0x7f,
+        0x0,
+        0xff,
+        0x7f,
+        0x81,
+        0x80,
+        0x0
     ];
     assert_eq!(output, expected);
 }
