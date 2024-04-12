@@ -27,7 +27,7 @@ fn largest_single_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn smallest_double_byte() {
     let input = &[128];
     let output = vlq::to_bytes(input);
@@ -36,7 +36,7 @@ fn smallest_double_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn arbitrary_double_byte() {
     let input = &[8192];
     let output = vlq::to_bytes(input);
@@ -45,7 +45,7 @@ fn arbitrary_double_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn largest_double_byte() {
     let input = &[16383];
     let output = vlq::to_bytes(input);
@@ -54,7 +54,7 @@ fn largest_double_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn smallest_triple_byte() {
     let input = &[16384];
     let output = vlq::to_bytes(input);
@@ -63,7 +63,7 @@ fn smallest_triple_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn arbitrary_triple_byte() {
     let input = &[1048576];
     let output = vlq::to_bytes(input);
@@ -72,7 +72,7 @@ fn arbitrary_triple_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn largest_triple_byte() {
     let input = &[2097151];
     let output = vlq::to_bytes(input);
@@ -81,7 +81,7 @@ fn largest_triple_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn smallest_quadruple_byte() {
     let input = &[2097152];
     let output = vlq::to_bytes(input);
@@ -90,7 +90,7 @@ fn smallest_quadruple_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn arbitrary_quadruple_byte() {
     let input = &[134217728];
     let output = vlq::to_bytes(input);
@@ -99,7 +99,7 @@ fn arbitrary_quadruple_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn largest_quadruple_byte() {
     let input = &[268435455];
     let output = vlq::to_bytes(input);
@@ -108,7 +108,7 @@ fn largest_quadruple_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn smallest_quintuple_byte() {
     let input = &[268435456];
     let output = vlq::to_bytes(input);
@@ -117,7 +117,7 @@ fn smallest_quintuple_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn arbitrary_quintuple_byte() {
     let input = &[4278190080];
     let output = vlq::to_bytes(input);
@@ -126,7 +126,7 @@ fn arbitrary_quintuple_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn maximum_32_bit_integer_input() {
     let input = &[4294967295];
     let output = vlq::to_bytes(input);
@@ -135,7 +135,7 @@ fn maximum_32_bit_integer_input() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn two_single_byte_values() {
     let input = &[64, 127];
     let output = vlq::to_bytes(input);
