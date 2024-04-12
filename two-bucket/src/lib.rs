@@ -6,6 +6,26 @@ pub enum Bucket {
     Two,
 }
 
+pub struct Jug {
+    pub id: Bucket,
+    capacity: u8,
+    pub content: u8,
+}
+
+impl Jug {
+    pub fn empty(&self) -> bool {
+        self.content == 0
+    }
+
+    pub fn full(&self) -> bool {
+        self.content == self.capacity
+    }
+
+    pub fn free(&self) -> u8 {
+        self.capacity - self.content
+    }
+}
+
 /// A struct to hold your results in.
 #[derive(PartialEq, Eq, Debug, Default)]
 pub struct BucketStats {
@@ -35,5 +55,6 @@ pub fn solve(
 }
 
 fn solvable(capacity_1: u8, capacity_2: u8, goal: u8) -> bool {
-    !(goal > capacity_1 && goal > capacity_2) && goal % gcd::binary_u8(capacity_1, capacity_2) == 0
+    goal <= std::cmp::max(capacity_1, capacity_2) &&
+        goal % gcd::binary_u8(capacity_1, capacity_2) == 0
 }
