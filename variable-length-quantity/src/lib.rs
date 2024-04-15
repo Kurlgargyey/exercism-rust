@@ -51,11 +51,11 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Vec<u32>, Error> {
 }
 
 fn extract_number_value(byte: &u8) -> u32 {
-    (byte & self::VALUE_BITS) as u32
+    (self::VALUE_BITS & byte) as u32
 }
 
 fn is_final_byte(byte: &u8) -> bool {
-    (byte & self::SIGN_BIT) == 0
+    (self::SIGN_BIT & byte) == 0
 }
 
 fn set_sign_bit(byte: u8) -> u8 {
