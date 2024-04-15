@@ -4,12 +4,11 @@ use rand::Rng;
 
 pub struct Robot(String);
 
-const TAKEN_NAMES: Mutex<Vec<String>> = Mutex::new(Vec::<String>::new());
+static TAKEN_NAMES: Mutex<Vec<String>> = Mutex::new(Vec::new());
 
 impl Robot {
     pub fn new() -> Self {
         let name = generate_name();
-        println!("{}", name);
         Robot(name)
     }
 
@@ -25,18 +24,23 @@ impl Robot {
 }
 
 fn generate_name() -> String {
+    let mut name = random_name();
+    while TAKEN_NAMES.lock().unwrap().contains(&name) {
+        name = random_name();
+    }
+    block_name(&name);
+    println!("Taken names: {:?}", TAKEN_NAMES.lock().unwrap());
+    name
+}
+
+fn random_name() -> String {
     let mut rng = rand::thread_rng();
-    let mut name = format!(
+    format!(
         "{}{}{:03}",
         rng.gen_range(b'A'..=b'Z') as char,
         rng.gen_range(b'A'..=b'Z') as char,
         rng.gen_range(0..=999)
-    );
-    while TAKEN_NAMES.lock().unwrap().contains(&name) {
-        name = generate_name();
-    }
-    block_name(&name);
-    name
+    )
 }
 
 fn free_name(free_name: &String) {
