@@ -29,7 +29,6 @@ fn generate_name() -> String {
         name = random_name();
     }
     block_name(&name);
-    println!("Taken names: {:?}", TAKEN_NAMES.lock().unwrap());
     name
 }
 
