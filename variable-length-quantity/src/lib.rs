@@ -3,8 +3,8 @@ pub enum Error {
     IncompleteNumber,
 }
 
-const PRECEDING_BYTE: u8 = 0b10000000;
-const FINAL_BYTE: u8 = 0b01111111;
+const SIGN_BIT: u8 = 0b10000000;
+const VALUE_BITS: u8 = 0b01111111;
 /// Convert a list of numbers to a stream of bytes encoded with variable length encoding.
 pub fn to_bytes(values: &[u32]) -> Vec<u8> {
     let mut result = Vec::<u8>::new();
@@ -18,10 +18,12 @@ fn encode(number: u32) -> Vec<u8> {
     let mut result = Vec::<u8>::new();
     let mut number = number;
 
-    result.push(self::FINAL_BYTE & number.to_ne_bytes().iter().next().unwrap());
+    let next_byte = number.to_ne_bytes().into_iter().next().unwrap();
+    result.push(set_value_bits_only(next_byte));
     number >>= 7;
     while number != 0 {
-        result.push(self::PRECEDING_BYTE | number.to_ne_bytes().iter().next().unwrap());
+        let next_byte = number.to_ne_bytes().into_iter().next().unwrap();
+        result.push(set_sign_bit(next_byte));
         number >>= 7;
     }
     result.into_iter().rev().collect()
@@ -49,9 +51,17 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Vec<u32>, Error> {
 }
 
 fn extract_number_value(byte: &u8) -> u32 {
-    (byte & self::FINAL_BYTE) as u32
+    (byte & self::VALUE_BITS) as u32
 }
 
 fn is_final_byte(byte: &u8) -> bool {
-    (byte & self::PRECEDING_BYTE) == 0
+    (byte & self::SIGN_BIT) == 0
+}
+
+fn set_sign_bit(byte: u8) -> u8 {
+    self::SIGN_BIT | byte
+}
+
+fn set_value_bits_only(byte: u8) -> u8 {
+    self::VALUE_BITS & byte
 }
