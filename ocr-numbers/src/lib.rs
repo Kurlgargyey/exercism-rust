@@ -9,11 +9,11 @@ pub enum Error {
 
 pub fn convert(input: &str) -> Result<String, Error> {
     let lines: Vec<_> = input.split("\n").collect();
-    check_format(&lines)?;
+    valid_format(&lines)?;
     Ok(String::new())
 }
 
-fn check_format(lines: &Vec<&str>) -> Result<(), Error> {
+fn valid_format(lines: &Vec<&str>) -> Result<(), Error> {
     if lines.len() % 4 != 0 {
         return Err(Error::InvalidRowCount(lines.len()));
     }
