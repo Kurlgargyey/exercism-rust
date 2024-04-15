@@ -144,7 +144,7 @@ fn two_single_byte_values() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn two_multi_byte_values() {
     let input = &[16384, 1193046];
     let output = vlq::to_bytes(input);
@@ -153,7 +153,7 @@ fn two_multi_byte_values() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn many_multi_byte_values() {
     let input = &[8192, 1193046, 268435455, 0, 16383, 16384];
     let output = vlq::to_bytes(input);
@@ -178,7 +178,7 @@ fn many_multi_byte_values() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn one_byte() {
     let input = &[0x7f];
     let output = vlq::from_bytes(input);
@@ -187,7 +187,7 @@ fn one_byte() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn two_bytes() {
     let input = &[0xc0, 0x0];
     let output = vlq::from_bytes(input);
@@ -196,7 +196,7 @@ fn two_bytes() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn three_bytes() {
     let input = &[0xff, 0xff, 0x7f];
     let output = vlq::from_bytes(input);
@@ -205,7 +205,7 @@ fn three_bytes() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn four_bytes() {
     let input = &[0x81, 0x80, 0x80, 0x0];
     let output = vlq::from_bytes(input);
@@ -214,7 +214,7 @@ fn four_bytes() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn maximum_32_bit_integer() {
     let input = &[0x8f, 0xff, 0xff, 0xff, 0x7f];
     let output = vlq::from_bytes(input);
@@ -223,7 +223,7 @@ fn maximum_32_bit_integer() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn incomplete_sequence_causes_error() {
     let input = &[0xff];
     let output = vlq::from_bytes(input);

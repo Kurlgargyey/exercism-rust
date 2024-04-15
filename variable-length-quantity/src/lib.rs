@@ -19,10 +19,10 @@ fn encode(number: u32) -> Vec<u8> {
     let mut number = number;
 
     result.push(self::FINAL_BYTE & number.to_ne_bytes().iter().next().unwrap());
-    number = number >> 7;
+    number >>= 7;
     while number != 0 {
         result.push(self::PRECEDING_BYTE | number.to_ne_bytes().iter().next().unwrap());
-        number = number >> 7;
+        number >>= 7;
     }
     result.into_iter().rev().collect()
 }
@@ -33,9 +33,22 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Vec<u32>, Error> {
     if bytes.len() == 0 {
         return Ok(result);
     }
-    let mut number = 0;
+    let mut subresult: u32 = 0;
     for byte in bytes {
-        number += byte & self::FINAL_BYTE;
+        subresult += extract_number_value(byte);
+        if is_final_byte(byte) {
+            result.push(subresult);
+            subresult = 0;
+        }
+        subresult <<= 7;
     }
-    todo!("Convert the list of bytes {bytes:?} to a list of numbers")
+    Ok(result)
+}
+
+fn extract_number_value(byte: &u8) -> u32 {
+    (byte & self::FINAL_BYTE) as u32
+}
+
+fn is_final_byte(byte: &u8) -> bool {
+    (byte & self::PRECEDING_BYTE) == 0
 }
