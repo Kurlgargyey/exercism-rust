@@ -9,38 +9,98 @@ pub enum Direction {
     West,
 }
 
-pub struct Robot;
+pub struct Robot {
+    x: i32,
+    y: i32,
+    d: Direction,
+}
 
+use self::Direction::*;
 impl Robot {
     pub fn new(x: i32, y: i32, d: Direction) -> Self {
-        todo!("Create a robot at (x, y) ({x}, {y}) facing {d:?}")
+        Robot { x, y, d }
     }
 
     #[must_use]
     pub fn turn_right(self) -> Self {
-        todo!()
+        Robot {
+            x: self.x,
+            y: self.y,
+            d: {
+                match self.d {
+                    North => East,
+                    East => South,
+                    South => West,
+                    West => North,
+                }
+            },
+        }
     }
 
     #[must_use]
     pub fn turn_left(self) -> Self {
-        todo!()
+        Robot {
+            x: self.x,
+            y: self.y,
+            d: {
+                match self.d {
+                    North => West,
+                    East => North,
+                    South => East,
+                    West => South,
+                }
+            },
+        }
     }
 
     #[must_use]
     pub fn advance(self) -> Self {
-        todo!()
+        Robot {
+            x: {
+                match self.direction() {
+                    East => self.x + 1,
+                    West => self.x - 1,
+                    _ => self.x,
+                }
+            },
+            y: {
+                match self.direction() {
+                    North => self.y + 1,
+                    South => self.y - 1,
+                    _ => self.y,
+                }
+            },
+            d: self.d,
+        }
     }
 
     #[must_use]
     pub fn instructions(self, instructions: &str) -> Self {
-        todo!("Follow the given sequence of instructions: {instructions}")
+        let mut result = self;
+        for char in instructions.chars() {
+            match char {
+                'R' => {
+                    result = result.turn_right();
+                }
+                'L' => {
+                    result = result.turn_left();
+                }
+                'A' => {
+                    result = result.advance();
+                }
+                _ => {
+                    panic!("I don't know this instruction!");
+                }
+            }
+        }
+        result
     }
 
     pub fn position(&self) -> (i32, i32) {
-        todo!()
+        (self.x, self.y)
     }
 
     pub fn direction(&self) -> &Direction {
-        todo!()
+        &self.d
     }
 }
