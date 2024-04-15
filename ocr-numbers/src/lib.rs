@@ -8,5 +8,19 @@ pub enum Error {
 }
 
 pub fn convert(input: &str) -> Result<String, Error> {
-    todo!("Convert the input '{input}' to a string");
+    let lines: Vec<_> = input.split("\n").collect();
+    check_format(&lines)?;
+    Ok(String::new())
+}
+
+fn check_format(lines: &Vec<&str>) -> Result<(), Error> {
+    if lines.len() % 4 != 0 {
+        return Err(Error::InvalidRowCount(lines.len()));
+    }
+    for line in lines.iter() {
+        if line.len() % 3 != 0 {
+            return Err(Error::InvalidColumnCount(line.len()));
+        }
+    }
+    Ok(())
 }

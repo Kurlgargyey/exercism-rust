@@ -11,7 +11,7 @@ fn input_with_lines_not_multiple_of_four_is_error() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn input_with_columns_not_multiple_of_three_is_error() {
     #[rustfmt::skip]
     let input = "    \n".to_string() +
