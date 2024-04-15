@@ -44,7 +44,7 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Vec<u32>, Error> {
         }
         subresult <<= 7;
     }
-    if subresult > 0 {
+    if result.len() == 0 {
         return Err(Error::IncompleteNumber);
     }
     Ok(result)

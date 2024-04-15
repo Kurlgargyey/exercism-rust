@@ -232,7 +232,7 @@ fn incomplete_sequence_causes_error() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn incomplete_sequence_causes_error_even_if_value_is_zero() {
     let input = &[0x80];
     let output = vlq::from_bytes(input);
@@ -241,7 +241,7 @@ fn incomplete_sequence_causes_error_even_if_value_is_zero() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn multiple_values() {
     let input = &[
         0xc0, 0x0, 0xc8, 0xe8, 0x56, 0xff, 0xff, 0xff, 0x7f, 0x0, 0xff, 0x7f, 0x81, 0x80, 0x0,
