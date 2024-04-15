@@ -24,3 +24,21 @@ fn valid_format(lines: &Vec<&str>) -> Result<(), Error> {
     }
     Ok(())
 }
+
+fn zip_lines(lines: &Vec<&str>) -> Vec<String> {
+    for block in lines
+        .into_iter()
+        .map(|line| convert_line_to_triplets(line))
+        .collect::<Vec<_>>()
+        .chunks(4) {
+    }
+    Vec::new()
+}
+
+fn convert_line_to_triplets(line: &str) -> Vec<String> {
+    line.chars()
+        .collect::<Vec<_>>()
+        .chunks(3)
+        .map(|chunk| chunk.iter().collect::<String>())
+        .collect::<Vec<_>>()
+}
