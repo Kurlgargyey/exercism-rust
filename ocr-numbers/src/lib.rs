@@ -10,6 +10,7 @@ pub enum Error {
 pub fn convert(input: &str) -> Result<String, Error> {
     let lines: Vec<_> = input.split("\n").collect();
     valid_format(&lines)?;
+    let lines = zip_lines(&lines);
     Ok(String::new())
 }
 
@@ -25,14 +26,30 @@ fn valid_format(lines: &Vec<&str>) -> Result<(), Error> {
     Ok(())
 }
 
-fn zip_lines(lines: &Vec<&str>) -> Vec<String> {
-    for block in lines
+fn zip_lines(lines: &Vec<&str>) -> Vec<Vec<String>> {
+    lines
         .into_iter()
         .map(|line| convert_line_to_triplets(line))
         .collect::<Vec<_>>()
-        .chunks(4) {
-    }
-    Vec::new()
+        .chunks(4)
+        .map(|block| zip_quadruplet_to_vec(block))
+        .collect::<Vec<_>>()
+}
+
+fn zip_quadruplet_to_vec(block: &[Vec<String>]) -> Vec<String> {
+    block[0]
+        .iter()
+        .zip(block[1].iter())
+        .zip(block[2].iter().zip(block[3].iter()))
+        .fold(Vec::new(), |mut result_vec, ((line1, line2), (line3, line4))| {
+            let mut result = String::new();
+            result.push_str(line1);
+            result.push_str(line2);
+            result.push_str(line3);
+            result.push_str(line4);
+            result_vec.push(result);
+            result_vec
+        })
 }
 
 fn convert_line_to_triplets(line: &str) -> Vec<String> {
