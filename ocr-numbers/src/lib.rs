@@ -11,7 +11,44 @@ pub fn convert(input: &str) -> Result<String, Error> {
     let lines: Vec<_> = input.split("\n").collect();
     valid_format(&lines)?;
     let lines = zip_lines(&lines);
-    Ok(String::new())
+
+    let lines: Vec<String> = lines
+        .into_iter()
+        .map(|line|
+            line.into_iter().fold(String::new(), |mut line_string, ocr_string| {
+                line_string.push(ocr_string.0);
+                line_string
+            })
+        )
+        .collect();
+
+    Ok(lines.join(","))
+}
+
+struct OCRString(char);
+
+impl OCRString {
+    fn new(input: &str) -> Self {
+        OCRString(match input {
+            " _ | ||_|   " => '0',
+            "     |  |   " => '1',
+            " _  _||_    " => '2',
+            " _  _| _|   " => '3',
+            "   |_|  |   " => '4',
+            " _ |_  _|   " => '5',
+            " _ |_ |_|   " => '6',
+            " _   |  |   " => '7',
+            " _ |_||_|   " => '8',
+            " _ |_| _|   " => '9',
+            _ => '?',
+        })
+    }
+}
+
+impl ToString for OCRString {
+    fn to_string(&self) -> String {
+        self.0.to_string()
+    }
 }
 
 fn valid_format(lines: &Vec<&str>) -> Result<(), Error> {
@@ -26,7 +63,7 @@ fn valid_format(lines: &Vec<&str>) -> Result<(), Error> {
     Ok(())
 }
 
-fn zip_lines(lines: &Vec<&str>) -> Vec<Vec<String>> {
+fn zip_lines(lines: &Vec<&str>) -> Vec<Vec<OCRString>> {
     lines
         .into_iter()
         .map(|line| convert_line_to_triplets(line))
@@ -36,7 +73,7 @@ fn zip_lines(lines: &Vec<&str>) -> Vec<Vec<String>> {
         .collect::<Vec<_>>()
 }
 
-fn zip_quadruplet_to_vec(block: &[Vec<String>]) -> Vec<String> {
+fn zip_quadruplet_to_vec(block: &[Vec<String>]) -> Vec<OCRString> {
     block[0]
         .iter()
         .zip(block[1].iter())
@@ -47,7 +84,7 @@ fn zip_quadruplet_to_vec(block: &[Vec<String>]) -> Vec<String> {
             result.push_str(line2);
             result.push_str(line3);
             result.push_str(line4);
-            result_vec.push(result);
+            result_vec.push(OCRString::new(&result));
             result_vec
         })
 }
