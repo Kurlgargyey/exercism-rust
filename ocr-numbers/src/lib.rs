@@ -14,12 +14,12 @@ pub fn convert(input: &str) -> Result<String, Error> {
 
     let lines: Vec<String> = lines
         .into_iter()
-        .map(|line|
+        .map(|line| {
             line.into_iter().fold(String::new(), |mut line_string, ocr_string| {
                 line_string.push(ocr_string.0);
                 line_string
             })
-        )
+        })
         .collect();
 
     Ok(lines.join(","))
@@ -60,27 +60,25 @@ fn valid_format(lines: &Vec<&str>) -> Result<(), Error> {
 fn zip_lines(lines: &Vec<&str>) -> Vec<Vec<OCRString>> {
     lines
         .into_iter()
-        .map(|line| convert_line_to_triplets(line))
+        .map(|line| into_triplets(line))
         .collect::<Vec<_>>()
         .chunks(4)
-        .map(|block| zip_quadruplet_to_vec(block))
+        .map(|block| zip_into_vec(block))
         .collect::<Vec<_>>()
 }
 
-fn zip_quadruplet_to_vec(block: &[Vec<String>]) -> Vec<OCRString> {
+fn zip_into_vec(block: &[Vec<String>]) -> Vec<OCRString> {
     block[0]
         .iter()
         .zip(block[1].iter())
         .zip(block[2].iter().zip(block[3].iter()))
         .fold(Vec::new(), |mut result_vec, quadruplet| {
-            result_vec.push(convert_quadruplet_to_ocrstring(quadruplet));
+            result_vec.push(to_ocrstring(quadruplet));
             result_vec
         })
 }
 
-fn convert_quadruplet_to_ocrstring(
-    quadruplet: ((&String, &String), (&String, &String))
-) -> OCRString {
+fn to_ocrstring(quadruplet: ((&String, &String), (&String, &String))) -> OCRString {
     let ((line1, line2), (line3, line4)) = quadruplet;
     let mut result = String::new();
     result.push_str(line1);
@@ -90,7 +88,7 @@ fn convert_quadruplet_to_ocrstring(
     OCRString::new(&result)
 }
 
-fn convert_line_to_triplets(line: &str) -> Vec<String> {
+fn into_triplets(line: &str) -> Vec<String> {
     line.chars()
         .collect::<Vec<_>>()
         .chunks(3)
