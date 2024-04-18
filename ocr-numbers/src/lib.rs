@@ -45,12 +45,6 @@ impl OCRString {
     }
 }
 
-impl ToString for OCRString {
-    fn to_string(&self) -> String {
-        self.0.to_string()
-    }
-}
-
 fn valid_format(lines: &Vec<&str>) -> Result<(), Error> {
     if lines.len() % 4 != 0 {
         return Err(Error::InvalidRowCount(lines.len()));
@@ -78,15 +72,22 @@ fn zip_quadruplet_to_vec(block: &[Vec<String>]) -> Vec<OCRString> {
         .iter()
         .zip(block[1].iter())
         .zip(block[2].iter().zip(block[3].iter()))
-        .fold(Vec::new(), |mut result_vec, ((line1, line2), (line3, line4))| {
-            let mut result = String::new();
-            result.push_str(line1);
-            result.push_str(line2);
-            result.push_str(line3);
-            result.push_str(line4);
-            result_vec.push(OCRString::new(&result));
+        .fold(Vec::new(), |mut result_vec, quadruplet| {
+            result_vec.push(convert_quadruplet_to_ocrstring(quadruplet));
             result_vec
         })
+}
+
+fn convert_quadruplet_to_ocrstring(
+    quadruplet: ((&String, &String), (&String, &String))
+) -> OCRString {
+    let ((line1, line2), (line3, line4)) = quadruplet;
+    let mut result = String::new();
+    result.push_str(line1);
+    result.push_str(line2);
+    result.push_str(line3);
+    result.push_str(line4);
+    OCRString::new(&result)
 }
 
 fn convert_line_to_triplets(line: &str) -> Vec<String> {
