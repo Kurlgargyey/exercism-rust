@@ -36,20 +36,20 @@ pub enum RemoveCallbackError {
     NonexistentCallback,
 }
 
-pub struct Reactor<T, F: Fn(&[T]) -> T> {
+pub struct Reactor<T> {
     input_cells: HashMap<InputCellId, T>,
-    compute_cells: HashMap<ComputeCellId, (Vec<CellId>, F)>,
+    compute_cells: HashMap<ComputeCellId, (Vec<CellId>, Box<dyn Fn(&[T]) -> T>)>,
     next_input: u32,
     next_compute: u32,
     next_callback: u32,
 }
 
 // You are guaranteed that Reactor will only be tested against types that are Copy + PartialEq.
-impl<T: Copy + PartialEq, F: Fn(&[T]) -> T> Reactor<T, F> {
+impl<T: Copy + PartialEq> Reactor<T> {
     pub fn new() -> Self {
         Reactor {
             input_cells: HashMap::<InputCellId, T>::new(),
-            compute_cells: HashMap::<ComputeCellId, (Vec<CellId>, F)>::new(),
+            compute_cells: HashMap::<ComputeCellId, (Vec<CellId>, Fn(&[T]) -> T)>::new(),
             next_input: 0,
             next_compute: 0,
             next_callback: 0,
@@ -76,7 +76,7 @@ impl<T: Copy + PartialEq, F: Fn(&[T]) -> T> Reactor<T, F> {
     // Notice that there is no way to *remove* a cell.
     // This means that you may assume, without checking, that if the dependencies exist at creation
     // time they will continue to exist as long as the Reactor exists.
-    pub fn create_compute(
+    pub fn create_compute<F: Fn(&[T]) -> T>(
         &mut self,
         dependencies: &[CellId],
         compute_func: F
