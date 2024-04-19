@@ -18,28 +18,16 @@ pub struct InputCellId(u32);
 /// let compute: react::InputCellId = r.create_compute(&[react::CellId::Input(input)], |_| 222).unwrap();
 /// ```
 
-impl InputCellId {
-    fn new(id: u32) -> Self {
-        InputCellId(id)
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct ComputeCellId(u32);
 
-impl ComputeCellId {
-    fn new(id: u32) -> Self {
-        ComputeCellId(id)
-    }
+pub struct ComputeCell<'a, F> {
+    dependencies: &'a [CellId],
+    function: F,
 }
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct CallbackId(u32);
-
-impl CallbackId {
-    fn new(id: u32) -> Self {
-        CallbackId(id)
-    }
-}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum CellId {
@@ -54,8 +42,6 @@ pub enum RemoveCallbackError {
 }
 
 pub struct Reactor<T> {
-    // Just so that the compiler doesn't complain about an unused type parameter.
-    // You probably want to delete this field.
     input_cells: HashMap<InputCellId, T>,
     compute_cells: HashMap<ComputeCellId, T>,
     next_input: u32,
@@ -77,7 +63,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
 
     // Creates an input cell with the specified initial value, returning its ID.
     pub fn create_input(&mut self, initial: T) -> InputCellId {
-        let input_cell = InputCellId::new(self.next_input);
+        let input_cell = InputCellId(self.next_input);
         self.input_cells.insert(input_cell, initial);
         input_cell
     }
@@ -97,10 +83,19 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // time they will continue to exist as long as the Reactor exists.
     pub fn create_compute<F: Fn(&[T]) -> T>(
         &mut self,
-        _dependencies: &[CellId],
-        _compute_func: F
+        dependencies: &[CellId],
+        compute_func: F
     ) -> Result<ComputeCellId, CellId> {
-        todo!()
+        for id in dependencies {
+            if (
+                match id {
+                    CellId::Input(id) => id >= self.next_input,
+                    CellId::Compute(id) => id >= self.next_compute,
+                }
+            ) {
+                return Err(id);
+            }
+        }
     }
 
     // Retrieves the current value of the cell, or None if the cell does not exist.
