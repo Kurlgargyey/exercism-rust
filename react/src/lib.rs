@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 /// `InputCellId` is a unique identifier for an input cell.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct InputCellId();
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct InputCellId(u32);
 /// `ComputeCellId` is a unique identifier for a compute cell.
 /// Values of type `InputCellId` and `ComputeCellId` should not be mutually assignable,
 /// demonstrated by the following tests:
@@ -15,12 +17,31 @@ pub struct InputCellId();
 /// let input = r.create_input(111);
 /// let compute: react::InputCellId = r.create_compute(&[react::CellId::Input(input)], |_| 222).unwrap();
 /// ```
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct ComputeCellId();
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct CallbackId();
 
+impl InputCellId {
+    fn new(id: u32) -> Self {
+        InputCellId(id)
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct ComputeCellId(u32);
+
+impl ComputeCellId {
+    fn new(id: u32) -> Self {
+        ComputeCellId(id)
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct CallbackId(u32);
+
+impl CallbackId {
+    fn new(id: u32) -> Self {
+        CallbackId(id)
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum CellId {
     Input(InputCellId),
     Compute(ComputeCellId),
@@ -35,18 +56,30 @@ pub enum RemoveCallbackError {
 pub struct Reactor<T> {
     // Just so that the compiler doesn't complain about an unused type parameter.
     // You probably want to delete this field.
-    dummy: ::std::marker::PhantomData<T>,
+    input_cells: HashMap<InputCellId, T>,
+    compute_cells: HashMap<ComputeCellId, T>,
+    next_input: u32,
+    next_compute: u32,
+    next_callback: u32,
 }
 
 // You are guaranteed that Reactor will only be tested against types that are Copy + PartialEq.
 impl<T: Copy + PartialEq> Reactor<T> {
     pub fn new() -> Self {
-        todo!()
+        Reactor {
+            input_cells: HashMap::<InputCellId, T>::new(),
+            compute_cells: HashMap::<ComputeCellId, T>::new(),
+            next_input: 0,
+            next_compute: 0,
+            next_callback: 0,
+        }
     }
 
     // Creates an input cell with the specified initial value, returning its ID.
-    pub fn create_input(&mut self, _initial: T) -> InputCellId {
-        todo!()
+    pub fn create_input(&mut self, initial: T) -> InputCellId {
+        let input_cell = InputCellId::new(self.next_input);
+        self.input_cells.insert(input_cell, initial);
+        input_cell
     }
 
     // Creates a compute cell with the specified dependencies and compute function.
@@ -65,7 +98,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
     pub fn create_compute<F: Fn(&[T]) -> T>(
         &mut self,
         _dependencies: &[CellId],
-        _compute_func: F,
+        _compute_func: F
     ) -> Result<ComputeCellId, CellId> {
         todo!()
     }
@@ -78,7 +111,22 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // It turns out this introduces a significant amount of extra complexity to this exercise.
     // We chose not to cover this here, since this exercise is probably enough work as-is.
     pub fn value(&self, id: CellId) -> Option<T> {
-        todo!("Get the value of the cell whose id is {id:?}")
+        match id {
+            CellId::Input(input_cell) => {
+                if let Some(value) = self.input_cells.get(&input_cell) {
+                    Some(*value)
+                } else {
+                    None
+                }
+            }
+            CellId::Compute(compute_cell) => {
+                if let Some(value) = self.compute_cells.get(&compute_cell) {
+                    Some(*value)
+                } else {
+                    None
+                }
+            }
+        }
     }
 
     // Sets the value of the specified input cell.
@@ -89,8 +137,13 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // a `set_value(&mut self, new_value: T)` method on `Cell`.
     //
     // As before, that turned out to add too much extra complexity.
-    pub fn set_value(&mut self, _id: InputCellId, _new_value: T) -> bool {
-        todo!()
+    pub fn set_value(&mut self, id: InputCellId, new_value: T) -> bool {
+        if let Some(value) = self.input_cells.get_mut(&id) {
+            *value = new_value;
+            true
+        } else {
+            false
+        }
     }
 
     // Adds a callback to the specified compute cell.
@@ -108,7 +161,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
     pub fn add_callback<F: FnMut(T)>(
         &mut self,
         _id: ComputeCellId,
-        _callback: F,
+        _callback: F
     ) -> Option<CallbackId> {
         todo!()
     }
@@ -121,7 +174,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
     pub fn remove_callback(
         &mut self,
         cell: ComputeCellId,
-        callback: CallbackId,
+        callback: CallbackId
     ) -> Result<(), RemoveCallbackError> {
         todo!(
             "Remove the callback identified by the CallbackId {callback:?} from the cell {cell:?}"
