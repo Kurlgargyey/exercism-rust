@@ -49,7 +49,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
     pub fn new() -> Self {
         Reactor {
             input_cells: HashMap::<InputCellId, T>::new(),
-            compute_cells: HashMap::<ComputeCellId, (Vec<CellId>, Fn(&[T]) -> T)>::new(),
+            compute_cells: HashMap::<ComputeCellId, (Vec<CellId>, Box<dyn Fn(&[T]) -> T>)>::new(),
             next_input: 0,
             next_compute: 0,
             next_callback: 0,
@@ -76,7 +76,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // Notice that there is no way to *remove* a cell.
     // This means that you may assume, without checking, that if the dependencies exist at creation
     // time they will continue to exist as long as the Reactor exists.
-    pub fn create_compute<F: Fn(&[T]) -> T>(
+    pub fn create_compute<F: Fn(&[T]) -> T + 'static>(
         &mut self,
         dependencies: &[CellId],
         compute_func: F
@@ -94,7 +94,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
         let compute_cell = ComputeCellId(self.next_compute);
         self.next_compute += 1;
 
-        self.compute_cells.insert(compute_cell, (dependencies.to_vec(), compute_func));
+        self.compute_cells.insert(compute_cell, (dependencies.to_vec(), Box::new(compute_func)));
         Ok(compute_cell)
     }
 
@@ -160,10 +160,10 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // * Exactly once if the compute cell's value changed as a result of the set_value call.
     //   The value passed to the callback should be the final value of the compute cell after the
     //   set_value call.
-    pub fn add_callback<G: FnMut(T)>(
+    pub fn add_callback<F: FnMut(T)>(
         &mut self,
         _id: ComputeCellId,
-        _callback: G
+        _callback: F
     ) -> Option<CallbackId> {
         todo!()
     }
