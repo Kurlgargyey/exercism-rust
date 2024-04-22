@@ -169,7 +169,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // As before, that turned out to add too much extra complexity.
     pub fn set_value(&mut self, id: InputCellId, new_value: T) -> bool {
         if let Some(input_cell) = self.input_cells.get_mut(&id) {
-            *input_cell.value = new_value;
+            input_cell.value = new_value;
             true
         } else {
             false
