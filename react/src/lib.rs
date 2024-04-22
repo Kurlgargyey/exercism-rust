@@ -39,6 +39,7 @@ pub enum RemoveCallbackError {
 pub struct Reactor<T> {
     input_cells: HashMap<InputCellId, T>,
     compute_cells: HashMap<ComputeCellId, (Vec<CellId>, Box<dyn Fn(&[T]) -> T>)>,
+    callbacks: HashMap<CallbackId, (ComputeCellId, Box<dyn FnMut(T)>)>,
     next_input: u32,
     next_compute: u32,
     next_callback: u32,
@@ -50,6 +51,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
         Reactor {
             input_cells: HashMap::<InputCellId, T>::new(),
             compute_cells: HashMap::<ComputeCellId, (Vec<CellId>, Box<dyn Fn(&[T]) -> T>)>::new(),
+            callbacks: HashMap::<CallbackId, (ComputeCellId, Box<dyn FnMut(T)>)>::new(),
             next_input: 0,
             next_compute: 0,
             next_callback: 0,
@@ -59,6 +61,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // Creates an input cell with the specified initial value, returning its ID.
     pub fn create_input(&mut self, initial: T) -> InputCellId {
         let input_cell = InputCellId(self.next_input);
+        self.next_input += 1;
         self.input_cells.insert(input_cell, initial);
         input_cell
     }
@@ -162,10 +165,13 @@ impl<T: Copy + PartialEq> Reactor<T> {
     //   set_value call.
     pub fn add_callback<F: FnMut(T)>(
         &mut self,
-        _id: ComputeCellId,
-        _callback: F
+        id: ComputeCellId,
+        callback: F
     ) -> Option<CallbackId> {
-        todo!()
+        if id.0 >= self.next_compute {
+            return None;
+        }
+        Some(CallbackId(self.next_callback))
     }
 
     // Removes the specified callback, using an ID returned from add_callback.
