@@ -18,11 +18,26 @@ pub struct InputCellId(u32);
 /// let compute: react::InputCellId = r.create_compute(&[react::CellId::Input(input)], |_| 222).unwrap();
 /// ```
 
+struct InputCell<T> {
+    value: T,
+    callbacks: Vec<CallbackId>,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct ComputeCellId(u32);
 
+struct ComputeCell<T> {
+    dependencies: Vec<CellId>,
+    function: Box<dyn Fn(&[T]) -> T>,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct CallbackId(u32);
+
+struct Callback<T> {
+    compute_cell: ComputeCellId,
+    function: Box<dyn FnMut(T)>,
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum CellId {
@@ -37,9 +52,9 @@ pub enum RemoveCallbackError {
 }
 
 pub struct Reactor<T> {
-    input_cells: HashMap<InputCellId, T>,
-    compute_cells: HashMap<ComputeCellId, (Vec<CellId>, Box<dyn Fn(&[T]) -> T>)>,
-    callbacks: HashMap<CallbackId, (ComputeCellId, Box<dyn FnMut(T)>)>,
+    input_cells: HashMap<InputCellId, InputCell<T>>,
+    compute_cells: HashMap<ComputeCellId, ComputeCell<T>>,
+    callbacks: HashMap<CallbackId, Callback<T>>,
     next_input: u32,
     next_compute: u32,
     next_callback: u32,
@@ -49,9 +64,9 @@ pub struct Reactor<T> {
 impl<T: Copy + PartialEq> Reactor<T> {
     pub fn new() -> Self {
         Reactor {
-            input_cells: HashMap::<InputCellId, T>::new(),
-            compute_cells: HashMap::<ComputeCellId, (Vec<CellId>, Box<dyn Fn(&[T]) -> T>)>::new(),
-            callbacks: HashMap::<CallbackId, (ComputeCellId, Box<dyn FnMut(T)>)>::new(),
+            input_cells: HashMap::<InputCellId, InputCell<T>>::new(),
+            compute_cells: HashMap::<ComputeCellId, ComputeCell<T>>::new(),
+            callbacks: HashMap::<CallbackId, Callback<T>>::new(),
             next_input: 0,
             next_compute: 0,
             next_callback: 0,
@@ -62,7 +77,10 @@ impl<T: Copy + PartialEq> Reactor<T> {
     pub fn create_input(&mut self, initial: T) -> InputCellId {
         let input_cell = InputCellId(self.next_input);
         self.next_input += 1;
-        self.input_cells.insert(input_cell, initial);
+        self.input_cells.insert(input_cell, InputCell {
+            value: initial,
+            callbacks: Vec::<CallbackId>::new(),
+        });
         input_cell
     }
 
@@ -97,7 +115,10 @@ impl<T: Copy + PartialEq> Reactor<T> {
         let compute_cell = ComputeCellId(self.next_compute);
         self.next_compute += 1;
 
-        self.compute_cells.insert(compute_cell, (dependencies.to_vec(), Box::new(compute_func)));
+        self.compute_cells.insert(compute_cell, ComputeCell {
+            dependencies: dependencies.to_vec(),
+            function: Box::new(compute_func),
+        });
         Ok(compute_cell)
     }
 
@@ -111,15 +132,19 @@ impl<T: Copy + PartialEq> Reactor<T> {
     pub fn value(&self, id: CellId) -> Option<T> {
         match id {
             CellId::Input(input_cell) => {
-                if let Some(value) = self.input_cells.get(&input_cell) {
-                    Some(*value)
+                if let Some(input_cell) = self.input_cells.get(&input_cell) {
+                    Some(input_cell.value)
                 } else {
                     None
                 }
             }
             CellId::Compute(compute_cell) => {
-                if let Some((dependencies, function)) = self.compute_cells.get(&compute_cell) {
-                    Some(function(&self.resolve_dependencies(dependencies)))
+                if let Some(compute_cell) = self.compute_cells.get(&compute_cell) {
+                    Some(
+                        (compute_cell.function)(
+                            &self.resolve_dependencies(&compute_cell.dependencies)
+                        )
+                    )
                 } else {
                     None
                 }
@@ -143,8 +168,8 @@ impl<T: Copy + PartialEq> Reactor<T> {
     //
     // As before, that turned out to add too much extra complexity.
     pub fn set_value(&mut self, id: InputCellId, new_value: T) -> bool {
-        if let Some(value) = self.input_cells.get_mut(&id) {
-            *value = new_value;
+        if let Some(input_cell) = self.input_cells.get_mut(&id) {
+            *input_cell.value = new_value;
             true
         } else {
             false
