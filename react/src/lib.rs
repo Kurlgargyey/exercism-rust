@@ -31,7 +31,7 @@ struct ComputeCell<T> {
     function: Box<dyn Fn(&[T]) -> T>,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct CallbackId(u32);
 
 struct Callback<T> {
@@ -188,15 +188,27 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // * Exactly once if the compute cell's value changed as a result of the set_value call.
     //   The value passed to the callback should be the final value of the compute cell after the
     //   set_value call.
-    pub fn add_callback<F: FnMut(T)>(
+    pub fn add_callback<F: FnMut(T) + 'static>(
         &mut self,
         id: ComputeCellId,
-        callback: F
+        callback_function: F
     ) -> Option<CallbackId> {
         if id.0 >= self.next_compute {
             return None;
         }
-        Some(CallbackId(self.next_callback))
+        let callback = Callback {
+            compute_cell: id,
+            function: Box::new(callback_function),
+        };
+        let callback_id = CallbackId(self.next_callback);
+        self.next_callback += 1;
+        self.callbacks.insert(callback_id, callback);
+        for cell_id in &self.compute_cells.get(&id).unwrap().dependencies {
+            if let CellId::Input(input_cell) = cell_id {
+                self.input_cells.get_mut(input_cell).unwrap().callbacks.push(callback_id);
+            }
+        }
+        Some(callback_id)
     }
 
     // Removes the specified callback, using an ID returned from add_callback.
