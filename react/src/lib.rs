@@ -34,7 +34,7 @@ struct ComputeCell<T> {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct CallbackId(u32);
 
-struct Callback<T> {
+struct Callback<T: Clone> {
     compute_cell: ComputeCellId,
     function: Box<dyn FnMut(T)>,
 }
@@ -51,7 +51,7 @@ pub enum RemoveCallbackError {
     NonexistentCallback,
 }
 
-pub struct Reactor<T> {
+pub struct Reactor<T: Copy> {
     input_cells: HashMap<InputCellId, InputCell<T>>,
     compute_cells: HashMap<ComputeCellId, ComputeCell<T>>,
     callbacks: HashMap<CallbackId, Callback<T>>,
@@ -170,9 +170,19 @@ impl<T: Copy + PartialEq> Reactor<T> {
     pub fn set_value(&mut self, id: InputCellId, new_value: T) -> bool {
         if let Some(input_cell) = self.input_cells.get_mut(&id) {
             input_cell.value = new_value;
+            self.run_callbacks(id);
             true
         } else {
             false
+        }
+    }
+
+    fn run_callbacks(&mut self, id: InputCellId) {
+        for callback_id in &self.input_cells.get(&id).unwrap().callbacks {
+            let callback = self.callbacks.get_mut(&callback_id).unwrap();
+            let cell_value = self.value(CellId::Compute(callback.compute_cell)).unwrap().clone();
+            let function = &mut callback.function;
+            function(cell_value);
         }
     }
 
