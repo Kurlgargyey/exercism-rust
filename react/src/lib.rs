@@ -179,9 +179,14 @@ impl<T: Copy + PartialEq> Reactor<T> {
 
     fn run_callbacks(&mut self, id: InputCellId) {
         for callback_id in &self.input_cells.get(&id).unwrap().callbacks {
-            let callback = self.callbacks.get_mut(&callback_id).unwrap();
-            let cell_value = self.value(CellId::Compute(callback.compute_cell)).unwrap().clone();
-            let function = &mut callback.function;
+            let mut compute_cell: ComputeCellId;
+            let mut function: Box<dyn FnMut(T)>;
+            {
+                let callback = self.callbacks.get_mut(&callback_id).unwrap();
+                compute_cell = callback.compute_cell;
+                function = callback.function;
+            }
+            let cell_value = self.value(CellId::Compute(compute_cell)).unwrap().clone();
             function(cell_value);
         }
     }
@@ -198,10 +203,10 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // * Exactly once if the compute cell's value changed as a result of the set_value call.
     //   The value passed to the callback should be the final value of the compute cell after the
     //   set_value call.
-    pub fn add_callback<F: FnMut(T) + 'static>(
+    pub fn add_callback(
         &mut self,
         id: ComputeCellId,
-        callback_function: F
+        callback_function: impl FnMut(T) + 'static
     ) -> Option<CallbackId> {
         if id.0 >= self.next_compute {
             return None;
