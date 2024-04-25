@@ -231,8 +231,24 @@ impl<T: Copy + PartialEq> Reactor<T> {
         cell: ComputeCellId,
         callback: CallbackId
     ) -> Result<(), RemoveCallbackError> {
-        todo!(
-            "Remove the callback identified by the CallbackId {callback:?} from the cell {cell:?}"
-        )
+        if let Some(_) = self.callbacks.get(&callback) {
+            self.callbacks.remove(&callback);
+        } else {
+            return Err(RemoveCallbackError::NonexistentCallback);
+        }
+        if let Some(cell) = self.compute_cells.get(&cell) {
+            for dependency in &cell.dependencies {
+                if let CellId::Input(input_cell) = dependency {
+                    let input_callbacks = &mut self.input_cells
+                        .get_mut(&input_cell)
+                        .unwrap().callbacks;
+                    input_callbacks.retain(|cb_id| cb_id != &callback);
+                }
+            }
+        } else {
+            return Err(RemoveCallbackError::NonexistentCell);
+        }
+
+        Ok(())
     }
 }
