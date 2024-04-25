@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::{ Mutex, Arc };
 
 /// `InputCellId` is a unique identifier for an input cell.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -36,7 +37,7 @@ pub struct CallbackId(u32);
 
 struct Callback<T: Clone> {
     compute_cell: ComputeCellId,
-    function: Box<dyn FnMut(T)>,
+    function: Arc<Mutex<dyn FnMut(T)>>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -180,11 +181,11 @@ impl<T: Copy + PartialEq> Reactor<T> {
     fn run_callbacks(&mut self, id: InputCellId) {
         for callback_id in &self.input_cells.get(&id).unwrap().callbacks {
             let mut compute_cell: ComputeCellId;
-            let mut function: Box<dyn FnMut(T)>;
+            let mut function: Arc<Mutex<dyn FnMut(T)>>;
             {
                 let callback = self.callbacks.get_mut(&callback_id).unwrap();
                 compute_cell = callback.compute_cell;
-                function = callback.function;
+                function = callback.function.clone();
             }
             let cell_value = self.value(CellId::Compute(compute_cell)).unwrap().clone();
             function(cell_value);
@@ -213,7 +214,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
         }
         let callback = Callback {
             compute_cell: id,
-            function: Box::new(callback_function),
+            function: Arc::new(Mutex::new(callback_function)),
         };
         let callback_id = CallbackId(self.next_callback);
         self.next_callback += 1;
