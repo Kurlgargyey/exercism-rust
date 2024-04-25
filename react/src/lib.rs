@@ -188,7 +188,7 @@ impl<T: Copy + PartialEq> Reactor<T> {
                 function = callback.function.clone();
             }
             let cell_value = self.value(CellId::Compute(compute_cell)).unwrap().clone();
-            function(cell_value);
+            (function.lock().unwrap())(cell_value);
         }
     }
 
