@@ -177,7 +177,8 @@ impl<'r, 'e:'r, T: Copy + PartialEq> Reactor<'r, T> {
         }
     }
 
-    fn run_callbacks(&mut self, id: InputCellId) {
+    fn run_callbacks(&mut self, _id: InputCellId) {
+        /*
         for callback_id in &self.input_cells.get(&id).unwrap().callbacks {
             let compute_cell: ComputeCellId;
             let mut function: Box<dyn FnMut(T)>;
@@ -189,6 +190,8 @@ impl<'r, 'e:'r, T: Copy + PartialEq> Reactor<'r, T> {
             let cell_value = self.value(CellId::Compute(compute_cell)).unwrap().clone();
             (function)(cell_value);
         }
+        */
+        todo!("implement way to run callbacks")
     }
 
     // Adds a callback to the specified compute cell.
