@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::sync::{ Mutex, Arc };
 
 /// `InputCellId` is a unique identifier for an input cell.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -37,7 +36,7 @@ pub struct CallbackId(u32);
 
 struct Callback<'c, T: Clone> {
     compute_cell: ComputeCellId,
-    function: Arc<Mutex<dyn FnMut(T) + 'c>>,
+    function: Box<dyn FnMut(T) + 'c>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -52,7 +51,7 @@ pub enum RemoveCallbackError {
     NonexistentCallback,
 }
 
-pub struct Reactor<'r: 'static, T: Copy> {
+pub struct Reactor<'r, T: Copy> {
     input_cells: HashMap<InputCellId, InputCell<T>>,
     compute_cells: HashMap<ComputeCellId, ComputeCell<T>>,
     callbacks: HashMap<CallbackId, Callback<'r, T>>,
@@ -62,7 +61,7 @@ pub struct Reactor<'r: 'static, T: Copy> {
 }
 
 // You are guaranteed that Reactor will only be tested against types that are Copy + PartialEq.
-impl<'r: 'static, T: Copy + PartialEq> Reactor<'r, T> {
+impl<'r, 'e:'r, T: Copy + PartialEq> Reactor<'r, T> {
     pub fn new() -> Self {
         Reactor {
             input_cells: HashMap::<InputCellId, InputCell<T>>::new(),
@@ -98,10 +97,10 @@ impl<'r: 'static, T: Copy + PartialEq> Reactor<'r, T> {
     // Notice that there is no way to *remove* a cell.
     // This means that you may assume, without checking, that if the dependencies exist at creation
     // time they will continue to exist as long as the Reactor exists.
-    pub fn create_compute<F: Fn(&[T]) -> T + 'r>(
+    pub fn create_compute(
         &mut self,
         dependencies: &[CellId],
-        compute_func: F
+        compute_func: impl Fn(&[T]) -> T + 'static
     ) -> Result<ComputeCellId, CellId> {
         for id in dependencies {
             if
@@ -181,14 +180,14 @@ impl<'r: 'static, T: Copy + PartialEq> Reactor<'r, T> {
     fn run_callbacks(&mut self, id: InputCellId) {
         for callback_id in &self.input_cells.get(&id).unwrap().callbacks {
             let compute_cell: ComputeCellId;
-            let function: Arc<Mutex<dyn FnMut(T)>>;
+            let mut function: Box<dyn FnMut(T)>;
             {
                 let callback = self.callbacks.get_mut(&callback_id).unwrap();
                 compute_cell = callback.compute_cell;
-                function = callback.function.clone();
+                function = callback.function;
             }
             let cell_value = self.value(CellId::Compute(compute_cell)).unwrap().clone();
-            (function.lock().unwrap())(cell_value);
+            (function)(cell_value);
         }
     }
 
@@ -207,14 +206,14 @@ impl<'r: 'static, T: Copy + PartialEq> Reactor<'r, T> {
     pub fn add_callback(
         &mut self,
         id: ComputeCellId,
-        callback_function: impl FnMut(T) + 'static
+        callback_function: impl FnMut(T) + 'e
     ) -> Option<CallbackId> {
         if id.0 >= self.next_compute {
             return None;
         }
         let callback = Callback {
             compute_cell: id,
-            function: Arc::new(Mutex::new(callback_function)),
+            function: Box::new(callback_function),
         };
         let callback_id = CallbackId(self.next_callback);
         self.next_callback += 1;
