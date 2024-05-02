@@ -5,6 +5,8 @@ pub fn answer(command: &str) -> Option<i32> {
         return None;
     }
 
+    let command = command.trim_end_matches('?');
+
     let mut words = command.split_ascii_whitespace();
 
     match (words.next(), words.next()) {
@@ -58,7 +60,10 @@ fn operate(command: Vec<&str>) -> Option<i32> {
                 }
             }
 
-            _ => return result,
+            s => {
+                println!("{:?} is not a digit!", s);
+                return result;
+            }
         }
     }
 }
