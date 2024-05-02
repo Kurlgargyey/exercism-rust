@@ -35,9 +35,9 @@ struct ComputeCell<T> {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct CallbackId(u32);
 
-struct Callback<T: Clone> {
+struct Callback<'c, T: Clone> {
     compute_cell: ComputeCellId,
-    function: Arc<Mutex<dyn FnMut(T)>>,
+    function: Arc<Mutex<dyn FnMut(T) + 'c>>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -52,17 +52,17 @@ pub enum RemoveCallbackError {
     NonexistentCallback,
 }
 
-pub struct Reactor<T: Copy> {
+pub struct Reactor<'r: 'static, T: Copy> {
     input_cells: HashMap<InputCellId, InputCell<T>>,
     compute_cells: HashMap<ComputeCellId, ComputeCell<T>>,
-    callbacks: HashMap<CallbackId, Callback<T>>,
+    callbacks: HashMap<CallbackId, Callback<'r, T>>,
     next_input: u32,
     next_compute: u32,
     next_callback: u32,
 }
 
 // You are guaranteed that Reactor will only be tested against types that are Copy + PartialEq.
-impl<T: Copy + PartialEq> Reactor<T> {
+impl<'r: 'static, T: Copy + PartialEq> Reactor<'r, T> {
     pub fn new() -> Self {
         Reactor {
             input_cells: HashMap::<InputCellId, InputCell<T>>::new(),
@@ -98,18 +98,18 @@ impl<T: Copy + PartialEq> Reactor<T> {
     // Notice that there is no way to *remove* a cell.
     // This means that you may assume, without checking, that if the dependencies exist at creation
     // time they will continue to exist as long as the Reactor exists.
-    pub fn create_compute<F: Fn(&[T]) -> T + 'static>(
+    pub fn create_compute<F: Fn(&[T]) -> T + 'r>(
         &mut self,
         dependencies: &[CellId],
         compute_func: F
     ) -> Result<ComputeCellId, CellId> {
         for id in dependencies {
-            if (
+            if
                 match id {
                     CellId::Input(id) => id.0 >= self.next_input,
                     CellId::Compute(id) => id.0 >= self.next_compute,
                 }
-            ) {
+            {
                 return Err(*id);
             }
         }
@@ -180,8 +180,8 @@ impl<T: Copy + PartialEq> Reactor<T> {
 
     fn run_callbacks(&mut self, id: InputCellId) {
         for callback_id in &self.input_cells.get(&id).unwrap().callbacks {
-            let mut compute_cell: ComputeCellId;
-            let mut function: Arc<Mutex<dyn FnMut(T)>>;
+            let compute_cell: ComputeCellId;
+            let function: Arc<Mutex<dyn FnMut(T)>>;
             {
                 let callback = self.callbacks.get_mut(&callback_id).unwrap();
                 compute_cell = callback.compute_cell;
