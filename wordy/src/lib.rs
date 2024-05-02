@@ -10,10 +10,8 @@ pub fn answer(command: &str) -> Option<i32> {
     let mut words = command.split_ascii_whitespace();
 
     match (words.next(), words.next()) {
-        (Some("What"), Some("is")) => {
-            return operate(words.collect());
-        }
-        _ => return None,
+        (Some("What"), Some("is")) => operate(words.collect()),
+        _ => None,
     }
 }
 
