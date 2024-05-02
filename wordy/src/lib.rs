@@ -28,8 +28,8 @@ impl FromStr for Operation {
         match s {
             "plus" => Ok(Operation::Addition),
             "minus" => Ok(Operation::Subtraction),
-            "multiplied by" => Ok(Operation::Multiplication),
-            "divided by" => Ok(Operation::Division),
+            "multiplied" => Ok(Operation::Multiplication),
+            "divided" => Ok(Operation::Division),
             _ => Err(format!("{} is not a valid operation", s).into()),
         }
     }
@@ -54,11 +54,17 @@ fn operate(command: Vec<&str>) -> Option<i32> {
                     Some(s) => operation = Operation::from_str(s).ok(),
                     _ => return result,
                 }
+                match &operation {
+                    Some(Operation::Division) | Some(Operation::Multiplication) => {
+                        let _ = iter.next();
+                    }
+                    _ => (),
+                }
             }
 
             s => {
                 println!("{:?} is not a digit!", s);
-                return result;
+                return None;
             }
         }
     }
