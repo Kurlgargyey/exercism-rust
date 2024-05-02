@@ -15,8 +15,6 @@ pub fn answer(command: &str) -> Option<i32> {
         }
         _ => return None,
     }
-
-    Some(1)
 }
 
 enum Operation {

@@ -9,7 +9,7 @@ fn just_a_number() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn addition() {
     let input = "What is 1 plus 1?";
     let output = answer(input);
@@ -18,7 +18,7 @@ fn addition() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn more_addition() {
     let input = "What is 53 plus 2?";
     let output = answer(input);
@@ -27,7 +27,7 @@ fn more_addition() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn addition_with_negative_numbers() {
     let input = "What is -1 plus -10?";
     let output = answer(input);
@@ -36,7 +36,7 @@ fn addition_with_negative_numbers() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn large_addition() {
     let input = "What is 123 plus 45678?";
     let output = answer(input);
