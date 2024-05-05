@@ -43,13 +43,13 @@ impl FromStr for Operation {
 
 fn operate(command: Vec<&str>) -> Option<i32> {
     println!("Operating on {:?}", command);
-    let mut operation: Option<Operation> = None;
+    let mut next_operation: Option<Operation> = None;
     let mut iter = command.into_iter();
     let mut result: Option<i32> = None;
     loop {
         match iter.next() {
             Some(s) if s.parse::<i32>().is_ok() => {
-                result = match &operation {
+                result = match &next_operation {
                     Some(operation) if *operation == Operation::Exponentiation => {
                         let op2 = s.parse::<i32>().unwrap();
                         if !(iter.next() == Some("power")) {
@@ -65,11 +65,11 @@ fn operate(command: Vec<&str>) -> Option<i32> {
                     None => s.parse::<i32>().ok(),
                 };
                 match iter.next() {
-                    Some(s) => operation = Operation::from_str(s).ok(),
+                    Some(s) => next_operation = Operation::from_str(s).ok(),
                     _ => return result,
                 }
-                println!("Next operation is {:?}", operation);
-                match &operation {
+                println!("Next operation is {:?}", next_operation);
+                match &next_operation {
                     Some(Operation::Division) | Some(Operation::Multiplication) => {
                         if !(iter.next() == Some("by")) {
                             return None;
