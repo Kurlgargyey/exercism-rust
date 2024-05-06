@@ -65,7 +65,7 @@ fn execute_command(command: Vec<&str>) -> Option<i32> {
                     None => s.parse::<i32>().ok(),
                 };
                 match iter.next() {
-                    Some(s) => next_operation = Some(Operation::from_str(s).ok()?),
+                    Some(s) => next_operation = Operation::from_str(s).ok(),
                     _ => return result,
                 }
                 println!("Next operation is {:?}", next_operation);
