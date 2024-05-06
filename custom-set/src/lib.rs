@@ -70,7 +70,7 @@ impl<T: PartialEq + Clone> CustomSet<T> {
     #[must_use]
     pub fn union(&self, other: &Self) -> Self {
         let mut union = self.data.clone();
-        union.append(&mut other.difference(self).data);
+        union.append(&mut other.data.clone());
         CustomSet { data: union }
     }
 }
