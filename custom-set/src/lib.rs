@@ -15,7 +15,8 @@ impl<T: PartialEq + Clone> PartialEq for CustomSet<T> {
 
 impl<T: PartialEq + Clone> CustomSet<T> {
     pub fn new(input: &[T]) -> Self {
-        let data = Vec::<T>::from(input);
+        let mut data = Vec::<T>::from(input);
+        data.dedup();
 
         CustomSet { data }
     }
