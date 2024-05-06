@@ -9,7 +9,7 @@ fn test_0_eggs() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn test_1_egg() {
     let input = 16;
     let output = egg_count(input);
@@ -18,7 +18,7 @@ fn test_1_egg() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn test_4_eggs() {
     let input = 89;
     let output = egg_count(input);
@@ -27,7 +27,7 @@ fn test_4_eggs() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn test_13_eggs() {
     let input = 2000000000;
     let output = egg_count(input);
