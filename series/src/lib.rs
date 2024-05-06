@@ -1,3 +1,9 @@
 pub fn series(digits: &str, len: usize) -> Vec<String> {
-    todo!("What are the series of length {len} in string {digits:?}")
+    digits
+        .chars()
+        .map(|c| c.to_string())
+        .collect::<Vec<_>>()
+        .windows(len)
+        .map(|window| window.join(""))
+        .collect()
 }

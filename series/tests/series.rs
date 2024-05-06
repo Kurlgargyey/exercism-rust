@@ -10,7 +10,7 @@ fn slices_of_one_from_one() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn slices_of_one_from_two() {
     let input = "12";
     let length = 1;
@@ -20,7 +20,7 @@ fn slices_of_one_from_two() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn slices_of_two() {
     let input = "35";
     let length = 2;
@@ -30,7 +30,7 @@ fn slices_of_two() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn slices_of_two_overlap() {
     let input = "9142";
     let length = 2;
@@ -40,7 +40,7 @@ fn slices_of_two_overlap() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn slices_can_include_duplicates() {
     let input = "777777";
     let length = 3;
@@ -50,7 +50,7 @@ fn slices_can_include_duplicates() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn slices_of_a_long_series() {
     let input = "918493904243";
     let length = 5;
@@ -62,7 +62,7 @@ fn slices_of_a_long_series() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn slice_length_is_too_large() {
     let input = "12345";
     let length = 6;
@@ -72,7 +72,7 @@ fn slice_length_is_too_large() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn slice_length_is_way_too_large() {
     let input = "12345";
     let length = 42;
@@ -82,7 +82,7 @@ fn slice_length_is_way_too_large() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn empty_series_is_invalid() {
     let input = "";
     let length = 1;
