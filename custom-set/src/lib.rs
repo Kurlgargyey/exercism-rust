@@ -15,10 +15,13 @@ impl<T: PartialEq + Clone> PartialEq for CustomSet<T> {
 
 impl<T: PartialEq + Clone> CustomSet<T> {
     pub fn new(input: &[T]) -> Self {
-        let mut data = Vec::<T>::from(input);
-        data.dedup();
-
-        CustomSet { data }
+        let result = CustomSet {
+            data: Vec::<T>::new(),
+        };
+        input.into_iter().cloned().fold(result, |mut set, element| {
+            set.add(element);
+            set
+        })
     }
 
     pub fn contains(&self, element: &T) -> bool {
