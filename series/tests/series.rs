@@ -90,3 +90,12 @@ fn empty_series_is_invalid() {
     let expected: &[&str] = &[];
     assert_eq!(output, expected);
 }
+
+#[test]
+fn length_zero_series() {
+    let input = "12345";
+    let length = 0;
+    let output = series(input, length);
+    let expected: &[&str] = &[""; 6];
+    assert_eq!(output, expected)
+}
