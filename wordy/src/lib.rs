@@ -14,7 +14,7 @@ pub fn answer(command: &str) -> Option<i32> {
     });
 
     match (words.next(), words.next()) {
-        (Some("What"), Some("is")) => operate(words.collect()),
+        (Some("What"), Some("is")) => execute_command(words.collect()),
         _ => None,
     }
 }
@@ -41,7 +41,7 @@ impl FromStr for Operation {
     }
 }
 
-fn operate(command: Vec<&str>) -> Option<i32> {
+fn execute_command(command: Vec<&str>) -> Option<i32> {
     println!("Operating on {:?}", command);
     let mut next_operation: Option<Operation> = None;
     let mut iter = command.into_iter();
@@ -55,9 +55,9 @@ fn operate(command: Vec<&str>) -> Option<i32> {
                         if !(iter.next() == Some("power")) {
                             return None;
                         }
-                        Some(run_operation(operation, result.unwrap(), op2))
+                        Some(operate(operation, result.unwrap(), op2))
                     }
-                    Some(operation) => Some(run_operation(
+                    Some(operation) => Some(operate(
                         operation,
                         result.unwrap(),
                         s.parse::<i32>().unwrap(),
@@ -65,23 +65,11 @@ fn operate(command: Vec<&str>) -> Option<i32> {
                     None => s.parse::<i32>().ok(),
                 };
                 match iter.next() {
-                    Some(s) => next_operation = Operation::from_str(s).ok(),
+                    Some(s) => next_operation = Some(Operation::from_str(s).ok()?),
                     _ => return result,
                 }
                 println!("Next operation is {:?}", next_operation);
-                match &next_operation {
-                    Some(Operation::Division) | Some(Operation::Multiplication) => {
-                        if !(iter.next() == Some("by")) {
-                            return None;
-                        };
-                    }
-                    Some(Operation::Exponentiation) => {
-                        if !((iter.next(), iter.next()) == (Some("to"), Some("the"))) {
-                            return None;
-                        }
-                    }
-                    _ => (),
-                }
+                test_multiword_operation_syntax(&next_operation, &mut iter)?;
             }
 
             s => {
@@ -92,7 +80,7 @@ fn operate(command: Vec<&str>) -> Option<i32> {
     }
 }
 
-fn run_operation(operation: &Operation, op1: i32, op2: i32) -> i32 {
+fn operate(operation: &Operation, op1: i32, op2: i32) -> i32 {
     match operation {
         Operation::Addition => op1 + op2,
         Operation::Subtraction => op1 - op2,
@@ -100,4 +88,24 @@ fn run_operation(operation: &Operation, op1: i32, op2: i32) -> i32 {
         Operation::Division => op1 / op2,
         Operation::Exponentiation => op1.pow(op2.try_into().unwrap()),
     }
+}
+
+fn test_multiword_operation_syntax<'a>(
+    operation: &Option<Operation>,
+    mut words: impl Iterator<Item = &'a str>,
+) -> Option<()> {
+    match operation {
+        Some(Operation::Division) | Some(Operation::Multiplication) => {
+            if !(words.next() == Some("by")) {
+                return None;
+            };
+        }
+        Some(Operation::Exponentiation) => {
+            if !((words.next(), words.next()) == (Some("to"), Some("the"))) {
+                return None;
+            }
+        }
+        _ => (),
+    }
+    Some(())
 }
