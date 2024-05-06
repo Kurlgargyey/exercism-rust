@@ -1,111 +1,42 @@
-use std::{error::Error, str::FromStr};
-
 pub fn answer(command: &str) -> Option<i32> {
     if !command.ends_with('?') {
         return None;
     }
 
-    let command = command.trim_end_matches('?');
+    let words: Vec<&str> = command
+        .trim_end_matches('?')
+        .split_ascii_whitespace()
+        .collect();
 
-    let mut words = command.split_ascii_whitespace().map(|word| {
-        word.trim_end_matches("th")
-            .trim_end_matches("nd")
-            .trim_end_matches("st")
-    });
-
-    match (words.next(), words.next()) {
-        (Some("What"), Some("is")) => execute_command(words.collect()),
+    match &words[..] {
+        &["What", "is", op1 @ _, ref rest @ ..] => execute_command(op1.parse::<i32>().ok()?, rest),
         _ => None,
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
-enum Operation {
-    Addition,
-    Subtraction,
-    Multiplication,
-    Division,
-    Exponentiation,
-}
-impl FromStr for Operation {
-    type Err = Box<dyn Error>;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "plus" => Ok(Operation::Addition),
-            "minus" => Ok(Operation::Subtraction),
-            "multiplied" => Ok(Operation::Multiplication),
-            "divided" => Ok(Operation::Division),
-            "raised" => Ok(Operation::Exponentiation),
-            _ => Err(format!("{} is not a valid operation", s).into()),
+fn execute_command(op1: i32, command: &[&str]) -> Option<i32> {
+    match command {
+        &["divided", "by", op2 @ _, ref rest @ ..] => {
+            execute_command(op1 / op2.parse::<i32>().ok()?, rest)
         }
-    }
-}
-
-fn execute_command(command: Vec<&str>) -> Option<i32> {
-    println!("Operating on {:?}", command);
-    let mut next_operation: Option<Operation> = None;
-    let mut iter = command.into_iter();
-    let mut result: Option<i32> = None;
-    loop {
-        match iter.next() {
-            Some(s) if s.parse::<i32>().is_ok() => {
-                result = match &next_operation {
-                    Some(operation) if *operation == Operation::Exponentiation => {
-                        let op2 = s.parse::<i32>().unwrap();
-                        if !(iter.next() == Some("power")) {
-                            return None;
-                        }
-                        Some(operate(operation, result.unwrap(), op2))
-                    }
-                    Some(operation) => Some(operate(
-                        operation,
-                        result.unwrap(),
-                        s.parse::<i32>().unwrap(),
-                    )),
-                    None => s.parse::<i32>().ok(),
-                };
-                match iter.next() {
-                    Some(s) => next_operation = Operation::from_str(s).ok(),
-                    _ => return result,
-                }
-                println!("Next operation is {:?}", next_operation);
-                test_multiword_operation_syntax(&next_operation, &mut iter)?;
-            }
-
-            s => {
-                println!("{:?} is not a digit!", s);
-                return None;
-            }
+        &["multiplied", "by", op2 @ _, ref rest @ ..] => {
+            execute_command(op1.saturating_mul(op2.parse::<i32>().ok()?), rest)
         }
-    }
-}
-
-fn operate(operation: &Operation, op1: i32, op2: i32) -> i32 {
-    match operation {
-        Operation::Addition => op1 + op2,
-        Operation::Subtraction => op1 - op2,
-        Operation::Multiplication => op1 * op2,
-        Operation::Division => op1 / op2,
-        Operation::Exponentiation => op1.pow(op2.try_into().unwrap()),
-    }
-}
-
-fn test_multiword_operation_syntax<'a>(
-    operation: &Option<Operation>,
-    mut words: impl Iterator<Item = &'a str>,
-) -> Option<()> {
-    match operation {
-        Some(Operation::Division) | Some(Operation::Multiplication) => {
-            if !(words.next() == Some("by")) {
-                return None;
-            };
+        &["plus", op2 @ _, ref rest @ ..] => {
+            execute_command(op1.saturating_add(op2.parse::<i32>().ok()?), rest)
         }
-        Some(Operation::Exponentiation) => {
-            if !((words.next(), words.next()) == (Some("to"), Some("the"))) {
-                return None;
-            }
+        &["minus", op2 @ _, ref rest @ ..] => {
+            execute_command(op1.saturating_sub(op2.parse::<i32>().ok()?), rest)
         }
-        _ => (),
+        &["raised", "to", "the", op2 @ _, "power", ref rest @ ..] => execute_command(
+            op1.saturating_pow(
+                op2.trim_end_matches(char::is_alphabetic)
+                    .parse::<u32>()
+                    .ok()?,
+            ),
+            rest,
+        ),
+        &[] => Some(op1),
+        _ => None,
     }
-    Some(())
 }
