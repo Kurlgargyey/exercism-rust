@@ -46,16 +46,19 @@ mod decrypt {
     }
 
     fn decipher_char(letter: char, a: i32, b: i32) -> char {
-        let a = a as i32;
+        let a = a;
         println!("a is {a}");
-        let b = b as i32;
+        let b = b;
         println!("b is {b}");
         let y = (letter.to_ascii_lowercase() as i32) - 97;
         println!("{letter}: {y}");
         let mmi = mmi(a, 26).unwrap();
         println!("mmi is {mmi}");
-        let char_value = (mmi * (y - b) % 26).abs();
-        println!("char_value is {char_value}");
+        let char_value = (mmi * (y - b)).rem_euclid(26);
+        println!(
+            "char_value is {char_value}, cipher value was {}",
+            mmi * (y - b)
+        );
         println!("---------");
         char::from_u32((char_value + 97) as u32).unwrap()
     }
@@ -74,7 +77,7 @@ mod encrypt {
         let a = a as u32;
         let b = b as u32;
         let i = (letter.to_ascii_lowercase() as u32) - 97;
-        char::from_u32(((a * i + b) % 26) + 97).unwrap()
+        char::from_u32(((a * i + b).rem_euclid(26)) + 97).unwrap()
     }
     pub(crate) fn blocks_of_five(phrase: Vec<char>) -> String {
         let mut i = 0;
