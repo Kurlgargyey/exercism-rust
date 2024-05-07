@@ -5,6 +5,8 @@ pub enum AffineCipherError {
     NotCoprime(i32),
 }
 
+use core::net;
+
 use coprime::*;
 
 /// Encodes the plaintext using the affine cipher with key (`a`, `b`). Note that, rather than
@@ -35,31 +37,36 @@ pub fn decode(ciphertext: &str, a: i32, b: i32) -> Result<String, AffineCipherEr
 
 fn encrypt(letter: char, a: i32, b: i32) -> Option<char> {
     match letter {
-        c if c.is_ascii_alphabetic() => {
-            let a = a as u32;
-            let b = b as u32;
-            let i = (letter.to_ascii_lowercase() as u32) - 97;
-            char::from_u32(((a * i + b) % 26) + 97)
-        }
+        c if c.is_ascii_alphabetic() => Some(cipher_char(letter, a, b)),
         c if c.is_ascii_digit() => Some(c),
         _ => None,
     }
 }
 
+fn cipher_char(letter: char, a: i32, b: i32) -> char {
+    let a = a as u32;
+    let b = b as u32;
+    let i = (letter.to_ascii_lowercase() as u32) - 97;
+    char::from_u32(((a * i + b) % 26) + 97).unwrap()
+}
+
 fn decrypt(letter: char, a: i32, b: i32) -> Option<char> {
     match letter {
-        c if c.is_ascii_alphabetic() => {
-            let a = a as f64;
-            let b = b as i32;
-            let y = (letter.to_ascii_lowercase() as i32) - 97;
-            let mmi = a.powi(-1);
-            println!("{mmi}");
-            let char_value = mmi * ((y - b) % 26) as f64;
-            char::from_u32(char_value as u32 + 97)
-        }
+        c if c.is_ascii_alphabetic() => Some(decipher_char(letter, a, b)),
         c if c.is_ascii_digit() => Some(c),
         _ => None,
     }
+}
+
+fn decipher_char(letter: char, a: i32, b: i32) -> char {
+    let a = a as f64;
+    let b = b as i32;
+    let y = (letter.to_ascii_lowercase() as i32) - 97;
+    println!("{letter}: {y}");
+    let mmi = a.powi(-1);
+    //println!("{mmi}");
+    let char_value = (mmi * ((y - b) as f64)) as i32 % 26;
+    char::from_u32(char_value as u32 + 97).unwrap()
 }
 
 fn blocks_of_five(phrase: Vec<char>) -> String {

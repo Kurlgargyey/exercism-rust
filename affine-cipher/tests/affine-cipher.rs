@@ -102,7 +102,7 @@ fn decode_exercism() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn decode_a_sentence() {
     let phrase = "qdwju nqcro muwhn odqun oppmd aunwd o";
     let (a, b) = (19, 16);
@@ -122,7 +122,7 @@ fn decode_numbers() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn decode_all_the_letters() {
     let phrase = "swxtj npvyk lruol iejdc blaxk swxmh qzglf";
     let (a, b) = (17, 33);
