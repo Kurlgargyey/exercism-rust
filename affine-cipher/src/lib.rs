@@ -36,6 +36,7 @@ pub fn decode(ciphertext: &str, a: i32, b: i32) -> Result<String, AffineCipherEr
 }
 
 mod decrypt {
+    use super::mmi::*;
     pub(crate) fn decrypt(letter: char, a: i32, b: i32) -> Option<char> {
         match letter {
             c if c.is_ascii_alphabetic() => Some(decipher_char(letter, a, b)),
@@ -45,15 +46,15 @@ mod decrypt {
     }
 
     fn decipher_char(letter: char, a: i32, b: i32) -> char {
-        let a = a as f64;
+        let a = a as i32;
         println!("a is {a}");
         let b = b as i32;
         println!("b is {b}");
         let y = (letter.to_ascii_lowercase() as i32) - 97;
         println!("{letter}: {y}");
-        let mmi = a.powi(-1);
+        let mmi = mmi(a, 26).unwrap();
         println!("mmi is {mmi}");
-        let char_value = mmi * ((y - b) as f64) % 26.0;
+        let char_value = mmi * (y - b) % 26;
         println!("char_value is {char_value}");
         println!("---------");
         char::from_u32(char_value as u32 + 97).unwrap()
@@ -140,5 +141,24 @@ mod coprime {
 }
 
 mod mmi {
-    pub(crate) fn mmi(a: i32, m: i32) -> i32 {}
+    pub(crate) fn mmi(a: i32, n: i32) -> Option<i32> {
+        let mut t = 0;
+        let mut newt = 1;
+        let mut r = n;
+        let mut newr = a;
+
+        while newr != 0 {
+            let quotient = r / newr;
+            (t, newt) = (newt, t - quotient * newt);
+            (r, newr) = (newr, r - quotient * newr);
+        }
+        if r > 1 {
+            return None;
+        }
+        if t < 0 {
+            t = t + n;
+        }
+
+        Some(t)
+    }
 }
