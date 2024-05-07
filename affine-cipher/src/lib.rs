@@ -5,14 +5,12 @@ pub enum AffineCipherError {
     NotCoprime(i32),
 }
 
-use core::net;
-
 use coprime::*;
 
 /// Encodes the plaintext using the affine cipher with key (`a`, `b`). Note that, rather than
 /// returning a return code, the more common convention in Rust is to return a `Result`.
 pub fn encode(plaintext: &str, a: i32, b: i32) -> Result<String, AffineCipherError> {
-    if !is_coprime(26, a) {
+    if !are_coprime(26, a) {
         return Err(AffineCipherError::NotCoprime(a));
     }
     Ok(blocks_of_five(
@@ -26,7 +24,7 @@ pub fn encode(plaintext: &str, a: i32, b: i32) -> Result<String, AffineCipherErr
 /// Decodes the ciphertext using the affine cipher with key (`a`, `b`). Note that, rather than
 /// returning a return code, the more common convention in Rust is to return a `Result`.
 pub fn decode(ciphertext: &str, a: i32, b: i32) -> Result<String, AffineCipherError> {
-    if !is_coprime(26, a) {
+    if !are_coprime(26, a) {
         return Err(AffineCipherError::NotCoprime(a));
     }
     Ok(ciphertext
@@ -60,12 +58,16 @@ fn decrypt(letter: char, a: i32, b: i32) -> Option<char> {
 
 fn decipher_char(letter: char, a: i32, b: i32) -> char {
     let a = a as f64;
+    println!("a is {a}");
     let b = b as i32;
+    println!("b is {b}");
     let y = (letter.to_ascii_lowercase() as i32) - 97;
     println!("{letter}: {y}");
     let mmi = a.powi(-1);
-    //println!("{mmi}");
-    let char_value = (mmi * ((y - b) as f64)) as i32 % 26;
+    println!("mmi is {mmi}");
+    let char_value = mmi * ((y - b) as f64) % 26.0;
+    println!("char_value is {char_value}");
+    println!("---------");
     char::from_u32(char_value as u32 + 97).unwrap()
 }
 
@@ -89,7 +91,7 @@ mod coprime {
     use std::cmp::min;
     use std::mem::swap;
 
-    pub(super) fn is_coprime(n: i32, m: i32) -> bool {
+    pub(super) fn are_coprime(n: i32, m: i32) -> bool {
         let n = n as u64;
         let m = m as u64;
         gcd(n, m) == 1
