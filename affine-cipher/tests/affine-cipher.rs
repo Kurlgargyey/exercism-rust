@@ -132,7 +132,7 @@ fn decode_all_the_letters() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn decode_with_no_spaces_in_input() {
     let phrase = "swxtjnpvyklruoliejdcblaxkswxmhqzglf";
     let (a, b) = (17, 33);
@@ -142,7 +142,7 @@ fn decode_with_no_spaces_in_input() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn decode_with_too_many_spaces() {
     let phrase = "vszzm    cly   yd cg    qdp";
     let (a, b) = (15, 16);
@@ -152,7 +152,7 @@ fn decode_with_too_many_spaces() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn decode_with_a_not_coprime_to_m() {
     let phrase = "Test";
     let (a, b) = (13, 5);
