@@ -54,7 +54,7 @@ mod decrypt {
         println!("{letter}: {y}");
         let mmi = mmi(a, 26).unwrap();
         println!("mmi is {mmi}");
-        let char_value = mmi * (y - b) % 26;
+        let char_value = (mmi * (y - b) % 26).abs();
         println!("char_value is {char_value}");
         println!("---------");
         char::from_u32((char_value + 97) as u32).unwrap()
