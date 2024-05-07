@@ -1,8 +1,9 @@
 /// What should the type of _function be?
 pub fn map<I, O>(input: Vec<I>, mut function: impl FnMut(I) -> O) -> Vec<O> {
-    let mut result = Vec::<O>::new();
-    for i in input {
-        result.push(function(i))
-    }
-    result
+    input
+        .into_iter()
+        .fold(Vec::<O>::new(), |mut output, element| {
+            output.push(function(element));
+            output
+        })
 }
