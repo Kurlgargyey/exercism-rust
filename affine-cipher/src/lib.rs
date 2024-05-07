@@ -6,6 +6,8 @@ pub enum AffineCipherError {
 }
 
 use coprime::*;
+use decrypt::*;
+use encrypt::*;
 
 /// Encodes the plaintext using the affine cipher with key (`a`, `b`). Note that, rather than
 /// returning a return code, the more common convention in Rust is to return a `Result`.
@@ -33,58 +35,61 @@ pub fn decode(ciphertext: &str, a: i32, b: i32) -> Result<String, AffineCipherEr
         .collect())
 }
 
-fn encrypt(letter: char, a: i32, b: i32) -> Option<char> {
-    match letter {
-        c if c.is_ascii_alphabetic() => Some(cipher_char(letter, a, b)),
-        c if c.is_ascii_digit() => Some(c),
-        _ => None,
-    }
-}
-
-fn cipher_char(letter: char, a: i32, b: i32) -> char {
-    let a = a as u32;
-    let b = b as u32;
-    let i = (letter.to_ascii_lowercase() as u32) - 97;
-    char::from_u32(((a * i + b) % 26) + 97).unwrap()
-}
-
-fn decrypt(letter: char, a: i32, b: i32) -> Option<char> {
-    match letter {
-        c if c.is_ascii_alphabetic() => Some(decipher_char(letter, a, b)),
-        c if c.is_ascii_digit() => Some(c),
-        _ => None,
-    }
-}
-
-fn decipher_char(letter: char, a: i32, b: i32) -> char {
-    let a = a as f64;
-    println!("a is {a}");
-    let b = b as i32;
-    println!("b is {b}");
-    let y = (letter.to_ascii_lowercase() as i32) - 97;
-    println!("{letter}: {y}");
-    let mmi = a.powi(-1);
-    println!("mmi is {mmi}");
-    let char_value = mmi * ((y - b) as f64) % 26.0;
-    println!("char_value is {char_value}");
-    println!("---------");
-    char::from_u32(char_value as u32 + 97).unwrap()
-}
-
-fn blocks_of_five(phrase: Vec<char>) -> String {
-    let mut i = 0;
-    let mut result = String::new();
-    println!("breaking up {:?}", phrase);
-    for letter in phrase {
-        if i > 0 && i % 5 == 0 {
-            println!("adding whitespace before {letter}, index {i}");
-            result.push_str(" ");
+mod decrypt {
+    pub(crate) fn decrypt(letter: char, a: i32, b: i32) -> Option<char> {
+        match letter {
+            c if c.is_ascii_alphabetic() => Some(decipher_char(letter, a, b)),
+            c if c.is_ascii_digit() => Some(c),
+            _ => None,
         }
-        result.push(letter);
-        println!("pushing {letter}, index {i}");
-        i += 1;
     }
-    result
+
+    fn decipher_char(letter: char, a: i32, b: i32) -> char {
+        let a = a as f64;
+        println!("a is {a}");
+        let b = b as i32;
+        println!("b is {b}");
+        let y = (letter.to_ascii_lowercase() as i32) - 97;
+        println!("{letter}: {y}");
+        let mmi = a.powi(-1);
+        println!("mmi is {mmi}");
+        let char_value = mmi * ((y - b) as f64) % 26.0;
+        println!("char_value is {char_value}");
+        println!("---------");
+        char::from_u32(char_value as u32 + 97).unwrap()
+    }
+}
+
+mod encrypt {
+    pub(crate) fn encrypt(letter: char, a: i32, b: i32) -> Option<char> {
+        match letter {
+            c if c.is_ascii_alphabetic() => Some(cipher_char(letter, a, b)),
+            c if c.is_ascii_digit() => Some(c),
+            _ => None,
+        }
+    }
+
+    fn cipher_char(letter: char, a: i32, b: i32) -> char {
+        let a = a as u32;
+        let b = b as u32;
+        let i = (letter.to_ascii_lowercase() as u32) - 97;
+        char::from_u32(((a * i + b) % 26) + 97).unwrap()
+    }
+    pub(crate) fn blocks_of_five(phrase: Vec<char>) -> String {
+        let mut i = 0;
+        let mut result = String::new();
+        println!("breaking up {:?}", phrase);
+        for letter in phrase {
+            if i > 0 && i % 5 == 0 {
+                println!("adding whitespace before {letter}, index {i}");
+                result.push_str(" ");
+            }
+            result.push(letter);
+            println!("pushing {letter}, index {i}");
+            i += 1;
+        }
+        result
+    }
 }
 
 mod coprime {
@@ -132,4 +137,8 @@ mod coprime {
             m >>= m.trailing_zeros();
         }
     }
+}
+
+mod mmi {
+    pub(crate) fn mmi(a: i32, m: i32) -> i32 {}
 }
