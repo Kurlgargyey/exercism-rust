@@ -77,11 +77,9 @@ mod encrypt {
         println!("breaking up {:?}", phrase);
         for letter in phrase {
             if i > 0 && i % 5 == 0 {
-                println!("adding whitespace before {letter}, index {i}");
                 result.push_str(" ");
             }
             result.push(letter);
-            println!("pushing {letter}, index {i}");
             i += 1;
         }
         result
