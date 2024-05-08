@@ -46,8 +46,6 @@ mod decrypt {
     }
 
     fn decipher_char(letter: char, a: i32, b: i32) -> char {
-        let a = a;
-        let b = b;
         let y = (letter.to_ascii_lowercase() as i32) - 'a' as i32;
         let mmi = mmi(a, 26).unwrap();
         let char_value = (mmi * (y - b)).rem_euclid(26);
