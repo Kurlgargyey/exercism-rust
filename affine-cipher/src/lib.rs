@@ -15,12 +15,11 @@ pub fn encode(plaintext: &str, a: i32, b: i32) -> Result<String, AffineCipherErr
     if !are_coprime(26, a) {
         return Err(AffineCipherError::NotCoprime(a));
     }
-    Ok(blocks_of_five(
-        plaintext
-            .chars()
-            .filter_map(|c| encrypt(c, a, b))
-            .collect::<Vec<char>>(),
-    ))
+    Ok(plaintext
+        .chars()
+        .filter_map(|c| encrypt(c, a, b))
+        .collect::<Vec<char>>()
+        .blocks(5))
 }
 
 /// Decodes the ciphertext using the affine cipher with key (`a`, `b`). Note that, rather than
@@ -67,12 +66,18 @@ mod encrypt {
         let i = (letter.to_ascii_lowercase() as i32) - 'a' as i32;
         char::from_u32((((a * i + b).rem_euclid(26)) + 'a' as i32) as u32).unwrap()
     }
-    pub(crate) fn blocks_of_five(phrase: Vec<char>) -> String {
-        phrase
-            .chunks(5)
-            .map(|chunk| chunk.iter().collect::<String>())
-            .collect::<Vec<String>>()
-            .join(" ")
+
+    pub(crate) trait Blocks {
+        fn blocks(&self, size: usize) -> String;
+    }
+
+    impl Blocks for Vec<char> {
+        fn blocks(&self, size: usize) -> String {
+            self.chunks(size)
+                .map(|chunk| chunk.iter().collect::<String>())
+                .collect::<Vec<String>>()
+                .join(" ")
+        }
     }
 }
 
