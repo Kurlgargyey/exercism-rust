@@ -22,8 +22,8 @@ fn translate_char(letter: char) -> Option<char> {
 }
 
 fn atbash_translation(letter: char) -> char {
-    let i = (letter.to_ascii_lowercase() as u32) - 'a' as u32;
-    let inverted_char = 'z' as u32 - i;
+    let letter_index = (letter.to_ascii_lowercase() as u32) - 'a' as u32;
+    let inverted_char = 'z' as u32 - letter_index;
     char::from_u32(inverted_char).unwrap()
 }
 
