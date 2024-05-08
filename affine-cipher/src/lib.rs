@@ -5,9 +5,9 @@ pub enum AffineCipherError {
     NotCoprime(i32),
 }
 
-use coprime::*;
 use decrypt::*;
 use encrypt::*;
+use mmi::*;
 
 /// Encodes the plaintext using the affine cipher with key (`a`, `b`). Note that, rather than
 /// returning a return code, the more common convention in Rust is to return a `Result`.
@@ -72,68 +72,19 @@ mod encrypt {
         char::from_u32(((a * i + b).rem_euclid(26)) + 97).unwrap()
     }
     pub(crate) fn blocks_of_five(phrase: Vec<char>) -> String {
-        let mut i = 0;
-        let mut result = String::new();
-        println!("breaking up {:?}", phrase);
-        for letter in phrase {
-            if i > 0 && i % 5 == 0 {
-                result.push_str(" ");
-            }
-            result.push(letter);
-            i += 1;
-        }
-        result
-    }
-}
-
-mod coprime {
-    use std::cmp::min;
-    use std::mem::swap;
-
-    pub(super) fn are_coprime(n: i32, m: i32) -> bool {
-        let n = n as u64;
-        let m = m as u64;
-        gcd(n, m) == 1
-    }
-
-    fn gcd(mut n: u64, mut m: u64) -> u64 {
-        // Stein's binary GCD algorithm
-        // Base cases: gcd(n, 0) = gcd(0, n) = n
-        if n == 0 {
-            return m;
-        } else if m == 0 {
-            return n;
-        }
-
-        // Extract common factor-2: gcd(2ⁱ n, 2ⁱ m) = 2ⁱ gcd(n, m)
-        // and reducing until odd gcd(2ⁱ n, m) = gcd(n, m) if m is odd
-        let k = {
-            let k_n = n.trailing_zeros();
-            let k_m = m.trailing_zeros();
-            n >>= k_n;
-            m >>= k_m;
-            min(k_n, k_m)
-        };
-
-        loop {
-            // Invariant: n odd
-            debug_assert!(n % 2 == 1, "n = {} is even", n);
-
-            if n > m {
-                swap(&mut n, &mut m);
-            }
-            m -= n;
-
-            if m == 0 {
-                return n << k;
-            }
-
-            m >>= m.trailing_zeros();
-        }
+        phrase
+            .chunks(5)
+            .map(|chunk| chunk.iter().collect::<String>())
+            .collect::<Vec<String>>()
+            .join(" ")
     }
 }
 
 mod mmi {
+
+    pub(super) fn are_coprime(n: i32, m: i32) -> bool {
+        mmi(n, m).is_some()
+    }
     pub(crate) fn mmi(a: i32, n: i32) -> Option<i32> {
         let mut t = 0;
         let mut newt = 1;
