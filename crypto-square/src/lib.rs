@@ -1,24 +1,32 @@
 pub fn encrypt(input: &str) -> String {
+    if input.is_empty() {
+        return String::new();
+    };
     let chars = &mut input
         .chars()
         .filter(|c| c.is_ascii_alphabetic())
         .map(|c| c.to_ascii_lowercase());
     let mut sanitized_input: String = chars.clone().collect();
     println!("{}", sanitized_input);
-    let dimensions = find_rectangle(sanitized_input.len()).unwrap();
-    println!("{:?}", dimensions);
-    let difference = dimensions.0 * dimensions.1 - sanitized_input.len();
+    let (rows, cols) = find_rectangle(sanitized_input.len()).unwrap();
+    println!("rows: {}, cols: {}", rows, cols);
+    let difference = rows * cols - sanitized_input.len();
     println!("{}", difference);
     for i in 1..=difference {
         sanitized_input.push(' ');
     }
-    let vec = sanitized_input
+    let vec: Vec<Vec<char>> = sanitized_input
         .chars()
         .collect::<Vec<char>>()
-        .chunks(dimensions.0);
+        .chunks(rows)
+        .map(|chunk| chunk.to_vec())
+        .collect();
     let mut result: Vec<String> = Vec::<String>::new();
-    for i in 1..=dimensions.0 - difference {
-        let row: String = chars.take(dimensions.1).collect();
+    for i in 0..rows {
+        let row: String = vec.iter().fold(String::new(), |mut result, row| {
+            result.push(row[i]);
+            result
+        });
         println!("{}", row);
         result.push(row);
     }

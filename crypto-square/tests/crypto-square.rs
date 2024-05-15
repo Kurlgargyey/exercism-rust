@@ -31,13 +31,13 @@ fn example() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn empty_last_line() {
     test("congratulate", "crl oaa ntt gue")
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn spaces_are_reorganized() {
     test("abet", "ae bt");
     test("a bet", "ae bt");
@@ -45,7 +45,7 @@ fn spaces_are_reorganized() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn everything_becomes_lowercase() {
     test("caSe", "cs ae");
     test("cAsE", "cs ae");
@@ -53,7 +53,7 @@ fn everything_becomes_lowercase() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn long() {
     test(
         r#"
