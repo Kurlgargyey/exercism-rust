@@ -3,12 +3,11 @@ pub fn encrypt(input: &str) -> String {
         return String::new();
     };
 
-    let chars = &mut input
+    let mut sanitized_input: String = input
         .chars()
         .filter(|c| c.is_ascii_alphanumeric())
-        .map(|c| c.to_ascii_lowercase());
-
-    let mut sanitized_input: String = chars.clone().collect();
+        .map(|c| c.to_ascii_lowercase())
+        .collect();
 
     let (rows, cols) = find_rectangle(sanitized_input.len()).unwrap();
 
