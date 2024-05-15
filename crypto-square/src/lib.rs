@@ -3,28 +3,30 @@ pub fn encrypt(input: &str) -> String {
         .chars()
         .filter(|c| c.is_ascii_alphabetic())
         .map(|c| c.to_ascii_lowercase());
-    let sanitized_input: String = chars.clone().collect();
+    let mut sanitized_input: String = chars.clone().collect();
     println!("{}", sanitized_input);
-    let dimensions = find_closest_divisors(sanitized_input.len()).unwrap();
+    let dimensions = find_rectangle(sanitized_input.len()).unwrap();
     println!("{:?}", dimensions);
     let difference = dimensions.0 * dimensions.1 - sanitized_input.len();
     println!("{}", difference);
-    let mut result: Vec<String> = Vec::<String>::new();
-    for i in 1..=dimensions.1 - difference {
-        let row: String = chars.take(dimensions.0).collect();
-        println!("{}", row);
-        result.push(row);
-    }
     for i in 1..=difference {
-        let mut row: String = chars.take(dimensions.0 - 1).collect();
-        row.push(' ');
+        sanitized_input.push(' ');
+    }
+    let vec = sanitized_input
+        .chars()
+        .collect::<Vec<char>>()
+        .chunks(dimensions.0);
+    let mut result: Vec<String> = Vec::<String>::new();
+    for i in 1..=dimensions.0 - difference {
+        let row: String = chars.take(dimensions.1).collect();
+        println!("{}", row);
         result.push(row);
     }
 
     result.join(" ")
 }
 
-fn find_closest_divisors(length: usize) -> Option<(usize, usize)> {
+fn find_rectangle(length: usize) -> Option<(usize, usize)> {
     let floor = (length as f64).sqrt().floor() as usize;
 
     for i in floor..=length {
