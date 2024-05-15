@@ -2,10 +2,12 @@ pub fn encrypt(input: &str) -> String {
     if input.is_empty() {
         return String::new();
     };
+
     let chars = &mut input
         .chars()
         .filter(|c| c.is_ascii_alphanumeric())
         .map(|c| c.to_ascii_lowercase());
+
     let mut sanitized_input: String = chars.clone().collect();
 
     let (rows, cols) = find_rectangle(sanitized_input.len()).unwrap();
@@ -15,13 +17,16 @@ pub fn encrypt(input: &str) -> String {
     for _i in 1..=difference {
         sanitized_input.push(' ');
     }
+
     let vec: Vec<Vec<char>> = sanitized_input
         .chars()
         .collect::<Vec<char>>()
         .chunks(rows)
         .map(|chunk| chunk.to_vec())
         .collect();
+
     let mut result: Vec<String> = Vec::<String>::new();
+
     for i in 0..rows {
         let row: String = vec.iter().fold(String::new(), |mut result, col| {
             result.push(col[i]);
