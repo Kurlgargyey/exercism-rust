@@ -4,7 +4,7 @@ pub fn encrypt(input: &str) -> String {
     };
     let chars = &mut input
         .chars()
-        .filter(|c| c.is_ascii_alphabetic())
+        .filter(|c| c.is_ascii_alphanumeric())
         .map(|c| c.to_ascii_lowercase());
     let mut sanitized_input: String = chars.clone().collect();
     println!("{}", sanitized_input);
