@@ -12,7 +12,7 @@ pub fn encrypt(input: &str) -> String {
     println!("rows: {}, cols: {}", rows, cols);
     let difference = rows * cols - sanitized_input.len();
     println!("{}", difference);
-    for i in 1..=difference {
+    for _i in 1..=difference {
         sanitized_input.push(' ');
     }
     let vec: Vec<Vec<char>> = sanitized_input
@@ -47,31 +47,4 @@ fn find_rectangle(length: usize) -> Option<(usize, usize)> {
 
 fn are_valid_dimensions(side1: usize, side2: usize, length: usize) -> bool {
     side1 * side2 >= length && side1 >= side2 && side1 - side2 <= 1
-}
-
-fn translate_char(letter: char) -> Option<char> {
-    match letter {
-        c if c.is_ascii_alphabetic() => Some(atbash_translation(letter)),
-        c if c.is_ascii_digit() => Some(c),
-        _ => None,
-    }
-}
-
-fn atbash_translation(letter: char) -> char {
-    let letter_index = (letter.to_ascii_lowercase() as u32) - 'a' as u32;
-    let inverted_char = 'z' as u32 - letter_index;
-    char::from_u32(inverted_char).unwrap()
-}
-
-trait Blocks {
-    fn blocks(&self, size: usize) -> String;
-}
-
-impl Blocks for Vec<char> {
-    fn blocks(&self, size: usize) -> String {
-        self.chunks(size)
-            .map(|chunk| chunk.iter().collect::<String>())
-            .collect::<Vec<String>>()
-            .join(" ")
-    }
 }
