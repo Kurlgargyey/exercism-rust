@@ -1,9 +1,42 @@
 pub fn encrypt(input: &str) -> String {
-    input
+    let chars = &mut input
         .chars()
-        .filter_map(|c| translate_char(c))
-        .collect::<Vec<char>>()
-        .blocks(5)
+        .filter(|c| c.is_ascii_alphabetic())
+        .map(|c| c.to_ascii_lowercase());
+    let sanitized_input: String = chars.clone().collect();
+    println!("{}", sanitized_input);
+    let dimensions = find_closest_divisors(sanitized_input.len()).unwrap();
+    println!("{:?}", dimensions);
+    let difference = dimensions.0 * dimensions.1 - sanitized_input.len();
+    println!("{}", difference);
+    let mut result: Vec<String> = Vec::<String>::new();
+    for i in 1..=dimensions.1 - difference {
+        let row: String = chars.take(dimensions.0).collect();
+        println!("{}", row);
+        result.push(row);
+    }
+    for i in 1..=difference {
+        let mut row: String = chars.take(dimensions.0 - 1).collect();
+        row.push(' ');
+        result.push(row);
+    }
+
+    result.join(" ")
+}
+
+fn find_closest_divisors(length: usize) -> Option<(usize, usize)> {
+    let floor = (length as f64).sqrt().floor() as usize;
+
+    for i in floor..=length {
+        if are_valid_dimensions(i, floor, length) {
+            return Some((i, floor));
+        }
+    }
+    None
+}
+
+fn are_valid_dimensions(side1: usize, side2: usize, length: usize) -> bool {
+    side1 * side2 >= length && side1 >= side2 && side1 - side2 <= 1
 }
 
 fn translate_char(letter: char) -> Option<char> {

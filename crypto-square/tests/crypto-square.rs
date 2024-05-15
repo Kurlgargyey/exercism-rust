@@ -10,7 +10,7 @@ fn empty_input() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn encrypt_also_decrypts_square() {
     // note that you only get the exact input back if:
     // 1. no punctuation
@@ -22,7 +22,7 @@ fn encrypt_also_decrypts_square() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn example() {
     test(
         "If man was meant to stay on the ground, god would have given us roots.",
