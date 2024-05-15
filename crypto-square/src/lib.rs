@@ -32,7 +32,7 @@ pub fn encrypt(input: &str) -> String {
             result.push(col[i]);
             result
         });
-        println!("{}", row);
+
         result.push(row);
     }
 
