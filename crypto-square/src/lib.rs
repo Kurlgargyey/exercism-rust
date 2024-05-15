@@ -7,11 +7,11 @@ pub fn encrypt(input: &str) -> String {
         .filter(|c| c.is_ascii_alphanumeric())
         .map(|c| c.to_ascii_lowercase());
     let mut sanitized_input: String = chars.clone().collect();
-    println!("{}", sanitized_input);
+
     let (rows, cols) = find_rectangle(sanitized_input.len()).unwrap();
-    println!("rows: {}, cols: {}", rows, cols);
+
     let difference = rows * cols - sanitized_input.len();
-    println!("{}", difference);
+
     for _i in 1..=difference {
         sanitized_input.push(' ');
     }
@@ -23,8 +23,8 @@ pub fn encrypt(input: &str) -> String {
         .collect();
     let mut result: Vec<String> = Vec::<String>::new();
     for i in 0..rows {
-        let row: String = vec.iter().fold(String::new(), |mut result, row| {
-            result.push(row[i]);
+        let row: String = vec.iter().fold(String::new(), |mut result, col| {
+            result.push(col[i]);
             result
         });
         println!("{}", row);
