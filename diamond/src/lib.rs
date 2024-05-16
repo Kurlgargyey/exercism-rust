@@ -1,15 +1,29 @@
 pub fn get_diamond(c: char) -> Vec<String> {
-    let row_width = ('A'..=c).count() * 2 - 1;
-    let middle_idx = row_width / 2;
-    ('A'..=c)
+    let range = ('A'..=c).count();
+    let mut diamond = ('A'..=c)
         .enumerate()
         .fold(Vec::<String>::new(), |mut vec, (idx, char)| {
-            let mut row = String::with_capacity(row_width);
-            let first_idx = middle_idx - idx;
-            let second_idx = middle_idx + idx;
-            row.replace_range(first_idx..first_idx + 1, char.to_string().as_str());
-            row.replace_range(second_idx..second_idx + 1, char.to_string().as_str());
+            let padding = row_width.div_ceil(2) - idx;
+            let middle = row_width.saturating_sub(padding).saturating_sub(2);
+            let mut row = String::new();
+            for _i in 0..padding {
+                row.push(' ');
+            }
+            row.push(char);
+            if middle > 0 {
+                for _i in 0..padding {
+                    row.push(' ');
+                    row.push(char);
+                }
+            }
+            for _i in 0..padding {
+                row.push(' ');
+            }
             vec.push(row);
             vec
-        })
+        });
+    if diamond.len() > 1 {
+        diamond.append(&mut diamond.clone().into_iter().rev().skip(1).collect())
+    }
+    diamond
 }

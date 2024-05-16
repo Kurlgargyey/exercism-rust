@@ -6,7 +6,7 @@ fn a() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn b() {
     #[rustfmt::skip]
     assert_eq!(
