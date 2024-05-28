@@ -19,15 +19,12 @@ pub fn lsp(string_digits: &str, span: usize) -> Result<u64, Error> {
 }
 
 fn series_product(window: &[char]) -> Result<u64, Error> {
-    window.iter().fold(Ok(1_u64), |product, digit| {
-        if product.is_ok() {
-            if let Some(num) = digit.to_digit(10) {
-                Ok(product.unwrap() * num as u64)
-            } else {
-                Err(Error::InvalidDigit(*digit))
-            }
-        } else {
-            product
+    let mut product = 1;
+    for char in window.iter() {
+        match char.to_digit(10) {
+            Some(num) => product *= num as u64,
+            _ => return Err(Error::InvalidDigit(*char)),
         }
-    })
+    }
+    Ok(product)
 }
