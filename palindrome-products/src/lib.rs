@@ -54,12 +54,14 @@ trait PalindromeLogCheck {
 //checking for palindromity(?) using integer math without the risk for overflowing
 impl PalindromeLogCheck for u64 {
     fn is_palindrome_log(&self) -> bool {
-        std::iter
-            ::successors(
-                Some(((10u64).pow(self.checked_ilog10().or(Some(1)).unwrap()), 1u64)),
-                |&(hi, lo)| { (hi > lo * 100).then_some((hi / 10, lo * 10)) }
-            )
-            .all(|(hi, lo)| (self / hi) % 10 == (self / lo) % 10)
+        std::iter::successors(
+            Some((
+                (10u64).pow(self.checked_ilog10().or(Some(1)).unwrap()),
+                1u64,
+            )),
+            |&(hi, lo)| (hi > lo * 100).then_some((hi / 10, lo * 10)),
+        )
+        .all(|(hi, lo)| (self / hi) % 10 == (self / lo) % 10)
     }
 }
 
@@ -69,7 +71,7 @@ trait ProductCheck {
 
 impl ProductCheck for u64 {
     fn is_product_of(&self, min: &u64, max: &u64) -> bool {
-        (*min..=*max).any(|i| { self % i == 0 && (min..=max).contains(&&(self / i)) })
+        (*min..=*max).any(|i| self % i == 0 && (min..=max).contains(&&(self / i)))
     }
 }
 
@@ -86,11 +88,15 @@ impl PalindromeProductCheck for u64 {
 pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
     let valid_range = min.pow(2)..=max.pow(2);
     let smallest_palindrome = Palindrome::new(
-        valid_range.clone().find(|candidate| candidate.is_palindrome_product_of(&min, &max))?
+        valid_range
+            .clone()
+            .find(|candidate| candidate.is_palindrome_product_of(&min, &max))?,
     )?;
 
     let largest_palindrome = Palindrome::new(
-        valid_range.rev().find(|candidate| candidate.is_palindrome_product_of(&min, &max))?
+        valid_range
+            .rev()
+            .find(|candidate| candidate.is_palindrome_product_of(&min, &max))?,
     )?;
 
     Some((smallest_palindrome, largest_palindrome))
@@ -99,14 +105,18 @@ pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome
 fn palindrome_products_iter(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
     (min..=max)
         .flat_map(|i| (i..=max).filter_map(move |j| Palindrome::new(i * j)))
-        .fold(None, |acc, p| acc.map(|(min, max)| (min.min(p), max.max(p))).or(Some((p, p))))
+        .fold(None, |acc, p| {
+            acc.map(|(min, max)| (min.min(p), max.max(p)))
+                .or(Some((p, p)))
+        })
 }
 
 extern crate test;
+#[cfg(test)]
 mod tests {
+    use super::*;
     #[cfg(test)]
     use test::Bencher;
-    use super::*;
     #[bench]
     fn palindrome_products_bench(b: &mut Bencher) {
         let min = 10;

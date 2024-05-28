@@ -1,5 +1,3 @@
-use std::hash::{DefaultHasher, Hash, Hasher};
-
 #[derive(Debug, Eq)]
 pub struct CustomSet<T: Clone> {
     // We fake using T here, so the compiler does not complain that
