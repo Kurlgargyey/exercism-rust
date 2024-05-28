@@ -23,7 +23,7 @@ fn series_product(window: &[char]) -> Result<u64, Error> {
     for char in window.iter() {
         match char.to_digit(10) {
             Some(num) => product *= num as u64,
-            _ => return Err(Error::InvalidDigit(*char)),
+            None => return Err(Error::InvalidDigit(*char)),
         }
     }
     Ok(product)
