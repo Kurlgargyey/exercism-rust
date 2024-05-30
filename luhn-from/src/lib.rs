@@ -2,32 +2,40 @@ pub struct Luhn(String);
 
 impl Luhn {
     pub fn is_valid(&self) -> bool {
-        let cleaned_code = &self.0.trim().split_whitespace().collect::<String>();
-        if !Self::correct_format(&cleaned_code) {
+        let cleaned_code = self.0.trim().split_whitespace().collect::<String>();
+        if cleaned_code.len() <= 1 {
             return false;
         }
+        let digits = Self::turn_into_digits(&cleaned_code);
 
-        cleaned_code
-            .chars()
-            .rev()
-            .enumerate()
-            .map(|(i, raw_digit)| match (i + 1) % 2 {
-                0 => Self::double_digit(&raw_digit),
-                _ => raw_digit,
-            })
-            .fold(0, |acc, final_digit| {
-                acc + final_digit.to_digit(10).unwrap()
-            })
-            % 10
-            == 0
+        match digits {
+            Some(vec) => {
+                let mut tmp: u32 = 0;
+                vec.into_iter()
+                    .enumerate()
+                    .fold(0, |chk, (idx, dgt)| match (idx + 1) % 2 {
+                        0 => {
+                            tmp = dgt * 2;
+                            if tmp > 9 {
+                                tmp -= 9
+                            }
+                            chk + tmp
+                        }
+                        _ => chk + dgt,
+                    })
+                    % 10
+                    == 0
+            }
+            None => false,
+        }
     }
 
-    fn double_digit(digit: &char) -> char {
-        vec!['0', '2', '4', '6', '8', '1', '3', '5', '7', '9'][digit.to_digit(10).unwrap() as usize]
-    }
-
-    fn correct_format(code: &String) -> bool {
-        !(code.len() < 2 || code.chars().any(|c| !c.is_digit(10)))
+    fn turn_into_digits(code: &String) -> Option<Vec<u32>> {
+        let mut output = Vec::<u32>::with_capacity(code.len());
+        for ch in code.chars().rev() {
+            output.push(ch.to_digit(10)?)
+        }
+        Some(output)
     }
 }
 
