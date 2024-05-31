@@ -9,42 +9,16 @@ pub trait Luhn {
 /// Perhaps there exists a better solution for this problem?
 impl<T: ToString> Luhn for T {
     fn valid_luhn(&self) -> bool {
-        let cleaned_code = self
-            .to_string()
-            .trim()
-            .split_whitespace()
-            .collect::<String>();
-        if cleaned_code.len() <= 1 {
-            return false;
-        }
-        fn turn_into_digits(code: &String) -> Option<Vec<u32>> {
-            let mut output = Vec::<u32>::with_capacity(code.len());
-            for ch in code.chars().rev() {
-                output.push(ch.to_digit(10)?)
-            }
-            Some(output)
-        }
-        let digits = turn_into_digits(&cleaned_code);
-
-        match digits {
-            Some(vec) => {
-                let mut tmp: u32 = 0;
-                vec.into_iter()
-                    .enumerate()
-                    .fold(0, |chk, (idx, dgt)| match (idx + 1) % 2 {
-                        0 => {
-                            tmp = dgt * 2;
-                            if tmp > 9 {
-                                tmp -= 9
-                            }
-                            chk + tmp
-                        }
-                        _ => chk + dgt,
-                    })
-                    % 10
-                    == 0
-            }
-            None => false,
-        }
+        self.to_string()
+            .chars()
+            .rev()
+            .filter(|c| !c.is_whitespace())
+            .try_fold((0, 0), |(sum, length), c| {
+                c.to_digit(10)
+                    .map(|num| if length % 2 == 1 { num * 2 } else { num })
+                    .map(|num| if num > 9 { num - 9 } else { num })
+                    .map(|num| (sum + num, length + 1))
+            })
+            .map_or(false, |(sum, length)| sum % 10 == 0 && length > 1)
     }
 }
