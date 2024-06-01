@@ -8,23 +8,17 @@ impl RailFence {
     pub fn encode(&self, text: &str) -> String {
         let mut lines = Vec::<Vec<char>>::with_capacity(self.0);
         for _ in 0..self.0 {
-            lines.push(Vec::<char>::with_capacity(text.len()))
-        }
-        for _ in 0..=text.len() {
-            for i in 0..self.0 {
-                lines[i].push(' ')
-            }
+            lines.push(Vec::<char>::with_capacity(text.len() / 2))
         }
 
         let mut dir_down = false;
-        let (mut row, mut col): (usize, usize) = (0, 0);
+        let mut row: usize = 0;
 
         for char in text.chars() {
             if row == 0 || row == self.0 - 1 {
                 dir_down = !dir_down
             }
-            lines[row][col] = char;
-            col += 1;
+            lines[row].push(char);
 
             if dir_down {
                 row += 1
@@ -53,12 +47,10 @@ impl RailFence {
         let mut dir_down = false;
         let (mut row, mut col): (usize, usize) = (0, 0);
         for _ in 0..=cipher.len() {
-            if row == 0 {
-                dir_down = true
+            if row == 0 || row == self.0 - 1 {
+                dir_down = !dir_down
             }
-            if row == self.0 - 1 {
-                dir_down = false
-            }
+
             lines[row][col] = '*';
             col += 1;
 
@@ -71,12 +63,12 @@ impl RailFence {
         for line in &lines {
             println!("{:?}", line);
         }
-        let mut index = 0;
+
+        let mut chars = cipher.chars();
         for row in 0..self.0 {
             for col in 0..cipher.len() {
-                if lines[row][col] == '*' && index < cipher.len() {
-                    lines[row][col] = cipher.chars().nth(index).unwrap();
-                    index += 1;
+                if lines[row][col] == '*' {
+                    lines[row][col] = chars.next().unwrap_or('*')
                 }
             }
         }
