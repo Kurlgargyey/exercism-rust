@@ -1,13 +1,52 @@
+use std::collections::HashMap;
 use std::fmt::{Display, Formatter, Result};
 
-pub struct Roman {
+pub struct Roman<'r> {
+    val: u32,
+    numerals: HashMap<u32, HashMap<&'r str, char>>,
+    /*
+    thousands_numerals: HashMap<&'r str, char>,
+    hundreds_numerals: HashMap<&'r str, char>,
+    tens_numerals: HashMap<&'r str, char>,
+    ones_numerals: HashMap<&'r str, char>,
     thousands: usize,
     hundreds: usize,
     tens: usize,
     ones: usize,
+    */
 }
 
-impl Roman {
+impl Roman<'_> {
+    fn display_decimal(&self, decimal: u32) -> String {
+        let decimal_val = self.val / decimal % 10;
+        let decimal_numerals = &self.numerals[&decimal];
+        match decimal_val {
+            0 => "".to_string(),
+            1..=3 => (0..decimal_val).fold(String::new(), |mut res, _| {
+                res.push(decimal_numerals["numeral"]);
+                res
+            }),
+            4 => {
+                let mut result = decimal_numerals["numeral"].to_string();
+                result.push(decimal_numerals["fiver"]);
+                result
+            }
+            5 => decimal_numerals["fiver"].to_string(),
+            6..=8 => {
+                (0..decimal_val - 5).fold(decimal_numerals["fiver"].to_string(), |mut res, _| {
+                    res.push(decimal_numerals["numeral"]);
+                    res
+                })
+            }
+            _ => {
+                let mut result = decimal_numerals["numeral"].to_string();
+                result.push(self.numerals[&(decimal * 10)]["numeral"]);
+                result
+            }
+        }
+    }
+
+    /*
     fn display_thousands(&self) -> String {
         match self.thousands {
             0 => "".to_string(),
@@ -86,22 +125,23 @@ impl Roman {
             _ => "IX".to_string(),
         }
     }
+    */
 }
 
-impl Display for Roman {
+impl Display for Roman<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(
             f,
             "{}{}{}{}",
-            self.display_thousands(),
-            self.display_hundreds(),
-            self.display_tens(),
-            self.display_ones()
+            self.display_decimal(1000),
+            self.display_decimal(100),
+            self.display_decimal(10),
+            self.display_decimal(1)
         )
     }
 }
 
-impl From<u32> for Roman {
+impl From<u32> for Roman<'_> {
     fn from(num: u32) -> Self {
         let thousands = (num / 1000) as usize;
         let remainder = num % 1000;
@@ -111,11 +151,17 @@ impl From<u32> for Roman {
         let remainder = remainder % 10;
         let ones = remainder as usize;
 
-        Roman {
-            thousands,
-            hundreds,
-            tens,
-            ones,
-        }
+        let val = num;
+        let mut numerals = HashMap::<u32, HashMap<&str, char>>::new();
+        let thousands_numerals = HashMap::from([("numeral", 'M')]);
+        numerals.insert(1000, thousands_numerals);
+        let hundreds_numerals = HashMap::from([("numeral", 'C'), ("fiver", 'D')]);
+        numerals.insert(100, hundreds_numerals);
+        let tens_numerals = HashMap::from([("numeral", 'X'), ("fiver", 'L')]);
+        numerals.insert(10, tens_numerals);
+        let ones_numerals = HashMap::from([("numeral", 'I'), ("fiver", 'V')]);
+        numerals.insert(1, ones_numerals);
+
+        Roman { val, numerals }
     }
 }
