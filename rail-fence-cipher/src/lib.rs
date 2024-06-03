@@ -60,10 +60,6 @@ impl RailFence {
                 row -= 1
             }
         }
-        for line in &lines {
-            println!("{:?}", line);
-        }
-
         let mut chars = cipher.chars();
         for row in 0..self.0 {
             for col in 0..cipher.len() {
@@ -72,9 +68,7 @@ impl RailFence {
                 }
             }
         }
-        for line in &lines {
-            println!("{:?}", line);
-        }
+
         let mut result = String::new();
         for i in 0..cipher.len() {
             for line in &lines {
