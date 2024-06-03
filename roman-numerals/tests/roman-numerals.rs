@@ -9,7 +9,7 @@ fn number_1_is_i() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_2_is_ii() {
     let input = 2;
     let output = Roman::from(input).to_string();
@@ -18,7 +18,7 @@ fn number_2_is_ii() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_3_is_iii() {
     let input = 3;
     let output = Roman::from(input).to_string();
@@ -27,7 +27,7 @@ fn number_3_is_iii() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_4_is_iv() {
     let input = 4;
     let output = Roman::from(input).to_string();
@@ -36,7 +36,7 @@ fn number_4_is_iv() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_5_is_v() {
     let input = 5;
     let output = Roman::from(input).to_string();
@@ -45,7 +45,7 @@ fn number_5_is_v() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_6_is_vi() {
     let input = 6;
     let output = Roman::from(input).to_string();
@@ -54,7 +54,7 @@ fn number_6_is_vi() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_9_is_ix() {
     let input = 9;
     let output = Roman::from(input).to_string();
@@ -63,7 +63,7 @@ fn number_9_is_ix() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_16_is_xvi() {
     let input = 16;
     let output = Roman::from(input).to_string();
@@ -72,7 +72,7 @@ fn number_16_is_xvi() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_27_is_xxvii() {
     let input = 27;
     let output = Roman::from(input).to_string();
@@ -81,7 +81,7 @@ fn number_27_is_xxvii() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_48_is_xlviii() {
     let input = 48;
     let output = Roman::from(input).to_string();
@@ -90,7 +90,7 @@ fn number_48_is_xlviii() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_49_is_xlix() {
     let input = 49;
     let output = Roman::from(input).to_string();
@@ -99,7 +99,7 @@ fn number_49_is_xlix() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_59_is_lix() {
     let input = 59;
     let output = Roman::from(input).to_string();
@@ -108,7 +108,7 @@ fn number_59_is_lix() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_66_is_lxvi() {
     let input = 66;
     let output = Roman::from(input).to_string();
@@ -117,7 +117,7 @@ fn number_66_is_lxvi() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_93_is_xciii() {
     let input = 93;
     let output = Roman::from(input).to_string();
@@ -126,7 +126,7 @@ fn number_93_is_xciii() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_141_is_cxli() {
     let input = 141;
     let output = Roman::from(input).to_string();
@@ -135,7 +135,7 @@ fn number_141_is_cxli() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_163_is_clxiii() {
     let input = 163;
     let output = Roman::from(input).to_string();
@@ -144,7 +144,7 @@ fn number_163_is_clxiii() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_166_is_clxvi() {
     let input = 166;
     let output = Roman::from(input).to_string();
@@ -153,7 +153,7 @@ fn number_166_is_clxvi() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_402_is_cdii() {
     let input = 402;
     let output = Roman::from(input).to_string();
@@ -162,7 +162,7 @@ fn number_402_is_cdii() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_575_is_dlxxv() {
     let input = 575;
     let output = Roman::from(input).to_string();
@@ -171,7 +171,7 @@ fn number_575_is_dlxxv() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_666_is_dclxvi() {
     let input = 666;
     let output = Roman::from(input).to_string();
@@ -180,7 +180,7 @@ fn number_666_is_dclxvi() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_911_is_cmxi() {
     let input = 911;
     let output = Roman::from(input).to_string();
@@ -189,7 +189,7 @@ fn number_911_is_cmxi() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_1024_is_mxxiv() {
     let input = 1024;
     let output = Roman::from(input).to_string();
@@ -198,7 +198,7 @@ fn number_1024_is_mxxiv() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_1666_is_mdclxvi() {
     let input = 1666;
     let output = Roman::from(input).to_string();
@@ -207,7 +207,7 @@ fn number_1666_is_mdclxvi() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_3000_is_mmm() {
     let input = 3000;
     let output = Roman::from(input).to_string();
@@ -216,7 +216,7 @@ fn number_3000_is_mmm() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_3001_is_mmmi() {
     let input = 3001;
     let output = Roman::from(input).to_string();
@@ -225,7 +225,7 @@ fn number_3001_is_mmmi() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_3888_is_mmmdccclxxxviii() {
     let input = 3888;
     let output = Roman::from(input).to_string();
@@ -234,7 +234,7 @@ fn number_3888_is_mmmdccclxxxviii() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn number_3999_is_mmmcmxcix() {
     let input = 3999;
     let output = Roman::from(input).to_string();
