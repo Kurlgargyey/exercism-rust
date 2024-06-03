@@ -4,16 +4,6 @@ use std::fmt::{Display, Formatter, Result};
 pub struct Roman<'r> {
     val: u32,
     numerals: HashMap<u32, HashMap<&'r str, char>>,
-    /*
-    thousands_numerals: HashMap<&'r str, char>,
-    hundreds_numerals: HashMap<&'r str, char>,
-    tens_numerals: HashMap<&'r str, char>,
-    ones_numerals: HashMap<&'r str, char>,
-    thousands: usize,
-    hundreds: usize,
-    tens: usize,
-    ones: usize,
-    */
 }
 
 impl Roman<'_> {
@@ -22,27 +12,24 @@ impl Roman<'_> {
         let decimal_numerals = &self.numerals[&decimal];
         match decimal_val {
             0 => "".to_string(),
-            1..=3 => (0..decimal_val).fold(String::new(), |mut res, _| {
-                res.push(decimal_numerals["numeral"]);
-                res
-            }),
-            4 => {
-                let mut result = decimal_numerals["numeral"].to_string();
-                result.push(decimal_numerals["fiver"]);
-                result
-            }
+            1..=3 => (0..decimal_val)
+                .map(|_| decimal_numerals["numeral"])
+                .collect(),
+            4 => [decimal_numerals["numeral"], decimal_numerals["fiver"]]
+                .into_iter()
+                .collect(),
             5 => decimal_numerals["fiver"].to_string(),
-            6..=8 => {
-                (0..decimal_val - 5).fold(decimal_numerals["fiver"].to_string(), |mut res, _| {
-                    res.push(decimal_numerals["numeral"]);
-                    res
-                })
-            }
-            _ => {
-                let mut result = decimal_numerals["numeral"].to_string();
-                result.push(self.numerals[&(decimal * 10)]["numeral"]);
-                result
-            }
+            6..=8 => [decimal_numerals["fiver"]]
+                .into_iter()
+                .chain((0..decimal_val - 5).map(|_| decimal_numerals["numeral"]))
+                .collect(),
+
+            _ => [
+                decimal_numerals["numeral"],
+                self.numerals[&(decimal * 10)]["numeral"],
+            ]
+            .into_iter()
+            .collect(),
         }
     }
 
@@ -143,24 +130,12 @@ impl Display for Roman<'_> {
 
 impl From<u32> for Roman<'_> {
     fn from(num: u32) -> Self {
-        let thousands = (num / 1000) as usize;
-        let remainder = num % 1000;
-        let hundreds = (remainder / 100) as usize;
-        let remainder = remainder % 100;
-        let tens = (remainder / 10) as usize;
-        let remainder = remainder % 10;
-        let ones = remainder as usize;
-
         let val = num;
         let mut numerals = HashMap::<u32, HashMap<&str, char>>::new();
-        let thousands_numerals = HashMap::from([("numeral", 'M')]);
-        numerals.insert(1000, thousands_numerals);
-        let hundreds_numerals = HashMap::from([("numeral", 'C'), ("fiver", 'D')]);
-        numerals.insert(100, hundreds_numerals);
-        let tens_numerals = HashMap::from([("numeral", 'X'), ("fiver", 'L')]);
-        numerals.insert(10, tens_numerals);
-        let ones_numerals = HashMap::from([("numeral", 'I'), ("fiver", 'V')]);
-        numerals.insert(1, ones_numerals);
+        numerals.insert(1000, HashMap::from([("numeral", 'M')]));
+        numerals.insert(100, HashMap::from([("numeral", 'C'), ("fiver", 'D')]));
+        numerals.insert(10, HashMap::from([("numeral", 'X'), ("fiver", 'L')]));
+        numerals.insert(1, HashMap::from([("numeral", 'I'), ("fiver", 'V')]));
 
         Roman { val, numerals }
     }
