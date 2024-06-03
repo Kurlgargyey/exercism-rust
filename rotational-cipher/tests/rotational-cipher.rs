@@ -10,7 +10,7 @@ fn rotate_a_by_0_same_output_as_input() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn rotate_a_by_1() {
     let text = "a";
     let shift_key = 1;
@@ -20,7 +20,7 @@ fn rotate_a_by_1() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn rotate_a_by_26_same_output_as_input() {
     let text = "a";
     let shift_key = 26;
@@ -30,7 +30,7 @@ fn rotate_a_by_26_same_output_as_input() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn rotate_m_by_13() {
     let text = "m";
     let shift_key = 13;
@@ -40,7 +40,7 @@ fn rotate_m_by_13() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn rotate_n_by_13_with_wrap_around_alphabet() {
     let text = "n";
     let shift_key = 13;
@@ -50,7 +50,7 @@ fn rotate_n_by_13_with_wrap_around_alphabet() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn rotate_capital_letters() {
     let text = "OMG";
     let shift_key = 5;
@@ -60,7 +60,7 @@ fn rotate_capital_letters() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn rotate_spaces() {
     let text = "O M G";
     let shift_key = 5;
@@ -70,7 +70,7 @@ fn rotate_spaces() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn rotate_numbers() {
     let text = "Testing 1 2 3 testing";
     let shift_key = 4;
@@ -80,7 +80,7 @@ fn rotate_numbers() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn rotate_punctuation() {
     let text = "Let's eat, Grandma!";
     let shift_key = 21;
@@ -90,7 +90,7 @@ fn rotate_punctuation() {
 }
 
 #[test]
-#[ignore]
+//#[ignore]
 fn rotate_all_letters() {
     let text = "The quick brown fox jumps over the lazy dog.";
     let shift_key = 13;
