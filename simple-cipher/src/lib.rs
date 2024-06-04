@@ -1,30 +1,21 @@
 use rand::Rng;
 
 pub fn encode(key: &str, s: &str) -> Option<String> {
-    if key.is_empty() {
-        return None;
-    }
-    let mut shiftgen = key.chars().map(|c| (c as i64 - 'a' as i64) as i8).cycle();
+    let mut shiftgen = key.chars().map(|c| c as i8 - 'a' as i8).cycle();
 
     shift_string(&mut shiftgen, s)
 }
 
 pub fn decode(key: &str, s: &str) -> Option<String> {
-    if key.is_empty() {
-        return None;
-    }
-    let mut shiftgen = key
-        .chars()
-        .map(|c| -((c as i64 - 'a' as i64) as i8))
-        .cycle();
+    let mut shiftgen = key.chars().map(|c| -(c as i8 - 'a' as i8)).cycle();
 
     shift_string(&mut shiftgen, s)
 }
 
 pub fn encode_random(s: &str) -> (String, String) {
     let key = generate_key();
-    let cipher = encode(&key, s).unwrap();
-    (key, cipher)
+    let ciphertext = encode(&key, s).unwrap();
+    (key, ciphertext)
 }
 
 fn generate_key() -> String {
@@ -36,7 +27,7 @@ fn generate_key() -> String {
 fn shift_string(shiftgen: &mut impl Iterator<Item = i8>, s: &str) -> Option<String> {
     let mut result = String::new();
     for char in s.chars() {
-        let key = shiftgen.next().expect("key ended for some reason");
+        let key = shiftgen.next()?;
         if !(key >= -26) || !(key <= 26) {
             return None;
         }
@@ -57,9 +48,7 @@ fn rotate_char(c: char, key: i8, offset: char) -> char {
     let mut char_cycle = ('a'..='z').cycle();
     let mut new_char_idx = c as i8 - offset as i8 + key;
     if new_char_idx.is_negative() {
-        new_char_idx = 26 + new_char_idx
+        new_char_idx += 26;
     }
-    char_cycle
-        .nth(new_char_idx as usize)
-        .expect("something went wrong")
+    char_cycle.nth(new_char_idx as usize).unwrap()
 }
