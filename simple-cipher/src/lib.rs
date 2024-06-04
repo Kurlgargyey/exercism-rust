@@ -37,7 +37,6 @@ fn shift_string(shiftgen: &mut impl Iterator<Item = i8>, s: &str) -> Option<Stri
 }
 
 fn cipher_char(c: char, key: i8) -> char {
-    println!("char: {}, key: {}", c, key);
     match c.is_lowercase() {
         true => rotate_char(c, key, 'a'),
         false => rotate_char(c, key, 'A'),
