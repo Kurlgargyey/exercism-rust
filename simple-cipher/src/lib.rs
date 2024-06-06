@@ -28,7 +28,7 @@ fn shift_string(shiftgen: &mut impl Iterator<Item = i8>, s: &str) -> Option<Stri
     let mut result = String::new();
     for char in s.chars() {
         let key = shiftgen.next()?;
-        if !(key >= -26) || !(key <= 26) {
+        if !((key >= -26) && (key <= 26)) {
             return None;
         }
         result.push(cipher_char(char, key))
