@@ -6,6 +6,8 @@ pub struct Item {
 }
 
 pub fn maximum_value(max_weight: u32, items: &[Item]) -> u32 {
+    let mut dp_table = Vec::<Vec<Vec<Item>>>::with_capacity();
+
     let result = (1..=items.len())
         .map(|i| {
             items
